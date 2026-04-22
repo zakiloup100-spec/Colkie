@@ -394,6 +394,48 @@
       animation: forestShake 0.25s ease;
     }
 
+
+    .secret-philo-btn {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.35);
+      background: radial-gradient(circle at 35% 35%, #ff7d7d 0%, #c51414 70%, #6d0707 100%);
+      box-shadow: 0 0 8px rgba(255,0,0,0.18);
+      cursor: pointer;
+      z-index: 100000;
+      opacity: 0.75;
+      transition: transform 0.12s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .secret-philo-btn:hover {
+      opacity: 1;
+      transform: scale(1.08);
+      box-shadow: 0 0 12px rgba(255,0,0,0.35);
+    }
+
+    .philo-options {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .philo-question-box {
+      background: rgba(0,0,0,0.22);
+      border-radius: 14px;
+      padding: 14px;
+      line-height: 1.45;
+    }
+
+    .philo-progress {
+      text-align: center;
+      opacity: 0.85;
+      margin-bottom: 10px;
+    }
+
     @media (min-width: 950px) {
       .game-layout {
         grid-template-columns: 1.15fr 0.95fr;
@@ -477,6 +519,15 @@
             <button class="small-btn" id="buySpaghettiBtn">Acheter l’accès — 20 000</button>
             <button class="small-btn secondary hidden" id="enterSpaghettiBtn" style="margin-top:10px;">
               Entrer dans la dimension spaghettis
+            </button>
+          </div>
+
+          <div class="unlock-box" id="casinoUnlockPanel">
+            <div style="font-weight:bold; margin-bottom:6px;">🎰 Casino</div>
+            <p id="casinoStatus" style="margin:6px 0 10px;">Verrouillé — il faut acheter Sarah Pepin puis payer 200 000 cookies</p>
+            <button class="small-btn" id="buyCasinoBtn">Acheter l’accès — 200 000</button>
+            <button class="small-btn secondary hidden" id="enterCasinoBtn" style="margin-top:10px;">
+              Entrer dans le casino
             </button>
           </div>
 
@@ -730,7 +781,116 @@
       <div class="rpg-log-box" id="spaghettiLog">Des pizzas tombent du ciel. Fais-les rebondir pour gagner des cookies.</div>
     </div>
 
+    <div class="panel rpg-panel" id="casinoPanel">
+      <h2 class="section-title">🎰 Casino Royal Biscuit</h2>
+
+      <div class="rpg-grid">
+        <div class="stat-box">
+          <div class="stat-label">Jetons misés</div>
+          <div class="stat-value" id="casinoBetStat">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Gains casino</div>
+          <div class="stat-value" id="casinoWonStat">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Victoires</div>
+          <div class="stat-value" id="casinoWinsStat">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Défaites</div>
+          <div class="stat-value" id="casinoLossesStat">0</div>
+        </div>
+      </div>
+
+      <div class="panel" style="background:rgba(0,0,0,0.22); margin-bottom:14px;">
+        <div style="font-weight:bold; margin-bottom:8px;">🎲 Jeu 1 — Pari 49%</div>
+        <div style="opacity:0.86; margin-bottom:10px;">Tu mises des cookies. 49% de chances de gagner 2x ta mise.</div>
+        <div class="small-actions">
+          <button class="small-btn" id="bet1kBtn">Miser 1 000</button>
+          <button class="small-btn" id="bet10kBtn">Miser 10 000</button>
+        </div>
+        <div class="small-actions">
+          <button class="small-btn" id="bet50kBtn">Miser 50 000</button>
+          <button class="small-btn" id="bet100kBtn">Miser 100 000</button>
+        </div>
+      </div>
+
+      <div class="panel" style="background:rgba(0,0,0,0.22); margin-bottom:14px;">
+        <div style="font-weight:bold; margin-bottom:8px;">🥃 Jeu 2 — Les 3 verres</div>
+        <div style="opacity:0.86; margin-bottom:10px;">Choisis un verre. Le bon est caché après mélange. Tu dois miser avant.</div>
+        <div class="small-actions">
+          <button class="small-btn" id="cupBet5kBtn">Mise 5 000</button>
+          <button class="small-btn" id="cupBet20kBtn">Mise 20 000</button>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:12px;">
+          <button class="small-btn" id="cup1Btn">🥃 Verre 1</button>
+          <button class="small-btn" id="cup2Btn">🥃 Verre 2</button>
+          <button class="small-btn" id="cup3Btn">🥃 Verre 3</button>
+        </div>
+      </div>
+
+      <div class="small-actions">
+        <button class="small-btn secondary" id="leaveCasinoBtn">Retour au clicker</button>
+        <button class="small-btn reset" id="resetCasinoBtn">Reset casino</button>
+      </div>
+
+      <div class="rpg-log-box" id="casinoLog">Bienvenue au casino. Les lumières brillent, les biscuits tombent, les regrets aussi.</div>
+      <div style="text-align:center; opacity:0.45; margin-top:10px; font-size:0.88rem;" id="casinoEasterEgg">Easter egg: Snacky et Trudeau, même énergie de casino douteux 👀</div>
+    </div>
+
   </div>
+
+
+  <button id="secretPhiloBtn" class="secret-philo-btn" title="..."></button>
+
+    <div class="panel rpg-panel" id="philoPanel">
+      <h2 class="section-title">🔴 Dimension Philosophique</h2>
+
+      <div class="rpg-grid">
+        <div class="stat-box">
+          <div class="stat-label">Question</div>
+          <div class="stat-value" id="philoQuestionIndex">1 / 15</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Score</div>
+          <div class="stat-value" id="philoScore">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Réponses</div>
+          <div class="stat-value" id="philoAnswered">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Cookies gagnés</div>
+          <div class="stat-value" id="philoCookiesEarned">0</div>
+        </div>
+      </div>
+
+      <div class="philo-progress" id="philoProgressText">Question 1 sur 15</div>
+
+      <div class="philo-question-box">
+        <div id="philoQuestionText" style="font-weight:bold; font-size:1.06rem;">...</div>
+        <div class="philo-options">
+          <button class="small-btn" id="philoOptionA">A</button>
+          <button class="small-btn" id="philoOptionB">B</button>
+          <button class="small-btn" id="philoOptionC">C</button>
+          <button class="small-btn" id="philoOptionD">D</button>
+        </div>
+      </div>
+
+      <div class="small-actions">
+        <button class="small-btn" id="philoNextBtn">Question suivante</button>
+        <button class="small-btn reset" id="philoResetBtn">Reset quiz</button>
+      </div>
+
+      <div class="small-actions">
+        <button class="small-btn secondary" id="leavePhiloBtn">Retour au clicker</button>
+        <button class="small-btn secondary" id="philoRevealBtn">Révéler la réponse</button>
+      </div>
+
+      <div class="rpg-log-box" id="philoLog">Tu entres dans un endroit où chaque réponse dit quelque chose sur toi.</div>
+    </div>
+
 
   <script>
     let cookies = 0;
@@ -781,6 +941,20 @@
     let spaghettiBallDX = 3.2;
     let spaghettiBallDY = -3.0;
     let spaghettiPaddleX = 120;
+
+    let casinoAccessBought = false;
+    let casinoBetTotal = 0;
+    let casinoWonTotal = 0;
+    let casinoWins = 0;
+    let casinoLosses = 0;
+    let currentCupBet = 0;
+    let winningCup = 0;
+
+    let philoQuestionCursor = 0;
+    let philoScore = 0;
+    let philoAnswered = 0;
+    let philoCookiesEarned = 0;
+    let philoAnsweredCurrent = false;
 
     let rpgLevel = 1;
     let rpgXp = 0;
@@ -866,6 +1040,14 @@
     const enterSpaghettiBtn = document.getElementById("enterSpaghettiBtn");
     const leaveSpaghettiBtn = document.getElementById("leaveSpaghettiBtn");
     const spaghettiPanel = document.getElementById("spaghettiPanel");
+
+    const casinoUnlockPanel = document.getElementById("casinoUnlockPanel");
+    const casinoStatusEl = document.getElementById("casinoStatus");
+    const buyCasinoBtn = document.getElementById("buyCasinoBtn");
+    const enterCasinoBtn = document.getElementById("enterCasinoBtn");
+    const leaveCasinoBtn = document.getElementById("leaveCasinoBtn");
+    const casinoPanel = document.getElementById("casinoPanel");
+
     const mainGameSection = document.getElementById("mainGameSection");
 
     const rpgLevelEl = document.getElementById("rpgLevel");
@@ -905,6 +1087,40 @@
     const spaghettiUpgradeBtn = document.getElementById("spaghettiUpgradeBtn");
     const resetSpaghettiBtn = document.getElementById("resetSpaghettiBtn");
     const spaghettiLogEl = document.getElementById("spaghettiLog");
+
+    const casinoBetStatEl = document.getElementById("casinoBetStat");
+    const casinoWonStatEl = document.getElementById("casinoWonStat");
+    const casinoWinsStatEl = document.getElementById("casinoWinsStat");
+    const casinoLossesStatEl = document.getElementById("casinoLossesStat");
+    const bet1kBtn = document.getElementById("bet1kBtn");
+    const bet10kBtn = document.getElementById("bet10kBtn");
+    const bet50kBtn = document.getElementById("bet50kBtn");
+    const bet100kBtn = document.getElementById("bet100kBtn");
+    const cupBet5kBtn = document.getElementById("cupBet5kBtn");
+    const cupBet20kBtn = document.getElementById("cupBet20kBtn");
+    const cup1Btn = document.getElementById("cup1Btn");
+    const cup2Btn = document.getElementById("cup2Btn");
+    const cup3Btn = document.getElementById("cup3Btn");
+    const resetCasinoBtn = document.getElementById("resetCasinoBtn");
+    const casinoLogEl = document.getElementById("casinoLog");
+
+    const secretPhiloBtn = document.getElementById("secretPhiloBtn");
+    const philoPanel = document.getElementById("philoPanel");
+    const philoQuestionIndexEl = document.getElementById("philoQuestionIndex");
+    const philoScoreEl = document.getElementById("philoScore");
+    const philoAnsweredEl = document.getElementById("philoAnswered");
+    const philoCookiesEarnedEl = document.getElementById("philoCookiesEarned");
+    const philoProgressTextEl = document.getElementById("philoProgressText");
+    const philoQuestionTextEl = document.getElementById("philoQuestionText");
+    const philoOptionA = document.getElementById("philoOptionA");
+    const philoOptionB = document.getElementById("philoOptionB");
+    const philoOptionC = document.getElementById("philoOptionC");
+    const philoOptionD = document.getElementById("philoOptionD");
+    const philoNextBtn = document.getElementById("philoNextBtn");
+    const philoResetBtn = document.getElementById("philoResetBtn");
+    const leavePhiloBtn = document.getElementById("leavePhiloBtn");
+    const philoRevealBtn = document.getElementById("philoRevealBtn");
+    const philoLogEl = document.getElementById("philoLog");
 
     const loreBtn = document.getElementById("startLore");
     const loreBox = document.getElementById("loreBox");
@@ -1041,6 +1257,310 @@
       }
     }
 
+
+    const philoQuestions = [
+      {
+        q: "Vaut-il mieux une vérité qui blesse ou une illusion qui apaise?",
+        options: [
+          "Toujours la vérité, même si elle détruit quelqu’un.",
+          "Toujours l’illusion, si elle rend la vie plus douce.",
+          "La vérité, sauf quand le coût moral dépasse le bien qu’elle apporte.",
+          "Aucune des deux n’a de valeur réelle."
+        ],
+        answer: 2,
+        reward: 3200,
+        explain: "Souvent, le point le plus défendable moralement est de peser le bien, le tort et le contexte."
+      },
+      {
+        q: "Si ton identité change complètement avec le temps, en quel sens restes-tu la même personne?",
+        options: [
+          "Parce que le corps reste à peu près le même.",
+          "Parce que les souvenirs suffisent toujours.",
+          "Parce qu’il existe une continuité psychologique, même imparfaite.",
+          "On ne reste jamais la même personne."
+        ],
+        answer: 2,
+        reward: 3400,
+        explain: "La continuité psychologique est souvent l’idée la plus solide dans ce type de problème."
+      },
+      {
+        q: "Une action bonne est-elle bonne à cause de ses conséquences ou de son intention?",
+        options: [
+          "Seulement l’intention compte.",
+          "Seulement les conséquences comptent.",
+          "Les deux comptent, mais dans des proportions qui dépendent du contexte.",
+          "Ni l’un ni l’autre: seule la loi compte."
+        ],
+        answer: 2,
+        reward: 3600,
+        explain: "Les théories morales s’opposent ici, mais une réponse nuancée évite les extrêmes."
+      },
+      {
+        q: "Si une machine pouvait te rendre heureux en permanence dans une simulation, devrais-tu l’accepter?",
+        options: [
+          "Oui, le bonheur suffit.",
+          "Non, parce que l’authenticité a une valeur propre.",
+          "Oui, si personne ne peut savoir la différence.",
+          "Non, mais seulement par orgueil."
+        ],
+        answer: 1,
+        reward: 3800,
+        explain: "L’objection classique est que l’authenticité, l’action réelle et le rapport au monde comptent."
+      },
+      {
+        q: "Peut-on être moralement responsable d’un acte si notre caractère a été entièrement façonné par des causes extérieures?",
+        options: [
+          "Oui, totalement quand même.",
+          "Non, jamais.",
+          "Responsabilité partielle: la causalité n’élimine pas toute imputabilité.",
+          "Seulement si on regrette après."
+        ],
+        answer: 2,
+        reward: 4000,
+        explain: "Le compatibilisme soutient souvent qu’une certaine responsabilité demeure malgré le déterminisme."
+      },
+      {
+        q: "Est-ce que l’égalité juste veut dire traiter tout le monde pareil?",
+        options: [
+          "Oui, toujours pareil.",
+          "Non, la justice peut exiger un traitement différent selon la situation.",
+          "Oui, sauf pour les riches.",
+          "La justice n’a rien à voir avec l’égalité."
+        ],
+        answer: 1,
+        reward: 4200,
+        explain: "L’équité et l’égalité stricte ne sont pas toujours la même chose."
+      },
+      {
+        q: "Mentir pour protéger une personne vulnérable est-il forcément immoral?",
+        options: [
+          "Oui, mentir est toujours immoral.",
+          "Non, le devoir de protection peut l’emporter.",
+          "Oui, sauf si personne ne le découvre.",
+          "Non, parce que la morale n’existe pas."
+        ],
+        answer: 1,
+        reward: 4400,
+        explain: "Ici encore, une position moins absolue tient mieux face aux cas difficiles."
+      },
+      {
+        q: "Le libre arbitre exige-t-il la possibilité réelle d’avoir pu agir autrement?",
+        options: [
+          "Oui, sans ça il n’y a aucune liberté.",
+          "Non, agir selon ses raisons peut suffire.",
+          "Oui, mais seulement pour les crimes.",
+          "Non, parce que tout est hasard."
+        ],
+        answer: 1,
+        reward: 4600,
+        explain: "Beaucoup de philosophes défendent une liberté liée aux raisons plutôt qu’à l’indétermination pure."
+      },
+      {
+        q: "Est-ce qu’une vie courte mais intense vaut plus qu’une vie longue mais vide?",
+        options: [
+          "Oui, toujours.",
+          "Non, toujours.",
+          "Cela dépend de ce qu’on entend par intensité et par vide.",
+          "La durée seule décide."
+        ],
+        answer: 2,
+        reward: 4800,
+        explain: "La question force à clarifier les critères de valeur d’une vie."
+      },
+      {
+        q: "Peut-on être une bonne personne sans jamais remettre en question ses propres croyances?",
+        options: [
+          "Oui, si les intentions sont bonnes.",
+          "Non, l’examen critique de soi fait partie de la vertu.",
+          "Oui, si la tradition est ancienne.",
+          "Non, sauf pour les génies."
+        ],
+        answer: 1,
+        reward: 5000,
+        explain: "L’humilité intellectuelle et l’examen de soi sont souvent vus comme essentiels."
+      },
+      {
+        q: "La souffrance donne-t-elle automatiquement du sens à une existence?",
+        options: [
+          "Oui, toujours.",
+          "Non, elle peut parfois approfondir une vie sans lui donner automatiquement du sens.",
+          "Oui, si elle est grande.",
+          "Non, parce que le sens n’existe pas."
+        ],
+        answer: 1,
+        reward: 5200,
+        explain: "La souffrance n’est pas en elle-même une garantie de sens."
+      },
+      {
+        q: "Si personne ne te voit faire le bien, ce bien a-t-il moins de valeur?",
+        options: [
+          "Oui, parce qu’il n’influence pas l’exemple public.",
+          "Non, sa valeur morale peut rester entière.",
+          "Oui, sauf si c’est très héroïque.",
+          "La valeur dépend seulement de la réputation."
+        ],
+        answer: 1,
+        reward: 5400,
+        explain: "La valeur morale ne dépend pas forcément de la visibilité sociale."
+      },
+      {
+        q: "Un monde parfaitement ordonné mais sans liberté serait-il préférable à un monde libre mais imparfait?",
+        options: [
+          "Oui, l’ordre vaut plus que la liberté.",
+          "Non, une liberté imparfaite vaut souvent mieux qu’un ordre total sans autonomie.",
+          "Oui, si les gens ont du confort.",
+          "Impossible à comparer."
+        ],
+        answer: 1,
+        reward: 5600,
+        explain: "La liberté a généralement une valeur fondamentale, même au prix du désordre."
+      },
+      {
+        q: "L’amour est-il plus vrai lorsqu’il est choisi librement que lorsqu’il est inévitable?",
+        options: [
+          "Oui, le choix libre lui donne une profondeur particulière.",
+          "Non, l’inévitable est plus pur.",
+          "Oui, mais seulement au début.",
+          "L’amour n’est jamais libre."
+        ],
+        answer: 0,
+        reward: 5800,
+        explain: "Le lien entre amour et liberté de se donner est souvent central."
+      },
+      {
+        q: "Si une règle morale produit constamment des résultats inhumains, faut-il l’abandonner?",
+        options: [
+          "Jamais: une règle est une règle.",
+          "Oui: une morale qui détruit l’humain rate sa propre fin.",
+          "Non, sauf si tout le monde est d’accord.",
+          "On doit seulement l’ignorer en secret."
+        ],
+        answer: 1,
+        reward: 6000,
+        explain: "Une règle morale doit rester justifiable humainement."
+      }
+    ];
+
+    function logPhilo(text) {
+      philoLogEl.textContent = text;
+    }
+
+    function updatePhiloUI() {
+      const q = philoQuestions[philoQuestionCursor];
+      philoQuestionIndexEl.textContent = `${philoQuestionCursor + 1} / ${philoQuestions.length}`;
+      philoScoreEl.textContent = formatNumber(philoScore);
+      philoAnsweredEl.textContent = formatNumber(philoAnswered);
+      philoCookiesEarnedEl.textContent = formatNumber(philoCookiesEarned);
+      philoProgressTextEl.textContent = `Question ${philoQuestionCursor + 1} sur ${philoQuestions.length}`;
+      philoQuestionTextEl.textContent = q.q;
+      philoOptionA.textContent = "A. " + q.options[0];
+      philoOptionB.textContent = "B. " + q.options[1];
+      philoOptionC.textContent = "C. " + q.options[2];
+      philoOptionD.textContent = "D. " + q.options[3];
+
+      [philoOptionA, philoOptionB, philoOptionC, philoOptionD].forEach(btn => {
+        btn.disabled = philoAnsweredCurrent;
+      });
+    }
+
+    function answerPhilo(choice) {
+      if (philoAnsweredCurrent) return;
+      philoAnsweredCurrent = true;
+      philoAnswered++;
+
+      const q = philoQuestions[philoQuestionCursor];
+      if (choice === q.answer) {
+        philoScore++;
+        cookies += q.reward;
+        totalCookiesEarned += q.reward;
+        philoCookiesEarned += q.reward;
+        showToast(`🧠 +${formatNumber(q.reward)} cookies`);
+        logPhilo("Bonne réponse. " + q.explain);
+      } else {
+        logPhilo("Réponse discutable... " + q.explain);
+      }
+
+      updateUI();
+      updatePhiloUI();
+    }
+
+    function nextPhiloQuestion() {
+      philoQuestionCursor++;
+      if (philoQuestionCursor >= philoQuestions.length) {
+        philoQuestionCursor = 0;
+        logPhilo("Tu as fini le cycle philosophique. On repart au début.");
+      }
+      philoAnsweredCurrent = false;
+      updatePhiloUI();
+    }
+
+    function revealPhiloAnswer() {
+      const q = philoQuestions[philoQuestionCursor];
+      const letters = ["A", "B", "C", "D"];
+      logPhilo(`Réponse suggérée: ${letters[q.answer]}. ${q.explain}`);
+    }
+
+    function resetPhiloQuiz() {
+      philoQuestionCursor = 0;
+      philoScore = 0;
+      philoAnswered = 0;
+      philoCookiesEarned = 0;
+      philoAnsweredCurrent = false;
+      logPhilo("Le silence recommence. Les questions reviennent.");
+      updatePhiloUI();
+    }
+
+    function enterPhilo() {
+      mainGameSection.classList.add("hidden");
+      darkForestPanel.style.display = "none";
+      spaghettiPanel.style.display = "none";
+      casinoPanel.style.display = "none";
+      philoPanel.style.display = "block";
+      updatePhiloUI();
+    }
+
+    function leavePhilo() {
+      philoPanel.style.display = "none";
+      mainGameSection.classList.remove("hidden");
+      updatePhiloUI();
+    }
+
+    function updateCasinoUI() {
+      const sarahUnlocked = sarahPepinCount >= 1;
+
+      if (!sarahUnlocked) {
+        casinoStatusEl.textContent = "Verrouillé — il faut acheter Sarah Pepin";
+        buyCasinoBtn.disabled = true;
+        buyCasinoBtn.textContent = "Acheter l’accès — 200 000";
+        enterCasinoBtn.classList.add("hidden");
+      } else if (!casinoAccessBought) {
+        casinoStatusEl.textContent = "Achetable pour 200 000 cookies";
+        buyCasinoBtn.disabled = cookies < 200000;
+        buyCasinoBtn.textContent = "Acheter l’accès — 200 000";
+        enterCasinoBtn.classList.add("hidden");
+      } else {
+        casinoStatusEl.textContent = "Débloqué";
+        buyCasinoBtn.disabled = true;
+        buyCasinoBtn.textContent = "Accès acheté";
+        enterCasinoBtn.classList.remove("hidden");
+      }
+
+      casinoBetStatEl.textContent = formatNumber(casinoBetTotal);
+      casinoWonStatEl.textContent = formatNumber(casinoWonTotal);
+      casinoWinsStatEl.textContent = formatNumber(casinoWins);
+      casinoLossesStatEl.textContent = formatNumber(casinoLosses);
+
+      [bet1kBtn, bet10kBtn, bet50kBtn, bet100kBtn].forEach((btn, i) => {
+        const amount = [1000,10000,50000,100000][i];
+        btn.disabled = cookies < amount;
+      });
+      cupBet5kBtn.disabled = cookies < 5000;
+      cupBet20kBtn.disabled = cookies < 20000;
+      cup1Btn.disabled = currentCupBet <= 0;
+      cup2Btn.disabled = currentCupBet <= 0;
+      cup3Btn.disabled = currentCupBet <= 0;
+    }
+
     function updateUI() {
       cookiesEl.textContent = formatNumber(cookies);
       perClickEl.textContent = formatNumber(effectiveClickPower());
@@ -1080,6 +1600,7 @@
       updatePrestigeUI();
       updateDarkForestUI();
       updateSpaghettiUI();
+      updateCasinoUI();
     }
 
     function grantCookies(amount) {
@@ -1690,6 +2211,53 @@
       updateDarkForestUI();
     }
 
+    secretPhiloBtn.addEventListener("click", enterPhilo);
+    leavePhiloBtn.addEventListener("click", leavePhilo);
+    philoNextBtn.addEventListener("click", nextPhiloQuestion);
+    philoResetBtn.addEventListener("click", resetPhiloQuiz);
+    philoRevealBtn.addEventListener("click", revealPhiloAnswer);
+    philoOptionA.addEventListener("click", () => answerPhilo(0));
+    philoOptionB.addEventListener("click", () => answerPhilo(1));
+    philoOptionC.addEventListener("click", () => answerPhilo(2));
+    philoOptionD.addEventListener("click", () => answerPhilo(3));
+
+    buyCasinoBtn.addEventListener("click", () => {
+      if (sarahPepinCount < 1) {
+        showToast("Il faut d’abord acheter Sarah Pepin.");
+        return;
+      }
+      if (casinoAccessBought) return;
+      if (cookies >= 200000) {
+        cookies -= 200000;
+        casinoAccessBought = true;
+        showToast("🎰 Casino débloqué");
+        updateUI();
+      } else {
+        showToast("Pas assez de cookies.");
+      }
+    });
+
+    enterCasinoBtn.addEventListener("click", enterCasino);
+    leaveCasinoBtn.addEventListener("click", leaveCasino);
+
+    bet1kBtn.addEventListener("click", () => doCasinoBet(1000));
+    bet10kBtn.addEventListener("click", () => doCasinoBet(10000));
+    bet50kBtn.addEventListener("click", () => doCasinoBet(50000));
+    bet100kBtn.addEventListener("click", () => doCasinoBet(100000));
+
+    cupBet5kBtn.addEventListener("click", () => prepareCupBet(5000));
+    cupBet20kBtn.addEventListener("click", () => prepareCupBet(20000));
+    cup1Btn.addEventListener("click", () => pickCup(1));
+    cup2Btn.addEventListener("click", () => pickCup(2));
+    cup3Btn.addEventListener("click", () => pickCup(3));
+
+    resetCasinoBtn.addEventListener("click", () => {
+      currentCupBet = 0;
+      winningCup = 0;
+      logCasino("Le croupier remet la table à zéro.");
+      updateUI();
+    });
+
     buySpaghettiBtn.addEventListener("click", () => {
       if (spaghettiAccessBought) return;
       if (cookies >= 20000) {
@@ -1930,6 +2498,93 @@
       updateSpaghettiUI();
     }
 
+
+    function logCasino(text) {
+      casinoLogEl.textContent = text;
+    }
+
+    function doCasinoBet(amount) {
+      if (cookies < amount) {
+        showToast("Pas assez de cookies.");
+        return;
+      }
+
+      cookies -= amount;
+      casinoBetTotal += amount;
+
+      if (Math.random() < 0.49) {
+        const winnings = amount * 2;
+        cookies += winnings;
+        casinoWonTotal += winnings;
+        casinoWins++;
+        logCasino(`🎰 Jackpot relatif! Tu gagnes ${formatNumber(winnings)} cookies.`);
+        showToast(`🎰 +${formatNumber(winnings)}`);
+      } else {
+        casinoLosses++;
+        logCasino(`💸 Perdu... la maison garde ${formatNumber(amount)} cookies.`);
+        showToast("💸 Perdu");
+      }
+
+      updateUI();
+    }
+
+    function prepareCupBet(amount) {
+      if (cookies < amount) {
+        showToast("Pas assez de cookies.");
+        return;
+      }
+      if (currentCupBet > 0) {
+        logCasino("Tu as déjà une mise active sur les verres.");
+        return;
+      }
+
+      cookies -= amount;
+      casinoBetTotal += amount;
+      currentCupBet = amount;
+      winningCup = Math.floor(Math.random() * 3) + 1;
+
+      logCasino(`🥃 Mise de ${formatNumber(amount)} placée. Les verres sont mélangés... choisis vite.`);
+      updateUI();
+    }
+
+    function pickCup(choice) {
+      if (currentCupBet <= 0) {
+        logCasino("Place une mise avant de choisir un verre.");
+        return;
+      }
+
+      if (choice === winningCup) {
+        const winnings = Math.floor(currentCupBet * 2.4);
+        cookies += winnings;
+        casinoWonTotal += winnings;
+        casinoWins++;
+        logCasino(`🥃 Tu trouves le bon verre! Gain de ${formatNumber(winnings)} cookies.`);
+        showToast(`🥃 +${formatNumber(winnings)}`);
+      } else {
+        casinoLosses++;
+        logCasino(`❌ Mauvais verre... le bon était le verre ${winningCup}.`);
+        showToast("❌ Mauvais verre");
+      }
+
+      currentCupBet = 0;
+      winningCup = 0;
+      updateUI();
+    }
+
+    function enterCasino() {
+      mainGameSection.classList.add("hidden");
+      darkForestPanel.style.display = "none";
+      spaghettiPanel.style.display = "none";
+      casinoPanel.style.display = "block";
+      updateCasinoUI();
+    }
+
+    function leaveCasino() {
+      casinoPanel.style.display = "none";
+      mainGameSection.classList.remove("hidden");
+      updateCasinoUI();
+    }
+
     function saveGame() {
       const data = {
         cookies,
@@ -1967,6 +2622,17 @@
 
         darkForestAccessBought,
         spaghettiAccessBought,
+        casinoAccessBought,
+        casinoBetTotal,
+        casinoWonTotal,
+        casinoWins,
+        casinoLosses,
+        currentCupBet,
+        winningCup,
+        philoQuestionCursor,
+        philoScore,
+        philoAnswered,
+        philoCookiesEarned,
         spaghettiScore,
         spaghettiHits,
         spaghettiCookiesEarned,
@@ -2033,6 +2699,18 @@
 
       darkForestAccessBought = data.darkForestAccessBought ?? false;
       spaghettiAccessBought = data.spaghettiAccessBought ?? false;
+      casinoAccessBought = data.casinoAccessBought ?? false;
+      casinoBetTotal = data.casinoBetTotal ?? 0;
+      casinoWonTotal = data.casinoWonTotal ?? 0;
+      casinoWins = data.casinoWins ?? 0;
+      casinoLosses = data.casinoLosses ?? 0;
+      currentCupBet = 0;
+      winningCup = 0;
+      philoQuestionCursor = data.philoQuestionCursor ?? 0;
+      philoScore = data.philoScore ?? 0;
+      philoAnswered = data.philoAnswered ?? 0;
+      philoCookiesEarned = data.philoCookiesEarned ?? 0;
+      philoAnsweredCurrent = false;
       spaghettiScore = data.spaghettiScore ?? 0;
       spaghettiHits = data.spaghettiHits ?? 0;
       spaghettiCookiesEarned = data.spaghettiCookiesEarned ?? 0;
@@ -2064,6 +2742,7 @@
 
     resetSpaghettiGameState();
     loadGame();
+    updatePhiloUI();
     updateUI();
     checkAchievements();
     scheduleGoldenCookie();
