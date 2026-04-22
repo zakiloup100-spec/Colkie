@@ -471,6 +471,15 @@
             </button>
           </div>
 
+          <div class="unlock-box" id="spaghettiUnlockPanel">
+            <div style="font-weight:bold; margin-bottom:6px;">🍝 Dimension Spaghettis</div>
+            <p id="spaghettiStatus" style="margin:6px 0 10px;">Achetable pour 20 000 cookies</p>
+            <button class="small-btn" id="buySpaghettiBtn">Acheter l’accès — 20 000</button>
+            <button class="small-btn secondary hidden" id="enterSpaghettiBtn" style="margin-top:10px;">
+              Entrer dans la dimension spaghettis
+            </button>
+          </div>
+
           <div style="margin-top: 14px;">
             <button class="lore-btn" id="startLore">Mode Secret 👁️</button>
             <div class="lore-box" id="loreBox">
@@ -647,54 +656,81 @@
 
       <div class="rpg-log-box" id="rpgLog">La forêt te regarde...</div>
     </div>
-  </div>
+    <div class="panel rpg-panel" id="spaghettiPanel">
+      <h2 class="section-title">🍝 Dimension Spaghettis</h2>
 
-<div class="panel rpg-panel" id="spaghettiPanel">
-  <h2 class="section-title">🍝 Dimension Spaghettis</h2>
-  <div class="subtitle" style="margin-bottom:14px;">Mini-jeu pizza ping-pong pour farmer des cookies</div>
+      <div class="rpg-grid">
+        <div class="stat-box">
+          <div class="stat-label">Score</div>
+          <div class="stat-value" id="spaghettiScore">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Pizza sauvées</div>
+          <div class="stat-value" id="spaghettiHits">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Cookies gagnés</div>
+          <div class="stat-value" id="spaghettiCookiesEarned">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Vitesse</div>
+          <div class="stat-value" id="spaghettiSpeed">1</div>
+        </div>
+      </div>
 
-  <div class="rpg-grid">
-    <div class="stat-box">
-      <div class="stat-label">Score</div>
-      <div class="stat-value" id="spaghettiScore">0</div>
+      <div id="spaghettiGameArea" style="
+        position:relative;
+        height:340px;
+        border-radius:16px;
+        overflow:hidden;
+        background:
+          radial-gradient(circle at top, rgba(255,220,180,0.35), rgba(120,40,10,0.95)),
+          linear-gradient(to bottom, #8d3e1d 0%, #5c220d 55%, #2e1007 100%);
+        border:1px solid rgba(255,255,255,0.08);
+        margin-bottom:14px;
+        box-shadow: inset 0 0 40px rgba(0,0,0,0.18);
+      ">
+        <div style="position:absolute; inset:0; opacity:0.08; pointer-events:none; background:
+          repeating-radial-gradient(circle at 20% 20%, #fff 0 2px, transparent 2px 26px),
+          repeating-radial-gradient(circle at 80% 70%, #ffd28f 0 3px, transparent 3px 34px);"></div>
+
+        <div id="spaghettiBall" style="
+          position:absolute;
+          left:155px;
+          top:140px;
+          width:38px;
+          height:38px;
+          border-radius:50%;
+          background: radial-gradient(circle at 35% 30%, #ffda6e 0%, #d67c28 65%, #a24310 100%);
+          box-shadow:0 0 10px rgba(255,180,60,0.4);
+        ">🍕</div>
+
+        <div id="spaghettiPaddle" style="
+          position:absolute;
+          left:120px;
+          bottom:18px;
+          width:105px;
+          height:18px;
+          border-radius:999px;
+          background: linear-gradient(90deg, #f5e2b8, #ffcf7a, #f5e2b8);
+          box-shadow:0 0 10px rgba(255,220,150,0.2);
+        "></div>
+      </div>
+
+      <div class="small-actions">
+        <button class="small-btn" id="startSpaghettiBtn">▶️ Jouer</button>
+        <button class="small-btn" id="spaghettiUpgradeBtn">⬆️ Booster la raquette — 7 500</button>
+      </div>
+
+      <div class="small-actions">
+        <button class="small-btn secondary" id="leaveSpaghettiBtn">Retour au clicker</button>
+        <button class="small-btn reset" id="resetSpaghettiBtn">Reset mini-jeu</button>
+      </div>
+
+      <div class="rpg-log-box" id="spaghettiLog">Des pizzas tombent du ciel. Fais-les rebondir pour gagner des cookies.</div>
     </div>
-    <div class="stat-box">
-      <div class="stat-label">Combo</div>
-      <div class="stat-value" id="spaghettiCombo">0</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-label">Cookies gagnés</div>
-      <div class="stat-value" id="spaghettiCookiesEarned">0</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-label">Meilleur score</div>
-      <div class="stat-value" id="spaghettiBest">0</div>
-    </div>
-  </div>
 
-  <div id="spaghettiGame" style="position:relative; height:360px; border-radius:16px; overflow:hidden; background:linear-gradient(to bottom, #d84e2f 0%, #b5301d 45%, #7e1f14 100%); border:1px solid rgba(255,255,255,0.08); margin-bottom:14px;">
-    <div style="position:absolute; inset:0; background:
-      radial-gradient(circle at 15% 20%, rgba(255,225,120,0.18), transparent 20%),
-      radial-gradient(circle at 70% 30%, rgba(255,225,120,0.14), transparent 18%),
-      radial-gradient(circle at 45% 75%, rgba(255,225,120,0.12), transparent 16%);"></div>
-    <div id="pizzaBall" style="position:absolute; left:180px; top:150px; width:28px; height:28px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #ffd37a 0%, #f6b64b 55%, #cf7e1c 100%); box-shadow:0 0 10px rgba(255,225,120,0.25);"></div>
-    <div id="leftPaddle" style="position:absolute; left:14px; top:130px; width:16px; height:90px; border-radius:12px; background:#f3e3c0;"></div>
-    <div id="rightPaddle" style="position:absolute; right:14px; top:130px; width:16px; height:90px; border-radius:12px; background:#d1f0c8;"></div>
-    <div style="position:absolute; left:50%; top:0; width:2px; height:100%; transform:translateX(-50%); background:rgba(255,255,255,0.08);"></div>
   </div>
-
-  <div class="small-actions">
-    <button class="small-btn" id="startSpaghettiBtn">▶️ Lancer la partie</button>
-    <button class="small-btn" id="claimSpaghettiBtn">🍪 Réclamer les cookies</button>
-  </div>
-
-  <div class="small-actions">
-    <button class="small-btn secondary" id="leaveSpaghettiBtn">Retour au clicker</button>
-    <button class="small-btn reset" id="resetSpaghettiBtn">Reset mini-jeu</button>
-  </div>
-
-  <div class="rpg-log-box" id="spaghettiLog">Des pizzas flottent partout...</div>
-</div>
 
   <script>
     let cookies = 0;
@@ -733,6 +769,18 @@
     let prestigeThreshold = 100000;
 
     let darkForestAccessBought = false;
+    let spaghettiAccessBought = false;
+    let spaghettiScore = 0;
+    let spaghettiHits = 0;
+    let spaghettiCookiesEarned = 0;
+    let spaghettiPaddleLevel = 1;
+    let spaghettiRunning = false;
+    let spaghettiAnimId = null;
+    let spaghettiBallX = 155;
+    let spaghettiBallY = 140;
+    let spaghettiBallDX = 3.2;
+    let spaghettiBallDY = -3.0;
+    let spaghettiPaddleX = 120;
 
     let rpgLevel = 1;
     let rpgXp = 0;
@@ -748,21 +796,6 @@
     let currentEnemy = null;
     let bossesKilled = 0;
     let musicEnabled = false;
-
-    let spaghettiAccessBought = false;
-    let spaghettiScore = 0;
-    let spaghettiCombo = 0;
-    let spaghettiCookiesEarned = 0;
-    let spaghettiBest = 0;
-    let spaghettiClaimable = 0;
-    let spaghettiRunning = false;
-    let spaghettiAnimation = null;
-    let ballX = 180;
-    let ballY = 150;
-    let ballVX = 3.8;
-    let ballVY = 2.8;
-    let leftPaddleY = 130;
-    let rightPaddleY = 130;
     let audioCtx = null;
     let musicInterval = null;
     let activeMusicNodes = [];
@@ -827,24 +860,13 @@
     const leaveDarkForestBtn = document.getElementById("leaveDarkForestBtn");
     const darkForestPanel = document.getElementById("darkForestPanel");
     const darkForestUnlockPanel = document.getElementById("darkForestUnlockPanel");
-    const mainGameSection = document.getElementById("mainGameSection");
-
+    const spaghettiUnlockPanel = document.getElementById("spaghettiUnlockPanel");
     const spaghettiStatusEl = document.getElementById("spaghettiStatus");
     const buySpaghettiBtn = document.getElementById("buySpaghettiBtn");
     const enterSpaghettiBtn = document.getElementById("enterSpaghettiBtn");
     const leaveSpaghettiBtn = document.getElementById("leaveSpaghettiBtn");
     const spaghettiPanel = document.getElementById("spaghettiPanel");
-    const spaghettiScoreEl = document.getElementById("spaghettiScore");
-    const spaghettiComboEl = document.getElementById("spaghettiCombo");
-    const spaghettiCookiesEarnedEl = document.getElementById("spaghettiCookiesEarned");
-    const spaghettiBestEl = document.getElementById("spaghettiBest");
-    const spaghettiLogEl = document.getElementById("spaghettiLog");
-    const startSpaghettiBtn = document.getElementById("startSpaghettiBtn");
-    const claimSpaghettiBtn = document.getElementById("claimSpaghettiBtn");
-    const resetSpaghettiBtn = document.getElementById("resetSpaghettiBtn");
-    const pizzaBallEl = document.getElementById("pizzaBall");
-    const leftPaddleEl = document.getElementById("leftPaddle");
-    const rightPaddleEl = document.getElementById("rightPaddle");
+    const mainGameSection = document.getElementById("mainGameSection");
 
     const rpgLevelEl = document.getElementById("rpgLevel");
     const rpgXpEl = document.getElementById("rpgXp");
@@ -871,6 +893,18 @@
     const spawnBossBtn = document.getElementById("spawnBossBtn");
     const toggleMusicBtn = document.getElementById("toggleMusicBtn");
     const rpgResetFightBtn = document.getElementById("rpgResetFightBtn");
+
+    const spaghettiScoreEl = document.getElementById("spaghettiScore");
+    const spaghettiHitsEl = document.getElementById("spaghettiHits");
+    const spaghettiCookiesEarnedEl = document.getElementById("spaghettiCookiesEarned");
+    const spaghettiSpeedEl = document.getElementById("spaghettiSpeed");
+    const spaghettiGameArea = document.getElementById("spaghettiGameArea");
+    const spaghettiBallEl = document.getElementById("spaghettiBall");
+    const spaghettiPaddleEl = document.getElementById("spaghettiPaddle");
+    const startSpaghettiBtn = document.getElementById("startSpaghettiBtn");
+    const spaghettiUpgradeBtn = document.getElementById("spaghettiUpgradeBtn");
+    const resetSpaghettiBtn = document.getElementById("resetSpaghettiBtn");
+    const spaghettiLogEl = document.getElementById("spaghettiLog");
 
     const loreBtn = document.getElementById("startLore");
     const loreBox = document.getElementById("loreBox");
@@ -1656,6 +1690,45 @@
       updateDarkForestUI();
     }
 
+    buySpaghettiBtn.addEventListener("click", () => {
+      if (spaghettiAccessBought) return;
+      if (cookies >= 20000) {
+        cookies -= 20000;
+        spaghettiAccessBought = true;
+        showToast("🍝 Dimension Spaghettis débloquée");
+        updateUI();
+      } else {
+        showToast("Pas assez de cookies.");
+      }
+    });
+
+    enterSpaghettiBtn.addEventListener("click", enterSpaghetti);
+    leaveSpaghettiBtn.addEventListener("click", leaveSpaghetti);
+
+    startSpaghettiBtn.addEventListener("click", startSpaghettiGame);
+
+    spaghettiUpgradeBtn.addEventListener("click", () => {
+      if (cookies >= 7500) {
+        cookies -= 7500;
+        spaghettiPaddleLevel++;
+        showToast("🍕 Raquette améliorée");
+        updateUI();
+      }
+    });
+
+    resetSpaghettiBtn.addEventListener("click", () => {
+      stopSpaghettiGame();
+      resetSpaghettiGameState();
+      logSpaghetti("Mini-jeu réinitialisé.");
+    });
+
+    spaghettiGameArea.addEventListener("pointermove", (e) => {
+      const rect = spaghettiGameArea.getBoundingClientRect();
+      const paddleW = 105 + (spaghettiPaddleLevel - 1) * 10;
+      spaghettiPaddleX = Math.max(0, Math.min(e.clientX - rect.left - paddleW / 2, rect.width - paddleW));
+      updateSpaghettiUI();
+    });
+
     buyDarkForestBtn.addEventListener("click", () => {
       if (eloikPoopCount < 1) {
         showToast("Il faut d’abord acheter Le caca à Éloik.");
@@ -1728,64 +1801,134 @@
       logRpg("Le combat a été réinitialisé.");
     });
 
-buySpaghettiBtn.addEventListener("click", () => {
-  if (spaghettiAccessBought) return;
-  if (cookies >= 20000) {
-    cookies -= 20000;
-    spaghettiAccessBought = true;
-    showToast("🍝 Dimension Spaghettis débloquée");
-    updateUI();
-  } else {
-    showToast("Pas assez de cookies.");
-  }
-});
 
-enterSpaghettiBtn.addEventListener("click", enterSpaghetti);
-leaveSpaghettiBtn.addEventListener("click", leaveSpaghetti);
+    function updateSpaghettiUI() {
+      if (!spaghettiStatusEl) return;
 
-startSpaghettiBtn.addEventListener("click", startSpaghettiGame);
+      if (!spaghettiAccessBought) {
+        spaghettiStatusEl.textContent = "Achetable pour 20 000 cookies";
+        buySpaghettiBtn.disabled = cookies < 20000;
+        buySpaghettiBtn.textContent = "Acheter l’accès — 20 000";
+        enterSpaghettiBtn.classList.add("hidden");
+      } else {
+        spaghettiStatusEl.textContent = "Débloquée";
+        buySpaghettiBtn.disabled = true;
+        buySpaghettiBtn.textContent = "Accès acheté";
+        enterSpaghettiBtn.classList.remove("hidden");
+      }
 
-claimSpaghettiBtn.addEventListener("click", () => {
-  if (spaghettiClaimable <= 0) {
-    logSpaghetti("Aucun cookie à réclamer.");
-    return;
-  }
-  cookies += spaghettiClaimable;
-  totalCookiesEarned += spaghettiClaimable;
-  spaghettiCookiesEarned += spaghettiClaimable;
-  showToast(`🍪 +${formatNumber(spaghettiClaimable)}`);
-  spaghettiClaimable = 0;
-  updateUI();
-  logSpaghetti("Récompense récupérée.");
-});
+      spaghettiScoreEl.textContent = formatNumber(spaghettiScore);
+      spaghettiHitsEl.textContent = formatNumber(spaghettiHits);
+      spaghettiCookiesEarnedEl.textContent = formatNumber(spaghettiCookiesEarned);
+      spaghettiSpeedEl.textContent = formatNumber(spaghettiPaddleLevel);
+      spaghettiUpgradeBtn.disabled = cookies < 7500;
+      spaghettiPaddleEl.style.width = (105 + (spaghettiPaddleLevel - 1) * 10) + "px";
+      spaghettiPaddleEl.style.left = spaghettiPaddleX + "px";
+      spaghettiBallEl.style.left = spaghettiBallX + "px";
+      spaghettiBallEl.style.top = spaghettiBallY + "px";
+    }
 
-resetSpaghettiBtn.addEventListener("click", () => {
-  spaghettiRunning = false;
-  if (spaghettiAnimation) cancelAnimationFrame(spaghettiAnimation);
-  spaghettiScore = 0;
-  spaghettiCombo = 0;
-  spaghettiClaimable = 0;
-  resetSpaghettiBall();
-  updateSpaghettiUI();
-  logSpaghetti("Mini-jeu reset.");
-});
+    function logSpaghetti(text) {
+      spaghettiLogEl.textContent = text;
+    }
 
-function moveLeftPaddle(clientY) {
-  const rect = document.getElementById("spaghettiGame").getBoundingClientRect();
-  const localY = clientY - rect.top;
-  leftPaddleY = Math.max(0, Math.min(360 - 90, localY - 45));
-  renderSpaghetti();
-}
+    function resetSpaghettiGameState() {
+      spaghettiScore = 0;
+      spaghettiHits = 0;
+      spaghettiBallX = 155;
+      spaghettiBallY = 140;
+      spaghettiBallDX = 3.2;
+      spaghettiBallDY = -3.0;
+      spaghettiPaddleX = 120;
+      updateSpaghettiUI();
+    }
 
-document.getElementById("spaghettiGame").addEventListener("mousemove", (e) => {
-  if (spaghettiPanel.style.display === "block") moveLeftPaddle(e.clientY);
-});
+    function stopSpaghettiGame() {
+      spaghettiRunning = false;
+      if (spaghettiAnimId) cancelAnimationFrame(spaghettiAnimId);
+      spaghettiAnimId = null;
+    }
 
-document.getElementById("spaghettiGame").addEventListener("touchmove", (e) => {
-  if (spaghettiPanel.style.display === "block" && e.touches[0]) {
-    moveLeftPaddle(e.touches[0].clientY);
-  }
-}, {passive: true});
+    function startSpaghettiGame() {
+      if (spaghettiRunning) return;
+      spaghettiRunning = true;
+      logSpaghetti("La pizza part! Fais-la rebondir pour gagner des cookies.");
+      spaghettiLoop();
+    }
+
+    function spaghettiLoop() {
+      if (!spaghettiRunning) return;
+
+      const areaW = spaghettiGameArea.clientWidth;
+      const areaH = spaghettiGameArea.clientHeight;
+      const ballSize = 38;
+      const paddleW = 105 + (spaghettiPaddleLevel - 1) * 10;
+      const paddleY = areaH - 18 - 18;
+
+      spaghettiBallX += spaghettiBallDX;
+      spaghettiBallY += spaghettiBallDY;
+
+      if (spaghettiBallX <= 0 || spaghettiBallX >= areaW - ballSize) {
+        spaghettiBallDX *= -1;
+        spaghettiBallX = Math.max(0, Math.min(spaghettiBallX, areaW - ballSize));
+      }
+
+      if (spaghettiBallY <= 0) {
+        spaghettiBallDY *= -1;
+        spaghettiBallY = 0;
+      }
+
+      const ballBottom = spaghettiBallY + ballSize;
+      const ballCenterX = spaghettiBallX + ballSize / 2;
+
+      if (
+        ballBottom >= paddleY &&
+        ballBottom <= paddleY + 24 &&
+        ballCenterX >= spaghettiPaddleX &&
+        ballCenterX <= spaghettiPaddleX + paddleW &&
+        spaghettiBallDY > 0
+      ) {
+        spaghettiBallDY *= -1;
+        spaghettiHits++;
+        spaghettiScore += 10;
+
+        const reward = 150 + (spaghettiHits * 8);
+        cookies += reward;
+        totalCookiesEarned += reward;
+        spaghettiCookiesEarned += reward;
+
+        const hitPos = (ballCenterX - spaghettiPaddleX) / paddleW - 0.5;
+        spaghettiBallDX += hitPos * 1.2;
+        spaghettiBallDX = Math.max(-7, Math.min(7, spaghettiBallDX));
+        showToast(`🍪 +${formatNumber(reward)}`);
+        logSpaghetti(`Ping! Pizza sauvée. +${formatNumber(reward)} cookies.`);
+        updateUI();
+      }
+
+      if (spaghettiBallY > areaH - ballSize) {
+        logSpaghetti("La pizza est tombée 😭 relance la partie.");
+        stopSpaghettiGame();
+      }
+
+      spaghettiBallEl.style.left = spaghettiBallX + "px";
+      spaghettiBallEl.style.top = spaghettiBallY + "px";
+
+      spaghettiAnimId = requestAnimationFrame(spaghettiLoop);
+    }
+
+    function enterSpaghetti() {
+      mainGameSection.classList.add("hidden");
+      darkForestPanel.style.display = "none";
+      spaghettiPanel.style.display = "block";
+      updateSpaghettiUI();
+    }
+
+    function leaveSpaghetti() {
+      spaghettiPanel.style.display = "none";
+      mainGameSection.classList.remove("hidden");
+      stopSpaghettiGame();
+      updateSpaghettiUI();
+    }
 
     function saveGame() {
       const data = {
@@ -1823,6 +1966,11 @@ document.getElementById("spaghettiGame").addEventListener("touchmove", (e) => {
         prestigeThreshold,
 
         darkForestAccessBought,
+        spaghettiAccessBought,
+        spaghettiScore,
+        spaghettiHits,
+        spaghettiCookiesEarned,
+        spaghettiPaddleLevel,
 
         rpgLevel,
         rpgXp,
@@ -1836,10 +1984,6 @@ document.getElementById("spaghettiGame").addEventListener("touchmove", (e) => {
         rpgCookiesEarned,
         bossesKilled,
         musicEnabled,
-
-        spaghettiAccessBought,
-        spaghettiCookiesEarned,
-        spaghettiBest,
 
         lastSavedAt: Date.now()
       };
@@ -1888,6 +2032,11 @@ document.getElementById("spaghettiGame").addEventListener("touchmove", (e) => {
       prestigeThreshold = data.prestigeThreshold ?? 100000;
 
       darkForestAccessBought = data.darkForestAccessBought ?? false;
+      spaghettiAccessBought = data.spaghettiAccessBought ?? false;
+      spaghettiScore = data.spaghettiScore ?? 0;
+      spaghettiHits = data.spaghettiHits ?? 0;
+      spaghettiCookiesEarned = data.spaghettiCookiesEarned ?? 0;
+      spaghettiPaddleLevel = data.spaghettiPaddleLevel ?? 1;
 
       rpgLevel = data.rpgLevel ?? 1;
       rpgXp = data.rpgXp ?? 0;
@@ -1902,10 +2051,6 @@ document.getElementById("spaghettiGame").addEventListener("touchmove", (e) => {
       bossesKilled = data.bossesKilled ?? 0;
       musicEnabled = false;
 
-      spaghettiAccessBought = data.spaghettiAccessBought ?? false;
-      spaghettiCookiesEarned = data.spaghettiCookiesEarned ?? 0;
-      spaghettiBest = data.spaghettiBest ?? 0;
-
       const lastSavedAt = data.lastSavedAt ?? Date.now();
       const secondsAway = Math.floor((Date.now() - lastSavedAt) / 1000);
 
@@ -1917,6 +2062,7 @@ document.getElementById("spaghettiGame").addEventListener("touchmove", (e) => {
       }
     }
 
+    resetSpaghettiGameState();
     loadGame();
     updateUI();
     checkAchievements();
