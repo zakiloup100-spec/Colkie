@@ -425,18 +425,22 @@
   let bankCount = 0;
   let kingdomCount = 0;
 
-  let clickUpgradeCost = 25;
-  let grandmaCost = 20;
-  let factoryCost = 100;
-  let farmCost = 250;
-  let bankCost = 700;
-  let kingdomCost = 2000;
+  let clickUpgradeCost = 40;
+  let grandmaCost = 35;
+  let factoryCost = 160;
+  let farmCost = 420;
+  let bankCost = 1200;
+  let kingdomCost = 4200;
 
   let totalClicks = 0;
   let totalCookiesEarned = 0;
   let comboCount = 0;
   let lastClickTime = 0;
   let rainActive = false;
+
+  let prestigePoints = 0;
+  let prestigeMultiplier = 1;
+  let prestigeThreshold = 100000;
 
   let achievements = {
     firstClick: false,
@@ -446,7 +450,8 @@
     tenPerSecond: false,
     hundredPerSecond: false,
     combo10: false,
-    kingdom: false
+    kingdom: false,
+    firstPrestige: false
   };
 
   const cookiesEl = document.getElementById("cookies");
@@ -482,34 +487,6 @@
 
   function formatNumber(num) {
     return Math.floor(num).toLocaleString("fr-CA");
-  }
-
-  function updateUI() {
-    cookiesEl.textContent = formatNumber(cookies);
-    perClickEl.textContent = formatNumber(cookiesPerClick);
-    perSecondEl.textContent = formatNumber(cookiesPerSecond);
-    goldenCountEl.textContent = formatNumber(goldenCaught);
-
-    clickUpgradeCountEl.textContent = clickUpgradeCount;
-    grandmaCountEl.textContent = grandmaCount;
-    factoryCountEl.textContent = factoryCount;
-    farmCountEl.textContent = farmCount;
-    bankCountEl.textContent = bankCount;
-    kingdomCountEl.textContent = kingdomCount;
-
-    clickUpgradeCostEl.textContent = formatNumber(clickUpgradeCost);
-    grandmaCostEl.textContent = formatNumber(grandmaCost);
-    factoryCostEl.textContent = formatNumber(factoryCost);
-    farmCostEl.textContent = formatNumber(farmCost);
-    bankCostEl.textContent = formatNumber(bankCost);
-    kingdomCostEl.textContent = formatNumber(kingdomCost);
-
-    buyClickUpgradeBtn.disabled = cookies < clickUpgradeCost;
-    buyGrandmaBtn.disabled = cookies < grandmaCost;
-    buyFactoryBtn.disabled = cookies < factoryCost;
-    buyFarmBtn.disabled = cookies < farmCost;
-    buyBankBtn.disabled = cookies < bankCost;
-    buyKingdomBtn.disabled = cookies < kingdomCost;
   }
 
   function ensureToastContainer() {
@@ -571,11 +548,96 @@
     }, 1000);
   }
 
+  function createPrestigeUI() {
+    if (document.getElementById("prestigeWrap")) return;
+
+    const anchor = document.querySelector(".small-actions") || saveBtn?.parentElement || document.body;
+
+    const wrap = document.createElement("div");
+    wrap.id = "prestigeWrap";
+    wrap.style.marginTop = "14px";
+    wrap.style.background = "rgba(0,0,0,0.18)";
+    wrap.style.borderRadius = "14px";
+    wrap.style.padding = "12px";
+    wrap.style.textAlign = "center";
+
+    wrap.innerHTML = `
+      <div style="font-weight:bold; margin-bottom:6px;">🌌 Prestige</div>
+      <div id="prestigeInfo" style="opacity:0.88; font-size:0.95rem; line-height:1.4; margin-bottom:10px;"></div>
+      <button id="prestigeBtn" class="small-btn" style="width:100%;">Prestige</button>
+    `;
+
+    anchor.insertAdjacentElement("afterend", wrap);
+
+    document.getElementById("prestigeBtn").addEventListener("click", tryPrestige);
+  }
+
+  function getPrestigeGain() {
+    return Math.floor(Math.sqrt(totalCookiesEarned / 50000));
+  }
+
+  function updatePrestigeUI() {
+    const info = document.getElementById("prestigeInfo");
+    const btn = document.getElementById("prestigeBtn");
+    if (!info || !btn) return;
+
+    const gain = getPrestigeGain();
+    const ready = totalCookiesEarned >= prestigeThreshold && gain > 0;
+
+    info.innerHTML = `
+      Points: <b>${prestigePoints}</b><br>
+      Bonus total: <b>x${prestigeMultiplier.toFixed(2)}</b><br>
+      Prochain prestige possible à: <b>${formatNumber(prestigeThreshold)}</b> cookies gagnés<br>
+      Gain actuel si tu reset: <b>+${gain}</b>
+    `;
+
+    btn.disabled = !ready;
+    btn.textContent = ready ? `Prestige maintenant (+${gain})` : "Prestige verrouillé";
+  }
+
+  function updateUI() {
+    cookiesEl.textContent = formatNumber(cookies);
+    perClickEl.textContent = formatNumber(cookiesPerClick * prestigeMultiplier);
+    perSecondEl.textContent = formatNumber(cookiesPerSecond * prestigeMultiplier);
+    goldenCountEl.textContent = formatNumber(goldenCaught);
+
+    clickUpgradeCountEl.textContent = clickUpgradeCount;
+    grandmaCountEl.textContent = grandmaCount;
+    factoryCountEl.textContent = factoryCount;
+    farmCountEl.textContent = farmCount;
+    bankCountEl.textContent = bankCount;
+    kingdomCountEl.textContent = kingdomCount;
+
+    clickUpgradeCostEl.textContent = formatNumber(clickUpgradeCost);
+    grandmaCostEl.textContent = formatNumber(grandmaCost);
+    factoryCostEl.textContent = formatNumber(factoryCost);
+    farmCostEl.textContent = formatNumber(farmCost);
+    bankCostEl.textContent = formatNumber(bankCost);
+    kingdomCostEl.textContent = formatNumber(kingdomCost);
+
+    buyClickUpgradeBtn.disabled = cookies < clickUpgradeCost;
+    buyGrandmaBtn.disabled = cookies < grandmaCost;
+    buyFactoryBtn.disabled = cookies < factoryCost;
+    buyFarmBtn.disabled = cookies < farmCost;
+    buyBankBtn.disabled = cookies < bankCost;
+    buyKingdomBtn.disabled = cookies < kingdomCost;
+
+    updatePrestigeUI();
+  }
+
   function grantCookies(amount) {
     cookies += amount;
     totalCookiesEarned += amount;
     updateUI();
     checkAchievements();
+  }
+
+  function effectiveClickPower() {
+    return Math.max(1, Math.floor(cookiesPerClick * prestigeMultiplier));
+  }
+
+  function effectiveSecondPower() {
+    return Math.max(0, Math.floor(cookiesPerSecond * prestigeMultiplier));
   }
 
   function checkAchievements() {
@@ -599,12 +661,12 @@
       showToast("🏆 Achievement: 1000 cookies gagnés");
     }
 
-    if (!achievements.tenPerSecond && cookiesPerSecond >= 10) {
+    if (!achievements.tenPerSecond && effectiveSecondPower() >= 10) {
       achievements.tenPerSecond = true;
       showToast("🏆 Achievement: 10 cookies/seconde");
     }
 
-    if (!achievements.hundredPerSecond && cookiesPerSecond >= 100) {
+    if (!achievements.hundredPerSecond && effectiveSecondPower() >= 100) {
       achievements.hundredPerSecond = true;
       showToast("🏆 Achievement: 100 cookies/seconde");
     }
@@ -618,29 +680,34 @@
       achievements.kingdom = true;
       showToast("🏆 Achievement: Royaume débloqué");
     }
+
+    if (!achievements.firstPrestige && prestigePoints >= 1) {
+      achievements.firstPrestige = true;
+      showToast("🏆 Achievement: Premier prestige");
+    }
   }
 
   cookieBtn.addEventListener("click", (e) => {
     const now = Date.now();
     totalClicks++;
 
-    if (now - lastClickTime <= 600) {
+    if (now - lastClickTime <= 500) {
       comboCount++;
     } else {
       comboCount = 1;
     }
     lastClickTime = now;
 
-    let gain = cookiesPerClick;
+    let gain = effectiveClickPower();
 
-    if (comboCount >= 5) {
-      gain += Math.floor(cookiesPerClick * 0.5);
+    if (comboCount >= 8) {
+      gain += Math.max(1, Math.floor(effectiveClickPower() * 0.35));
     }
 
-    const crit = Math.random() < 0.08;
+    const crit = Math.random() < 0.04;
     if (crit) {
-      gain *= 3;
-      showToast("💥 Critical click x3");
+      gain *= 2;
+      showToast("💥 Critical click x2");
     }
 
     grantCookies(gain);
@@ -669,7 +736,7 @@
     buyUpgrade(clickUpgradeCost, () => {
       clickUpgradeCount++;
       cookiesPerClick += 1;
-      clickUpgradeCost = Math.floor(clickUpgradeCost * 1.35);
+      clickUpgradeCost = Math.floor(clickUpgradeCost * 1.48);
     });
   });
 
@@ -677,46 +744,89 @@
     buyUpgrade(grandmaCost, () => {
       grandmaCount++;
       cookiesPerSecond += 1;
-      grandmaCost = Math.floor(grandmaCost * 1.2);
+      grandmaCost = Math.floor(grandmaCost * 1.30);
     });
   });
 
   buyFactoryBtn.addEventListener("click", () => {
     buyUpgrade(factoryCost, () => {
       factoryCount++;
-      cookiesPerSecond += 5;
-      factoryCost = Math.floor(factoryCost * 1.22);
+      cookiesPerSecond += 4;
+      factoryCost = Math.floor(factoryCost * 1.34);
     });
   });
 
   buyFarmBtn.addEventListener("click", () => {
     buyUpgrade(farmCost, () => {
       farmCount++;
-      cookiesPerSecond += 12;
-      farmCost = Math.floor(farmCost * 1.24);
+      cookiesPerSecond += 10;
+      farmCost = Math.floor(farmCost * 1.37);
     });
   });
 
   buyBankBtn.addEventListener("click", () => {
     buyUpgrade(bankCost, () => {
       bankCount++;
-      cookiesPerSecond += 30;
-      bankCost = Math.floor(bankCost * 1.26);
+      cookiesPerSecond += 24;
+      bankCost = Math.floor(bankCost * 1.41);
     });
   });
 
   buyKingdomBtn.addEventListener("click", () => {
     buyUpgrade(kingdomCost, () => {
       kingdomCount++;
-      cookiesPerSecond += 80;
-      kingdomCost = Math.floor(kingdomCost * 1.3);
+      cookiesPerSecond += 60;
+      kingdomCost = Math.floor(kingdomCost * 1.46);
     });
   });
 
   setInterval(() => {
-    grantCookies(cookiesPerSecond);
+    grantCookies(effectiveSecondPower());
     saveGame();
   }, 1000);
+
+  function tryPrestige() {
+    const gain = getPrestigeGain();
+
+    if (totalCookiesEarned < prestigeThreshold || gain <= 0) {
+      showToast("Prestige pas encore prêt");
+      return;
+    }
+
+    const ok = confirm(`Prestige va reset tes cookies et tes achats.\nTu gagnes +${gain} points de prestige.\nContinuer ?`);
+    if (!ok) return;
+
+    prestigePoints += gain;
+    prestigeMultiplier = 1 + prestigePoints * 0.12;
+
+    cookies = 0;
+    cookiesPerClick = 1;
+    cookiesPerSecond = 0;
+    goldenCaught = 0;
+
+    clickUpgradeCount = 0;
+    grandmaCount = 0;
+    factoryCount = 0;
+    farmCount = 0;
+    bankCount = 0;
+    kingdomCount = 0;
+
+    clickUpgradeCost = 40;
+    grandmaCost = 35;
+    factoryCost = 160;
+    farmCost = 420;
+    bankCost = 1200;
+    kingdomCost = 4200;
+
+    totalClicks = 0;
+    comboCount = 0;
+    prestigeThreshold = Math.floor(prestigeThreshold * 2.35);
+
+    updateUI();
+    saveGame();
+    checkAchievements();
+    showToast(`🌌 Prestige +${gain} | Bonus x${prestigeMultiplier.toFixed(2)}`);
+  }
 
   function saveGame() {
     const data = {
@@ -740,6 +850,9 @@
       totalCookiesEarned,
       comboCount,
       achievements,
+      prestigePoints,
+      prestigeMultiplier,
+      prestigeThreshold,
       lastSavedAt: Date.now()
     };
     localStorage.setItem("colkieClickerSave", JSON.stringify(data));
@@ -763,23 +876,27 @@
     bankCount = data.bankCount ?? 0;
     kingdomCount = data.kingdomCount ?? 0;
 
-    clickUpgradeCost = data.clickUpgradeCost ?? 25;
-    grandmaCost = data.grandmaCost ?? 20;
-    factoryCost = data.factoryCost ?? 100;
-    farmCost = data.farmCost ?? 250;
-    bankCost = data.bankCost ?? 700;
-    kingdomCost = data.kingdomCost ?? 2000;
+    clickUpgradeCost = data.clickUpgradeCost ?? 40;
+    grandmaCost = data.grandmaCost ?? 35;
+    factoryCost = data.factoryCost ?? 160;
+    farmCost = data.farmCost ?? 420;
+    bankCost = data.bankCost ?? 1200;
+    kingdomCost = data.kingdomCost ?? 4200;
 
     totalClicks = data.totalClicks ?? 0;
     totalCookiesEarned = data.totalCookiesEarned ?? 0;
     comboCount = data.comboCount ?? 0;
     achievements = data.achievements ?? achievements;
 
+    prestigePoints = data.prestigePoints ?? 0;
+    prestigeMultiplier = data.prestigeMultiplier ?? (1 + prestigePoints * 0.12);
+    prestigeThreshold = data.prestigeThreshold ?? 100000;
+
     const lastSavedAt = data.lastSavedAt ?? Date.now();
     const secondsAway = Math.floor((Date.now() - lastSavedAt) / 1000);
 
-    if (secondsAway > 5 && cookiesPerSecond > 0) {
-      const offlineGain = Math.min(secondsAway, 14400) * cookiesPerSecond;
+    if (secondsAway > 10 && cookiesPerSecond > 0) {
+      const offlineGain = Math.min(secondsAway, 7200) * effectiveSecondPower();
       cookies += offlineGain;
       totalCookiesEarned += offlineGain;
       showToast(`⏰ Hors ligne: +${formatNumber(offlineGain)} cookies`);
@@ -792,7 +909,7 @@
   });
 
   resetBtn.addEventListener("click", () => {
-    const ok = confirm("Tu veux vraiment reset le jeu ?");
+    const ok = confirm("Tu veux vraiment reset le jeu COMPLET ?");
     if (!ok) return;
     localStorage.removeItem("colkieClickerSave");
     location.reload();
@@ -824,7 +941,7 @@
     golden.style.top = top + "px";
 
     golden.addEventListener("click", () => {
-      const bonus = Math.max(50, Math.floor(cookiesPerSecond * 35 + cookiesPerClick * 20));
+      const bonus = Math.max(60, Math.floor(effectiveSecondPower() * 18 + effectiveClickPower() * 10));
       cookies += bonus;
       totalCookiesEarned += bonus;
       goldenCaught++;
@@ -839,7 +956,7 @@
       goldenCookieActive = false;
       if (goldenCookieTimeout) clearTimeout(goldenCookieTimeout);
 
-      if (Math.random() < 0.18) {
+      if (Math.random() < 0.10) {
         startCookieRain();
       }
     });
@@ -849,11 +966,11 @@
     goldenCookieTimeout = setTimeout(() => {
       if (golden.parentNode) golden.remove();
       goldenCookieActive = false;
-    }, 6000);
+    }, 5000);
   }
 
   function scheduleGoldenCookie() {
-    const delay = Math.floor(Math.random() * 20000) + 25000;
+    const delay = Math.floor(Math.random() * 35000) + 45000;
     setTimeout(() => {
       spawnGoldenCookie();
       scheduleGoldenCookie();
@@ -865,11 +982,11 @@
     rainActive = true;
     showToast("🌧️ Pluie de cookies!");
 
-    let drops = 12;
+    let drops = 10;
     let spawned = 0;
 
     const interval = setInterval(() => {
-      const bonus = Math.max(10, Math.floor(cookiesPerClick * 4 + cookiesPerSecond * 2));
+      const bonus = Math.max(8, Math.floor(effectiveClickPower() * 3 + effectiveSecondPower()));
       const x = Math.floor(Math.random() * (window.innerWidth - 80)) + 20;
       const y = Math.floor(Math.random() * 180) + 80;
 
@@ -885,7 +1002,7 @@
         rainActive = false;
         checkAchievements();
       }
-    }, 280);
+    }, 320);
   }
 
   const loreBtn = document.getElementById("startLore");
@@ -924,6 +1041,7 @@
     }
   });
 
+  createPrestigeUI();
   loadGame();
   updateUI();
   checkAchievements();
