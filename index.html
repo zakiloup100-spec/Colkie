@@ -412,332 +412,522 @@
     </div>
   </div>
 
-  <script>
-    let cookies = 0;
-    let cookiesPerClick = 1;
-    let cookiesPerSecond = 0;
-    let goldenCaught = 0;
+<script>
+  let cookies = 0;
+  let cookiesPerClick = 1;
+  let cookiesPerSecond = 0;
+  let goldenCaught = 0;
 
-    let clickUpgradeCount = 0;
-    let grandmaCount = 0;
-    let factoryCount = 0;
-    let farmCount = 0;
-    let bankCount = 0;
-    let kingdomCount = 0;
+  let clickUpgradeCount = 0;
+  let grandmaCount = 0;
+  let factoryCount = 0;
+  let farmCount = 0;
+  let bankCount = 0;
+  let kingdomCount = 0;
 
-    let clickUpgradeCost = 25;
-    let grandmaCost = 20;
-    let factoryCost = 100;
-    let farmCost = 250;
-    let bankCost = 700;
-    let kingdomCost = 2000;
+  let clickUpgradeCost = 25;
+  let grandmaCost = 20;
+  let factoryCost = 100;
+  let farmCost = 250;
+  let bankCost = 700;
+  let kingdomCost = 2000;
 
-    const cookiesEl = document.getElementById("cookies");
-    const perClickEl = document.getElementById("perClick");
-    const perSecondEl = document.getElementById("perSecond");
-    const goldenCountEl = document.getElementById("goldenCount");
+  let totalClicks = 0;
+  let totalCookiesEarned = 0;
+  let comboCount = 0;
+  let lastClickTime = 0;
+  let rainActive = false;
 
-    const clickUpgradeCountEl = document.getElementById("clickUpgradeCount");
-    const grandmaCountEl = document.getElementById("grandmaCount");
-    const factoryCountEl = document.getElementById("factoryCount");
-    const farmCountEl = document.getElementById("farmCount");
-    const bankCountEl = document.getElementById("bankCount");
-    const kingdomCountEl = document.getElementById("kingdomCount");
+  let achievements = {
+    firstClick: false,
+    hundredClicks: false,
+    firstGolden: false,
+    thousandCookies: false,
+    tenPerSecond: false,
+    hundredPerSecond: false,
+    combo10: false,
+    kingdom: false
+  };
 
-    const clickUpgradeCostEl = document.getElementById("clickUpgradeCost");
-    const grandmaCostEl = document.getElementById("grandmaCost");
-    const factoryCostEl = document.getElementById("factoryCost");
-    const farmCostEl = document.getElementById("farmCost");
-    const bankCostEl = document.getElementById("bankCost");
-    const kingdomCostEl = document.getElementById("kingdomCost");
+  const cookiesEl = document.getElementById("cookies");
+  const perClickEl = document.getElementById("perClick");
+  const perSecondEl = document.getElementById("perSecond");
+  const goldenCountEl = document.getElementById("goldenCount");
 
-    const buyClickUpgradeBtn = document.getElementById("buyClickUpgrade");
-    const buyGrandmaBtn = document.getElementById("buyGrandma");
-    const buyFactoryBtn = document.getElementById("buyFactory");
-    const buyFarmBtn = document.getElementById("buyFarm");
-    const buyBankBtn = document.getElementById("buyBank");
-    const buyKingdomBtn = document.getElementById("buyKingdom");
+  const clickUpgradeCountEl = document.getElementById("clickUpgradeCount");
+  const grandmaCountEl = document.getElementById("grandmaCount");
+  const factoryCountEl = document.getElementById("factoryCount");
+  const farmCountEl = document.getElementById("farmCount");
+  const bankCountEl = document.getElementById("bankCount");
+  const kingdomCountEl = document.getElementById("kingdomCount");
 
-    const cookieBtn = document.getElementById("cookieBtn");
-    const cookieArea = document.getElementById("cookieArea");
-    const saveBtn = document.getElementById("saveBtn");
-    const resetBtn = document.getElementById("resetBtn");
+  const clickUpgradeCostEl = document.getElementById("clickUpgradeCost");
+  const grandmaCostEl = document.getElementById("grandmaCost");
+  const factoryCostEl = document.getElementById("factoryCost");
+  const farmCostEl = document.getElementById("farmCost");
+  const bankCostEl = document.getElementById("bankCost");
+  const kingdomCostEl = document.getElementById("kingdomCost");
 
-    function formatNumber(num) {
-      return Math.floor(num).toLocaleString("fr-CA");
+  const buyClickUpgradeBtn = document.getElementById("buyClickUpgrade");
+  const buyGrandmaBtn = document.getElementById("buyGrandma");
+  const buyFactoryBtn = document.getElementById("buyFactory");
+  const buyFarmBtn = document.getElementById("buyFarm");
+  const buyBankBtn = document.getElementById("buyBank");
+  const buyKingdomBtn = document.getElementById("buyKingdom");
+
+  const cookieBtn = document.getElementById("cookieBtn");
+  const cookieArea = document.getElementById("cookieArea");
+  const saveBtn = document.getElementById("saveBtn");
+  const resetBtn = document.getElementById("resetBtn");
+
+  function formatNumber(num) {
+    return Math.floor(num).toLocaleString("fr-CA");
+  }
+
+  function updateUI() {
+    cookiesEl.textContent = formatNumber(cookies);
+    perClickEl.textContent = formatNumber(cookiesPerClick);
+    perSecondEl.textContent = formatNumber(cookiesPerSecond);
+    goldenCountEl.textContent = formatNumber(goldenCaught);
+
+    clickUpgradeCountEl.textContent = clickUpgradeCount;
+    grandmaCountEl.textContent = grandmaCount;
+    factoryCountEl.textContent = factoryCount;
+    farmCountEl.textContent = farmCount;
+    bankCountEl.textContent = bankCount;
+    kingdomCountEl.textContent = kingdomCount;
+
+    clickUpgradeCostEl.textContent = formatNumber(clickUpgradeCost);
+    grandmaCostEl.textContent = formatNumber(grandmaCost);
+    factoryCostEl.textContent = formatNumber(factoryCost);
+    farmCostEl.textContent = formatNumber(farmCost);
+    bankCostEl.textContent = formatNumber(bankCost);
+    kingdomCostEl.textContent = formatNumber(kingdomCost);
+
+    buyClickUpgradeBtn.disabled = cookies < clickUpgradeCost;
+    buyGrandmaBtn.disabled = cookies < grandmaCost;
+    buyFactoryBtn.disabled = cookies < factoryCost;
+    buyFarmBtn.disabled = cookies < farmCost;
+    buyBankBtn.disabled = cookies < bankCost;
+    buyKingdomBtn.disabled = cookies < kingdomCost;
+  }
+
+  function ensureToastContainer() {
+    let toastContainer = document.getElementById("toastContainer");
+    if (!toastContainer) {
+      toastContainer = document.createElement("div");
+      toastContainer.id = "toastContainer";
+      toastContainer.style.position = "fixed";
+      toastContainer.style.top = "16px";
+      toastContainer.style.left = "50%";
+      toastContainer.style.transform = "translateX(-50%)";
+      toastContainer.style.zIndex = "9999";
+      toastContainer.style.display = "flex";
+      toastContainer.style.flexDirection = "column";
+      toastContainer.style.gap = "8px";
+      toastContainer.style.pointerEvents = "none";
+      document.body.appendChild(toastContainer);
     }
+    return toastContainer;
+  }
 
-    function updateUI() {
-      cookiesEl.textContent = formatNumber(cookies);
-      perClickEl.textContent = formatNumber(cookiesPerClick);
-      perSecondEl.textContent = formatNumber(cookiesPerSecond);
-      goldenCountEl.textContent = formatNumber(goldenCaught);
+  function showToast(text) {
+    const container = ensureToastContainer();
+    const toast = document.createElement("div");
+    toast.textContent = text;
+    toast.style.background = "rgba(0,0,0,0.82)";
+    toast.style.color = "white";
+    toast.style.padding = "10px 14px";
+    toast.style.borderRadius = "12px";
+    toast.style.fontWeight = "bold";
+    toast.style.boxShadow = "0 8px 24px rgba(0,0,0,0.28)";
+    toast.style.opacity = "0";
+    toast.style.transition = "opacity 0.25s ease, transform 0.25s ease";
+    toast.style.transform = "translateY(-8px)";
+    container.appendChild(toast);
 
-      clickUpgradeCountEl.textContent = clickUpgradeCount;
-      grandmaCountEl.textContent = grandmaCount;
-      factoryCountEl.textContent = factoryCount;
-      farmCountEl.textContent = farmCount;
-      bankCountEl.textContent = bankCount;
-      kingdomCountEl.textContent = kingdomCount;
-
-      clickUpgradeCostEl.textContent = formatNumber(clickUpgradeCost);
-      grandmaCostEl.textContent = formatNumber(grandmaCost);
-      factoryCostEl.textContent = formatNumber(factoryCost);
-      farmCostEl.textContent = formatNumber(farmCost);
-      bankCostEl.textContent = formatNumber(bankCost);
-      kingdomCostEl.textContent = formatNumber(kingdomCost);
-
-      buyClickUpgradeBtn.disabled = cookies < clickUpgradeCost;
-      buyGrandmaBtn.disabled = cookies < grandmaCost;
-      buyFactoryBtn.disabled = cookies < factoryCost;
-      buyFarmBtn.disabled = cookies < farmCost;
-      buyBankBtn.disabled = cookies < bankCost;
-      buyKingdomBtn.disabled = cookies < kingdomCost;
-    }
-
-    function showFloatingText(text, x, y, isGold = false) {
-      const el = document.createElement("div");
-      el.className = `floating-text ${isGold ? "floating-gold" : "floating-normal"}`;
-      el.textContent = text;
-      el.style.left = x + "px";
-      el.style.top = y + "px";
-      document.body.appendChild(el);
-
-      setTimeout(() => {
-        el.remove();
-      }, 1000);
-    }
-
-    cookieBtn.addEventListener("click", (e) => {
-      cookies += cookiesPerClick;
-      updateUI();
-
-      cookieBtn.classList.add("clicked");
-      setTimeout(() => cookieBtn.classList.remove("clicked"), 90);
-
-      showFloatingText(
-        `+${formatNumber(cookiesPerClick)}`,
-        e.clientX - 10,
-        e.clientY - 10,
-        false
-      );
+    requestAnimationFrame(() => {
+      toast.style.opacity = "1";
+      toast.style.transform = "translateY(0)";
     });
 
-    function buyUpgrade(cost, onBuy) {
-      if (cookies >= cost) {
-        cookies -= cost;
-        onBuy();
-        updateUI();
-      }
-    }
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      toast.style.transform = "translateY(-8px)";
+      setTimeout(() => toast.remove(), 250);
+    }, 2200);
+  }
 
-    buyClickUpgradeBtn.addEventListener("click", () => {
-      buyUpgrade(clickUpgradeCost, () => {
-        clickUpgradeCount++;
-        cookiesPerClick += 1;
-        clickUpgradeCost = Math.floor(clickUpgradeCost * 1.35);
-      });
-    });
+  function showFloatingText(text, x, y, isGold = false) {
+    const el = document.createElement("div");
+    el.className = `floating-text ${isGold ? "floating-gold" : "floating-normal"}`;
+    el.textContent = text;
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+    document.body.appendChild(el);
 
-    buyGrandmaBtn.addEventListener("click", () => {
-      buyUpgrade(grandmaCost, () => {
-        grandmaCount++;
-        cookiesPerSecond += 1;
-        grandmaCost = Math.floor(grandmaCost * 1.2);
-      });
-    });
-
-    buyFactoryBtn.addEventListener("click", () => {
-      buyUpgrade(factoryCost, () => {
-        factoryCount++;
-        cookiesPerSecond += 5;
-        factoryCost = Math.floor(factoryCost * 1.22);
-      });
-    });
-
-    buyFarmBtn.addEventListener("click", () => {
-      buyUpgrade(farmCost, () => {
-        farmCount++;
-        cookiesPerSecond += 12;
-        farmCost = Math.floor(farmCost * 1.24);
-      });
-    });
-
-    buyBankBtn.addEventListener("click", () => {
-      buyUpgrade(bankCost, () => {
-        bankCount++;
-        cookiesPerSecond += 30;
-        bankCost = Math.floor(bankCost * 1.26);
-      });
-    });
-
-    buyKingdomBtn.addEventListener("click", () => {
-      buyUpgrade(kingdomCost, () => {
-        kingdomCount++;
-        cookiesPerSecond += 80;
-        kingdomCost = Math.floor(kingdomCost * 1.3);
-      });
-    });
-
-    setInterval(() => {
-      cookies += cookiesPerSecond;
-      updateUI();
-      saveGame();
+    setTimeout(() => {
+      el.remove();
     }, 1000);
+  }
 
-    function saveGame() {
-      const data = {
-        cookies,
-        cookiesPerClick,
-        cookiesPerSecond,
-        goldenCaught,
-        clickUpgradeCount,
-        grandmaCount,
-        factoryCount,
-        farmCount,
-        bankCount,
-        kingdomCount,
-        clickUpgradeCost,
-        grandmaCost,
-        factoryCost,
-        farmCost,
-        bankCost,
-        kingdomCost
-      };
-      localStorage.setItem("colkieClickerSave", JSON.stringify(data));
+  function grantCookies(amount) {
+    cookies += amount;
+    totalCookiesEarned += amount;
+    updateUI();
+    checkAchievements();
+  }
+
+  function checkAchievements() {
+    if (!achievements.firstClick && totalClicks >= 1) {
+      achievements.firstClick = true;
+      showToast("🏆 Achievement: Premier clic");
     }
 
-    function loadGame() {
-      const raw = localStorage.getItem("colkieClickerSave");
-      if (!raw) return;
-
-      const data = JSON.parse(raw);
-
-      cookies = data.cookies ?? 0;
-      cookiesPerClick = data.cookiesPerClick ?? 1;
-      cookiesPerSecond = data.cookiesPerSecond ?? 0;
-      goldenCaught = data.goldenCaught ?? 0;
-
-      clickUpgradeCount = data.clickUpgradeCount ?? 0;
-      grandmaCount = data.grandmaCount ?? 0;
-      factoryCount = data.factoryCount ?? 0;
-      farmCount = data.farmCount ?? 0;
-      bankCount = data.bankCount ?? 0;
-      kingdomCount = data.kingdomCount ?? 0;
-
-      clickUpgradeCost = data.clickUpgradeCost ?? 25;
-      grandmaCost = data.grandmaCost ?? 20;
-      factoryCost = data.factoryCost ?? 100;
-      farmCost = data.farmCost ?? 250;
-      bankCost = data.bankCost ?? 700;
-      kingdomCost = data.kingdomCost ?? 2000;
+    if (!achievements.hundredClicks && totalClicks >= 100) {
+      achievements.hundredClicks = true;
+      showToast("🏆 Achievement: 100 clics");
     }
 
-    saveBtn.addEventListener("click", () => {
-      saveGame();
-      alert("Sauvegarde faite.");
+    if (!achievements.firstGolden && goldenCaught >= 1) {
+      achievements.firstGolden = true;
+      showToast("🏆 Achievement: Premier golden cookie");
+    }
+
+    if (!achievements.thousandCookies && totalCookiesEarned >= 1000) {
+      achievements.thousandCookies = true;
+      showToast("🏆 Achievement: 1000 cookies gagnés");
+    }
+
+    if (!achievements.tenPerSecond && cookiesPerSecond >= 10) {
+      achievements.tenPerSecond = true;
+      showToast("🏆 Achievement: 10 cookies/seconde");
+    }
+
+    if (!achievements.hundredPerSecond && cookiesPerSecond >= 100) {
+      achievements.hundredPerSecond = true;
+      showToast("🏆 Achievement: 100 cookies/seconde");
+    }
+
+    if (!achievements.combo10 && comboCount >= 10) {
+      achievements.combo10 = true;
+      showToast("🏆 Achievement: Combo x10");
+    }
+
+    if (!achievements.kingdom && kingdomCount >= 1) {
+      achievements.kingdom = true;
+      showToast("🏆 Achievement: Royaume débloqué");
+    }
+  }
+
+  cookieBtn.addEventListener("click", (e) => {
+    const now = Date.now();
+    totalClicks++;
+
+    if (now - lastClickTime <= 600) {
+      comboCount++;
+    } else {
+      comboCount = 1;
+    }
+    lastClickTime = now;
+
+    let gain = cookiesPerClick;
+
+    if (comboCount >= 5) {
+      gain += Math.floor(cookiesPerClick * 0.5);
+    }
+
+    const crit = Math.random() < 0.08;
+    if (crit) {
+      gain *= 3;
+      showToast("💥 Critical click x3");
+    }
+
+    grantCookies(gain);
+
+    cookieBtn.classList.add("clicked");
+    setTimeout(() => cookieBtn.classList.remove("clicked"), 90);
+
+    showFloatingText(
+      `+${formatNumber(gain)}`,
+      e.clientX - 10,
+      e.clientY - 10,
+      crit
+    );
+  });
+
+  function buyUpgrade(cost, onBuy) {
+    if (cookies >= cost) {
+      cookies -= cost;
+      onBuy();
+      updateUI();
+      checkAchievements();
+    }
+  }
+
+  buyClickUpgradeBtn.addEventListener("click", () => {
+    buyUpgrade(clickUpgradeCost, () => {
+      clickUpgradeCount++;
+      cookiesPerClick += 1;
+      clickUpgradeCost = Math.floor(clickUpgradeCost * 1.35);
     });
+  });
 
-    resetBtn.addEventListener("click", () => {
-      const ok = confirm("Tu veux vraiment reset le jeu ?");
-      if (!ok) return;
-      localStorage.removeItem("colkieClickerSave");
-      location.reload();
+  buyGrandmaBtn.addEventListener("click", () => {
+    buyUpgrade(grandmaCost, () => {
+      grandmaCount++;
+      cookiesPerSecond += 1;
+      grandmaCost = Math.floor(grandmaCost * 1.2);
     });
+  });
 
-    let goldenCookieActive = false;
-    let goldenCookieTimeout = null;
-
-    function spawnGoldenCookie() {
-      if (goldenCookieActive) return;
-
-      goldenCookieActive = true;
-
-      const golden = document.createElement("button");
-      golden.className = "golden-cookie";
-      golden.textContent = "✨";
-
-      const areaRect = cookieArea.getBoundingClientRect();
-      const size = 82;
-      const minLeft = 12;
-      const maxLeft = Math.max(12, areaRect.width - size - 12);
-      const minTop = 20;
-      const maxTop = Math.max(20, areaRect.height - size - 20);
-
-      const left = Math.floor(Math.random() * (maxLeft - minLeft + 1)) + minLeft;
-      const top = Math.floor(Math.random() * (maxTop - minTop + 1)) + minTop;
-
-      golden.style.left = left + "px";
-      golden.style.top = top + "px";
-
-      golden.addEventListener("click", () => {
-        const bonus = Math.max(25, Math.floor(cookiesPerSecond * 20 + cookiesPerClick * 12));
-        cookies += bonus;
-        goldenCaught++;
-        updateUI();
-
-        const rect = golden.getBoundingClientRect();
-        showFloatingText(`+${formatNumber(bonus)} GOLD`, rect.left, rect.top, true);
-
-        golden.remove();
-        goldenCookieActive = false;
-        if (goldenCookieTimeout) clearTimeout(goldenCookieTimeout);
-      });
-
-      cookieArea.appendChild(golden);
-
-      goldenCookieTimeout = setTimeout(() => {
-        if (golden.parentNode) golden.remove();
-        goldenCookieActive = false;
-      }, 5000);
-    }
-
-    function scheduleGoldenCookie() {
-      const delay = Math.floor(Math.random() * 9000) + 6000;
-      setTimeout(() => {
-        spawnGoldenCookie();
-        scheduleGoldenCookie();
-      }, delay);
-    }
-
-    const loreBtn = document.getElementById("startLore");
-    const loreBox = document.getElementById("loreBox");
-    const loreText = document.getElementById("loreText");
-    const nextLoreBtn = document.getElementById("nextLoreBtn");
-
-    let loreStep = 0;
-
-    const loreLines = [
-      "Tu trouves un vieux passage caché derrière l’usine...",
-      "L’air devient froid. Trop froid.",
-      "Une silhouette immobile te regarde au loin.",
-      "Ses yeux deviennent rouges pendant une seconde.",
-      "Le royaume semble faux. Comme une scène vide.",
-      "Quelqu’un a menti sur tout depuis le début.",
-      "Tu entends: continue de cliquer.",
-      "Le cookie te regarde aussi.",
-      "GAME OVER."
-    ];
-
-    loreBtn.addEventListener("click", () => {
-      loreBox.style.display = "block";
-      loreStep = 0;
-      loreText.textContent = loreLines[loreStep];
+  buyFactoryBtn.addEventListener("click", () => {
+    buyUpgrade(factoryCost, () => {
+      factoryCount++;
+      cookiesPerSecond += 5;
+      factoryCost = Math.floor(factoryCost * 1.22);
     });
+  });
 
-    nextLoreBtn.addEventListener("click", () => {
-      loreStep++;
-      if (loreStep < loreLines.length) {
-        loreText.textContent = loreLines[loreStep];
-      } else {
-        loreText.textContent = "GAME OVER.";
-        document.body.style.background = "black";
+  buyFarmBtn.addEventListener("click", () => {
+    buyUpgrade(farmCost, () => {
+      farmCount++;
+      cookiesPerSecond += 12;
+      farmCost = Math.floor(farmCost * 1.24);
+    });
+  });
+
+  buyBankBtn.addEventListener("click", () => {
+    buyUpgrade(bankCost, () => {
+      bankCount++;
+      cookiesPerSecond += 30;
+      bankCost = Math.floor(bankCost * 1.26);
+    });
+  });
+
+  buyKingdomBtn.addEventListener("click", () => {
+    buyUpgrade(kingdomCost, () => {
+      kingdomCount++;
+      cookiesPerSecond += 80;
+      kingdomCost = Math.floor(kingdomCost * 1.3);
+    });
+  });
+
+  setInterval(() => {
+    grantCookies(cookiesPerSecond);
+    saveGame();
+  }, 1000);
+
+  function saveGame() {
+    const data = {
+      cookies,
+      cookiesPerClick,
+      cookiesPerSecond,
+      goldenCaught,
+      clickUpgradeCount,
+      grandmaCount,
+      factoryCount,
+      farmCount,
+      bankCount,
+      kingdomCount,
+      clickUpgradeCost,
+      grandmaCost,
+      factoryCost,
+      farmCost,
+      bankCost,
+      kingdomCost,
+      totalClicks,
+      totalCookiesEarned,
+      comboCount,
+      achievements,
+      lastSavedAt: Date.now()
+    };
+    localStorage.setItem("colkieClickerSave", JSON.stringify(data));
+  }
+
+  function loadGame() {
+    const raw = localStorage.getItem("colkieClickerSave");
+    if (!raw) return;
+
+    const data = JSON.parse(raw);
+
+    cookies = data.cookies ?? 0;
+    cookiesPerClick = data.cookiesPerClick ?? 1;
+    cookiesPerSecond = data.cookiesPerSecond ?? 0;
+    goldenCaught = data.goldenCaught ?? 0;
+
+    clickUpgradeCount = data.clickUpgradeCount ?? 0;
+    grandmaCount = data.grandmaCount ?? 0;
+    factoryCount = data.factoryCount ?? 0;
+    farmCount = data.farmCount ?? 0;
+    bankCount = data.bankCount ?? 0;
+    kingdomCount = data.kingdomCount ?? 0;
+
+    clickUpgradeCost = data.clickUpgradeCost ?? 25;
+    grandmaCost = data.grandmaCost ?? 20;
+    factoryCost = data.factoryCost ?? 100;
+    farmCost = data.farmCost ?? 250;
+    bankCost = data.bankCost ?? 700;
+    kingdomCost = data.kingdomCost ?? 2000;
+
+    totalClicks = data.totalClicks ?? 0;
+    totalCookiesEarned = data.totalCookiesEarned ?? 0;
+    comboCount = data.comboCount ?? 0;
+    achievements = data.achievements ?? achievements;
+
+    const lastSavedAt = data.lastSavedAt ?? Date.now();
+    const secondsAway = Math.floor((Date.now() - lastSavedAt) / 1000);
+
+    if (secondsAway > 5 && cookiesPerSecond > 0) {
+      const offlineGain = Math.min(secondsAway, 14400) * cookiesPerSecond;
+      cookies += offlineGain;
+      totalCookiesEarned += offlineGain;
+      showToast(`⏰ Hors ligne: +${formatNumber(offlineGain)} cookies`);
+    }
+  }
+
+  saveBtn.addEventListener("click", () => {
+    saveGame();
+    showToast("💾 Sauvegarde faite");
+  });
+
+  resetBtn.addEventListener("click", () => {
+    const ok = confirm("Tu veux vraiment reset le jeu ?");
+    if (!ok) return;
+    localStorage.removeItem("colkieClickerSave");
+    location.reload();
+  });
+
+  let goldenCookieActive = false;
+  let goldenCookieTimeout = null;
+
+  function spawnGoldenCookie() {
+    if (goldenCookieActive) return;
+
+    goldenCookieActive = true;
+
+    const golden = document.createElement("button");
+    golden.className = "golden-cookie";
+    golden.textContent = "✨";
+
+    const areaRect = cookieArea.getBoundingClientRect();
+    const size = 82;
+    const minLeft = 12;
+    const maxLeft = Math.max(12, areaRect.width - size - 12);
+    const minTop = 20;
+    const maxTop = Math.max(20, areaRect.height - size - 20);
+
+    const left = Math.floor(Math.random() * (maxLeft - minLeft + 1)) + minLeft;
+    const top = Math.floor(Math.random() * (maxTop - minTop + 1)) + minTop;
+
+    golden.style.left = left + "px";
+    golden.style.top = top + "px";
+
+    golden.addEventListener("click", () => {
+      const bonus = Math.max(50, Math.floor(cookiesPerSecond * 35 + cookiesPerClick * 20));
+      cookies += bonus;
+      totalCookiesEarned += bonus;
+      goldenCaught++;
+      updateUI();
+      checkAchievements();
+
+      const rect = golden.getBoundingClientRect();
+      showFloatingText(`+${formatNumber(bonus)} GOLD`, rect.left, rect.top, true);
+      showToast("✨ Golden cookie!");
+
+      golden.remove();
+      goldenCookieActive = false;
+      if (goldenCookieTimeout) clearTimeout(goldenCookieTimeout);
+
+      if (Math.random() < 0.18) {
+        startCookieRain();
       }
     });
 
-    loadGame();
-    updateUI();
-    scheduleGoldenCookie();
-  </script>
+    cookieArea.appendChild(golden);
+
+    goldenCookieTimeout = setTimeout(() => {
+      if (golden.parentNode) golden.remove();
+      goldenCookieActive = false;
+    }, 6000);
+  }
+
+  function scheduleGoldenCookie() {
+    const delay = Math.floor(Math.random() * 20000) + 25000;
+    setTimeout(() => {
+      spawnGoldenCookie();
+      scheduleGoldenCookie();
+    }, delay);
+  }
+
+  function startCookieRain() {
+    if (rainActive) return;
+    rainActive = true;
+    showToast("🌧️ Pluie de cookies!");
+
+    let drops = 12;
+    let spawned = 0;
+
+    const interval = setInterval(() => {
+      const bonus = Math.max(10, Math.floor(cookiesPerClick * 4 + cookiesPerSecond * 2));
+      const x = Math.floor(Math.random() * (window.innerWidth - 80)) + 20;
+      const y = Math.floor(Math.random() * 180) + 80;
+
+      cookies += bonus;
+      totalCookiesEarned += bonus;
+      updateUI();
+
+      showFloatingText(`+${formatNumber(bonus)}`, x, y, true);
+
+      spawned++;
+      if (spawned >= drops) {
+        clearInterval(interval);
+        rainActive = false;
+        checkAchievements();
+      }
+    }, 280);
+  }
+
+  const loreBtn = document.getElementById("startLore");
+  const loreBox = document.getElementById("loreBox");
+  const loreText = document.getElementById("loreText");
+  const nextLoreBtn = document.getElementById("nextLoreBtn");
+
+  let loreStep = 0;
+
+  const loreLines = [
+    "Tu trouves un vieux passage caché derrière l’usine...",
+    "L’air devient froid. Trop froid.",
+    "Une silhouette immobile te regarde au loin.",
+    "Ses yeux deviennent rouges pendant une seconde.",
+    "Le royaume semble faux. Comme une scène vide.",
+    "Quelqu’un a menti sur tout depuis le début.",
+    "Tu entends: continue de cliquer.",
+    "Le cookie te regarde aussi.",
+    "GAME OVER."
+  ];
+
+  loreBtn.addEventListener("click", () => {
+    loreBox.style.display = "block";
+    loreStep = 0;
+    loreText.textContent = loreLines[loreStep];
+  });
+
+  nextLoreBtn.addEventListener("click", () => {
+    loreStep++;
+    if (loreStep < loreLines.length) {
+      loreText.textContent = loreLines[loreStep];
+    } else {
+      loreText.textContent = "GAME OVER.";
+      document.body.style.background = "black";
+      showToast("👁️ Le secret est terminé");
+    }
+  });
+
+  loadGame();
+  updateUI();
+  checkAchievements();
+  scheduleGoldenCookie();
+</script>
 </body>
 </html>
