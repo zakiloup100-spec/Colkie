@@ -314,24 +314,57 @@
       border-radius: 16px;
       overflow: hidden;
       background:
-        radial-gradient(circle at top, rgba(45,75,45,0.5), rgba(5,10,5,0.98)),
-        linear-gradient(to bottom, #132014 0%, #0b120b 55%, #050805 100%);
+        radial-gradient(circle at 50% 8%, rgba(115,145,115,0.16), rgba(0,0,0,0) 28%),
+        linear-gradient(to bottom, #19271a 0%, #101810 42%, #070b07 100%);
       border: 1px solid rgba(255,255,255,0.08);
       margin-bottom: 14px;
-      box-shadow: inset 0 0 40px rgba(0,0,0,0.25);
+      box-shadow: inset 0 0 60px rgba(0,0,0,0.34);
+    }
+
+    .dark-forest-scene::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top, rgba(0,0,0,0.22), rgba(0,0,0,0) 28%),
+        repeating-linear-gradient(
+          90deg,
+          transparent 0 50px,
+          rgba(18,26,18,0.78) 50px 63px,
+          transparent 63px 115px,
+          rgba(14,22,14,0.72) 115px 128px
+        );
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .dark-forest-scene::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 90px;
+      background:
+        repeating-radial-gradient(circle at 10% 120%, rgba(33,49,33,0.95) 0 18px, transparent 19px 48px),
+        linear-gradient(to top, #0a100a 0%, rgba(10,16,10,0.2) 100%);
+      opacity: 0.95;
+      pointer-events: none;
     }
 
     .forest-fog {
       position: absolute;
       inset: 0;
-      background: repeating-linear-gradient(
-        90deg,
-        rgba(255,255,255,0.02) 0px,
-        rgba(255,255,255,0.055) 70px,
-        rgba(255,255,255,0.02) 140px
-      );
-      opacity: 0.24;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          rgba(255,255,255,0.02) 0px,
+          rgba(255,255,255,0.05) 60px,
+          rgba(255,255,255,0.02) 120px
+        );
+      opacity: 0.18;
       pointer-events: none;
+      mix-blend-mode: screen;
     }
 
     .player-sprite {
@@ -341,8 +374,10 @@
       width: 44px;
       height: 44px;
       border-radius: 10px;
-      background: linear-gradient(135deg, #f0f0f0, #9e9e9e);
+      background:
+        linear-gradient(to bottom, #f2f2f2 0 30%, #3b3b3b 30% 62%, #b89f62 62% 100%);
       box-shadow: 0 0 10px rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.12);
     }
 
     .enemy-sprite {
@@ -352,8 +387,10 @@
       width: 50px;
       height: 50px;
       border-radius: 12px;
-      background: #701313;
-      box-shadow: 0 0 14px rgba(255,0,0,0.28);
+      background:
+        radial-gradient(circle at 50% 30%, #b11a1a 0 18%, #581111 19% 56%, #240909 57% 100%);
+      box-shadow: 0 0 18px rgba(255,0,0,0.22);
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
     .scene-tag {
@@ -436,7 +473,26 @@
       margin-bottom: 10px;
     }
 
+
+    #elonCar {
+      position: fixed;
+      bottom: 10px;
+      left: -220px;
+      padding: 7px 12px;
+      border-radius: 14px;
+      background: linear-gradient(90deg, #1f1f1f, #444);
+      color: white;
+      font-size: 14px;
+      z-index: 99999;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      opacity: 0.95;
+      white-space: nowrap;
+      transform: translateX(0);
+    }
+
     @media (min-width: 950px) {
+
       .game-layout {
         grid-template-columns: 1.15fr 0.95fr;
         align-items: start;
@@ -461,7 +517,7 @@
 <body>
   <div class="wrapper">
     <h1 class="title">🍪 Colkie Clicker Ultimate</h1>
-    <div class="subtitle">Version finale combinée • clicker + prestige + forêt dark horror RPG</div>
+    <div class="subtitle">Version finale combinée • clicker + prestige + forêt dark horror RPG • mieux équilibrée</div>
 
     <div id="mainGameSection">
       <div class="game-layout">
@@ -622,6 +678,15 @@
               </div>
               <div class="upgrade-desc">+900 cookies par seconde</div>
               <button id="buySarahPepin">Acheter — <span id="sarahPepinCost">95000</span></button>
+            </div>
+
+            <div class="upgrade">
+              <div class="upgrade-top">
+                <div class="upgrade-name">🏭 Snacky industrie</div>
+                <div class="upgrade-owned">Possédé : <span id="snackyIndustryCount">0</span></div>
+              </div>
+              <div class="upgrade-desc">+1400 cookies par seconde</div>
+              <button id="buySnackyIndustry">Acheter — <span id="snackyIndustryCost">180000</span></button>
             </div>
           </div>
         </aside>
@@ -892,6 +957,8 @@
     </div>
 
 
+  <div id="elonCar">🚗 Elon</div>
+
   <script>
     let cookies = 0;
     let cookiesPerClick = 1;
@@ -907,6 +974,7 @@
     let alyciaHouseCount = 0;
     let eloikPoopCount = 0;
     let sarahPepinCount = 0;
+    let snackyIndustryCount = 0;
 
     let clickUpgradeCost = 40;
     let grandmaCost = 35;
@@ -917,6 +985,7 @@
     let alyciaHouseCost = 9000;
     let eloikPoopCost = 28000;
     let sarahPepinCost = 95000;
+    let snackyIndustryCost = 180000;
 
     let totalClicks = 0;
     let totalCookiesEarned = 0;
@@ -1000,6 +1069,7 @@
     const alyciaHouseCountEl = document.getElementById("alyciaHouseCount");
     const eloikPoopCountEl = document.getElementById("eloikPoopCount");
     const sarahPepinCountEl = document.getElementById("sarahPepinCount");
+    const snackyIndustryCountEl = document.getElementById("snackyIndustryCount");
 
     const clickUpgradeCostEl = document.getElementById("clickUpgradeCost");
     const grandmaCostEl = document.getElementById("grandmaCost");
@@ -1010,6 +1080,7 @@
     const alyciaHouseCostEl = document.getElementById("alyciaHouseCost");
     const eloikPoopCostEl = document.getElementById("eloikPoopCost");
     const sarahPepinCostEl = document.getElementById("sarahPepinCost");
+    const snackyIndustryCostEl = document.getElementById("snackyIndustryCost");
 
     const buyClickUpgradeBtn = document.getElementById("buyClickUpgrade");
     const buyGrandmaBtn = document.getElementById("buyGrandma");
@@ -1020,6 +1091,7 @@
     const buyAlyciaHouseBtn = document.getElementById("buyAlyciaHouse");
     const buyEloikPoopBtn = document.getElementById("buyEloikPoop");
     const buySarahPepinBtn = document.getElementById("buySarahPepin");
+    const buySnackyIndustryBtn = document.getElementById("buySnackyIndustry");
 
     const cookieBtn = document.getElementById("cookieBtn");
     const cookieArea = document.getElementById("cookieArea");
@@ -1121,6 +1193,7 @@
     const leavePhiloBtn = document.getElementById("leavePhiloBtn");
     const philoRevealBtn = document.getElementById("philoRevealBtn");
     const philoLogEl = document.getElementById("philoLog");
+    const elonCar = document.getElementById("elonCar");
 
     const loreBtn = document.getElementById("startLore");
     const loreBox = document.getElementById("loreBox");
@@ -1525,6 +1598,18 @@
       updatePhiloUI();
     }
 
+
+    function spawnElonCar() {
+      if (!elonCar) return;
+
+      elonCar.style.transition = "none";
+      elonCar.style.transform = "translateX(0)";
+      elonCar.style.left = "-220px";
+      elonCar.offsetHeight;
+      elonCar.style.transition = "transform 7s linear";
+      elonCar.style.transform = "translateX(calc(100vw + 320px))";
+    }
+
     function updateCasinoUI() {
       const sarahUnlocked = sarahPepinCount >= 1;
 
@@ -1576,6 +1661,7 @@
       alyciaHouseCountEl.textContent = alyciaHouseCount;
       eloikPoopCountEl.textContent = eloikPoopCount;
       sarahPepinCountEl.textContent = sarahPepinCount;
+      snackyIndustryCountEl.textContent = snackyIndustryCount;
 
       clickUpgradeCostEl.textContent = formatNumber(clickUpgradeCost);
       grandmaCostEl.textContent = formatNumber(grandmaCost);
@@ -1586,6 +1672,7 @@
       alyciaHouseCostEl.textContent = formatNumber(alyciaHouseCost);
       eloikPoopCostEl.textContent = formatNumber(eloikPoopCost);
       sarahPepinCostEl.textContent = formatNumber(sarahPepinCost);
+      snackyIndustryCostEl.textContent = formatNumber(snackyIndustryCost);
 
       buyClickUpgradeBtn.disabled = cookies < clickUpgradeCost;
       buyGrandmaBtn.disabled = cookies < grandmaCost;
@@ -1596,6 +1683,7 @@
       buyAlyciaHouseBtn.disabled = cookies < alyciaHouseCost;
       buyEloikPoopBtn.disabled = cookies < eloikPoopCost;
       buySarahPepinBtn.disabled = cookies < sarahPepinCost;
+      buySnackyIndustryBtn.disabled = cookies < snackyIndustryCost;
 
       updatePrestigeUI();
       updateDarkForestUI();
@@ -1766,6 +1854,14 @@
       });
     });
 
+    buySnackyIndustryBtn.addEventListener("click", () => {
+      buyUpgrade(snackyIndustryCost, () => {
+        snackyIndustryCount++;
+        cookiesPerSecond += 1400;
+        snackyIndustryCost = Math.floor(snackyIndustryCost * 1.68);
+      });
+    });
+
     function tryPrestige() {
       const gain = getPrestigeGain();
 
@@ -1794,6 +1890,7 @@
       alyciaHouseCount = 0;
       eloikPoopCount = 0;
       sarahPepinCount = 0;
+      snackyIndustryCount = 0;
 
       clickUpgradeCost = 40;
       grandmaCost = 35;
@@ -1804,6 +1901,7 @@
       alyciaHouseCost = 9000;
       eloikPoopCost = 28000;
       sarahPepinCost = 95000;
+      snackyIndustryCost = 180000;
 
       totalClicks = 0;
       comboCount = 0;
@@ -1859,7 +1957,7 @@
       golden.style.top = top + "px";
 
       golden.addEventListener("click", () => {
-        const bonus = Math.max(60, Math.floor(effectiveSecondPower() * 18 + effectiveClickPower() * 10));
+        const bonus = Math.max(45, Math.floor(effectiveSecondPower() * 10 + effectiveClickPower() * 7));
         cookies += bonus;
         totalCookiesEarned += bonus;
         goldenCaught++;
@@ -1904,7 +2002,7 @@
       let spawned = 0;
 
       const interval = setInterval(() => {
-        const bonus = Math.max(8, Math.floor(effectiveClickPower() * 3 + effectiveSecondPower()));
+        const bonus = Math.max(5, Math.floor(effectiveClickPower() * 2 + effectiveSecondPower() * 0.45));
         const x = Math.floor(Math.random() * (window.innerWidth - 80)) + 20;
         const y = Math.floor(Math.random() * 180) + 80;
 
@@ -2046,11 +2144,11 @@
 
     function spawnRpgEnemy() {
       const enemyPool = [
-        { name: "Loup Rouge", hp: 70, attack: 10, defense: 2, reward: 3500, xp: 30, color: "#7a1212" },
-        { name: "Cerf Maudit", hp: 110, attack: 14, defense: 4, reward: 6500, xp: 50, color: "#5a3b20" },
-        { name: "Ombre Rampante", hp: 170, attack: 18, defense: 6, reward: 12000, xp: 75, color: "#2f2f44" },
-        { name: "Entité de la Brume", hp: 260, attack: 24, defense: 8, reward: 25000, xp: 120, color: "#1d4c4c" },
-        { name: "Gardien Noir", hp: 420, attack: 32, defense: 12, reward: 50000, xp: 200, color: "#4d1414" }
+        { name: "Loup Rouge", hp: 90, attack: 12, defense: 3, reward: 900, xp: 24, color: "#7a1212" },
+        { name: "Cerf Maudit", hp: 145, attack: 17, defense: 5, reward: 1800, xp: 38, color: "#5a3b20" },
+        { name: "Ombre Rampante", hp: 220, attack: 22, defense: 8, reward: 3600, xp: 56, color: "#2f2f44" },
+        { name: "Entité de la Brume", hp: 320, attack: 28, defense: 11, reward: 7000, xp: 88, color: "#1d4c4c" },
+        { name: "Gardien Noir", hp: 520, attack: 38, defense: 15, reward: 14000, xp: 135, color: "#4d1414" }
       ];
 
       const tierBase = Math.min(enemyPool.length - 1, Math.floor((rpgLevel - 1) / 2));
@@ -2077,9 +2175,9 @@
 
     function spawnBossEnemy() {
       const bosses = [
-        { name: "Roi des Loups", hp: 950, attack: 45, defense: 16, reward: 160000, xp: 420, color: "#8b1717" },
-        { name: "Abomination de Sève", hp: 1400, attack: 52, defense: 22, reward: 260000, xp: 650, color: "#355f2a" },
-        { name: "Veilleur Sans Visage", hp: 2200, attack: 68, defense: 28, reward: 420000, xp: 1000, color: "#3b315f" }
+        { name: "Roi des Loups", hp: 1100, attack: 52, defense: 18, reward: 28000, xp: 220, color: "#8b1717" },
+        { name: "Abomination de Sève", hp: 1650, attack: 60, defense: 24, reward: 48000, xp: 340, color: "#355f2a" },
+        { name: "Veilleur Sans Visage", hp: 2500, attack: 76, defense: 31, reward: 78000, xp: 520, color: "#3b315f" }
       ];
       const idx = Math.min(bosses.length - 1, Math.floor((rpgLevel - 1) / 4));
       const base = bosses[idx];
@@ -2176,10 +2274,10 @@
 
         if (wasBoss) {
           bossesKilled++;
-          cookies += Math.floor(reward * 0.35);
-          totalCookiesEarned += Math.floor(reward * 0.35);
-          rpgCookiesEarned += Math.floor(reward * 0.35);
-          logRpg(`Tu détruis ${currentEnemy.name} et gagnes ${formatNumber(reward)} cookies + bonus boss + ${formatNumber(Math.floor(reward * 0.35))} + ${formatNumber(xp)} XP.`);
+          cookies += Math.floor(reward * 0.18);
+          totalCookiesEarned += Math.floor(reward * 0.18);
+          rpgCookiesEarned += Math.floor(reward * 0.18);
+          logRpg(`Tu détruis ${currentEnemy.name} et gagnes ${formatNumber(reward)} cookies + bonus boss + ${formatNumber(Math.floor(reward * 0.18))} + ${formatNumber(xp)} XP.`);
           showToast(`👑 Boss vaincu!`);
         } else {
           logRpg(`Tu tues ${currentEnemy.name} et gagnes ${formatNumber(reward)} cookies + ${formatNumber(xp)} XP.`);
@@ -2276,8 +2374,9 @@
     startSpaghettiBtn.addEventListener("click", startSpaghettiGame);
 
     spaghettiUpgradeBtn.addEventListener("click", () => {
-      if (cookies >= 7500) {
-        cookies -= 7500;
+      const upgradeCost = 7500 + (spaghettiPaddleLevel - 1) * 4500;
+      if (cookies >= upgradeCost) {
+        cookies -= upgradeCost;
         spaghettiPaddleLevel++;
         showToast("🍕 Raquette améliorée");
         updateUI();
@@ -2341,8 +2440,9 @@
     });
 
     buySwordBtn.addEventListener("click", () => {
-      if (cookies >= 25000) {
-        cookies -= 25000;
+      const swordCost = 25000 + rpgSword * 18000;
+      if (cookies >= swordCost) {
+        cookies -= swordCost;
         rpgSword++;
         showToast("⚔️ Épée améliorée");
         updateUI();
@@ -2350,8 +2450,9 @@
     });
 
     buyArmorBtn.addEventListener("click", () => {
-      if (cookies >= 25000) {
-        cookies -= 25000;
+      const armorCost = 25000 + rpgArmor * 18000;
+      if (cookies >= armorCost) {
+        cookies -= armorCost;
         rpgArmor++;
         showToast("🛡️ Armure améliorée");
         updateUI();
@@ -2389,7 +2490,7 @@
       spaghettiHitsEl.textContent = formatNumber(spaghettiHits);
       spaghettiCookiesEarnedEl.textContent = formatNumber(spaghettiCookiesEarned);
       spaghettiSpeedEl.textContent = formatNumber(spaghettiPaddleLevel);
-      spaghettiUpgradeBtn.disabled = cookies < 7500;
+      spaghettiUpgradeBtn.disabled = cookies < (7500 + (spaghettiPaddleLevel - 1) * 4500);
       spaghettiPaddleEl.style.width = (105 + (spaghettiPaddleLevel - 1) * 10) + "px";
       spaghettiPaddleEl.style.left = spaghettiPaddleX + "px";
       spaghettiBallEl.style.left = spaghettiBallX + "px";
@@ -2460,7 +2561,7 @@
         spaghettiHits++;
         spaghettiScore += 10;
 
-        const reward = 150 + (spaghettiHits * 8);
+        const reward = 55 + (spaghettiHits * 4);
         cookies += reward;
         totalCookiesEarned += reward;
         spaghettiCookiesEarned += reward;
@@ -2513,7 +2614,7 @@
       casinoBetTotal += amount;
 
       if (Math.random() < 0.49) {
-        const winnings = amount * 2;
+        const winnings = Math.floor(amount * 1.85);
         cookies += winnings;
         casinoWonTotal += winnings;
         casinoWins++;
@@ -2554,7 +2655,7 @@
       }
 
       if (choice === winningCup) {
-        const winnings = Math.floor(currentCupBet * 2.4);
+        const winnings = Math.floor(currentCupBet * 1.9);
         cookies += winnings;
         casinoWonTotal += winnings;
         casinoWins++;
@@ -2601,6 +2702,7 @@
         alyciaHouseCount,
         eloikPoopCount,
         sarahPepinCount,
+        snackyIndustryCount,
 
         clickUpgradeCost,
         grandmaCost,
@@ -2611,6 +2713,7 @@
         alyciaHouseCost,
         eloikPoopCost,
         sarahPepinCost,
+        snackyIndustryCost,
 
         totalClicks,
         totalCookiesEarned,
@@ -2677,6 +2780,7 @@
       alyciaHouseCount = data.alyciaHouseCount ?? 0;
       eloikPoopCount = data.eloikPoopCount ?? 0;
       sarahPepinCount = data.sarahPepinCount ?? 0;
+      snackyIndustryCount = data.snackyIndustryCount ?? 0;
 
       clickUpgradeCost = data.clickUpgradeCost ?? 40;
       grandmaCost = data.grandmaCost ?? 35;
@@ -2687,6 +2791,7 @@
       alyciaHouseCost = data.alyciaHouseCost ?? 9000;
       eloikPoopCost = data.eloikPoopCost ?? 28000;
       sarahPepinCost = data.sarahPepinCost ?? 95000;
+      snackyIndustryCost = data.snackyIndustryCost ?? 180000;
 
       totalClicks = data.totalClicks ?? 0;
       totalCookiesEarned = data.totalCookiesEarned ?? 0;
@@ -2746,6 +2851,12 @@
     updateUI();
     checkAchievements();
     scheduleGoldenCookie();
+
+    setInterval(() => {
+      if (Math.random() < 0.35) {
+        spawnElonCar();
+      }
+    }, 12000);
   </script>
 </body>
 </html>
