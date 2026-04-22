@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -287,6 +287,15 @@
       line-height: 1.4;
     }
 
+
+    .skill-owned {
+      display:block;
+      opacity:0.78;
+      font-size:0.84rem;
+      margin-top:4px;
+      font-weight:normal;
+    }
+
     .footer-tip {
       text-align: center;
       margin-top: 18px;
@@ -517,7 +526,7 @@
 <body>
   <div class="wrapper">
     <h1 class="title">🍪 Colkie Clicker Ultimate</h1>
-    <div class="subtitle">Version finale combinée • clicker + prestige + forêt dark horror RPG • mieux équilibrée</div>
+    <div class="subtitle">Version finale combinée • prestige arbre de skills • nouveaux bâtiments late game</div>
 
     <div id="mainGameSection">
       <div class="game-layout">
@@ -555,9 +564,33 @@
           </div>
 
           <div class="prestige-box" id="prestigeWrap">
-            <div style="font-weight:bold; margin-bottom:6px;">🌌 Prestige</div>
+            <div style="font-weight:bold; margin-bottom:6px;">🌌 Prestige & Arbre de skills</div>
             <div id="prestigeInfo" style="opacity:0.88; font-size:0.95rem; line-height:1.45; margin-bottom:10px;"></div>
             <button id="prestigeBtn" class="small-btn">Prestige</button>
+
+            <div style="margin-top:12px; text-align:left;">
+              <div style="font-weight:bold; margin-bottom:8px;">Tableau de skills</div>
+              <div id="skillTree" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <button class="small-btn" id="skillClickPowerBtn" style="text-align:left;">
+                  🖱️ Clic puissant
+                </button>
+                <button class="small-btn" id="skillAutoPowerBtn" style="text-align:left;">
+                  ⚙️ Production auto
+                </button>
+                <button class="small-btn" id="skillGoldenBtn" style="text-align:left;">
+                  ✨ Golden chance
+                </button>
+                <button class="small-btn" id="skillRpgBtn" style="text-align:left;">
+                  ⚔️ Force RPG
+                </button>
+                <button class="small-btn" id="skillCasinoBtn" style="text-align:left;">
+                  🎰 Main chanceuse
+                </button>
+                <button class="small-btn" id="skillSpaghettiBtn" style="text-align:left;">
+                  🍝 Paddle expert
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="unlock-box" id="darkForestUnlockPanel">
@@ -687,6 +720,42 @@
               </div>
               <div class="upgrade-desc">+1400 cookies par seconde</div>
               <button id="buySnackyIndustry">Acheter — <span id="snackyIndustryCost">180000</span></button>
+            </div>
+
+            <div class="upgrade">
+              <div class="upgrade-top">
+                <div class="upgrade-name">🐶 Le chien Bobine</div>
+                <div class="upgrade-owned">Possédé : <span id="bobineDogCount">0</span></div>
+              </div>
+              <div class="upgrade-desc">+2400 cookies par seconde</div>
+              <button id="buyBobineDog">Acheter — <span id="bobineDogCost">420000</span></button>
+            </div>
+
+            <div class="upgrade">
+              <div class="upgrade-top">
+                <div class="upgrade-name">🧀 L'usine à Cheese Whiz de Antoine Leroux</div>
+                <div class="upgrade-owned">Possédé : <span id="cheeseWhizFactoryCount">0</span></div>
+              </div>
+              <div class="upgrade-desc">+4200 cookies par seconde</div>
+              <button id="buyCheeseWhizFactory">Acheter — <span id="cheeseWhizFactoryCost">980000</span></button>
+            </div>
+
+            <div class="upgrade">
+              <div class="upgrade-top">
+                <div class="upgrade-name">🙃 Miko le pas beau</div>
+                <div class="upgrade-owned">Possédé : <span id="mikoCount">0</span></div>
+              </div>
+              <div class="upgrade-desc">+7800 cookies par seconde</div>
+              <button id="buyMiko">Acheter — <span id="mikoCost">2400000</span></button>
+            </div>
+
+            <div class="upgrade">
+              <div class="upgrade-top">
+                <div class="upgrade-name">🪦 Le cercueil de Technoblade</div>
+                <div class="upgrade-owned">Possédé : <span id="technobladeCount">0</span></div>
+              </div>
+              <div class="upgrade-desc">+20000 cookies par seconde</div>
+              <button id="buyTechnoblade">Acheter — <span id="technobladeCost">9000000</span></button>
             </div>
           </div>
         </aside>
@@ -975,6 +1044,10 @@
     let eloikPoopCount = 0;
     let sarahPepinCount = 0;
     let snackyIndustryCount = 0;
+    let bobineDogCount = 0;
+    let cheeseWhizFactoryCount = 0;
+    let mikoCount = 0;
+    let technobladeCount = 0;
 
     let clickUpgradeCost = 40;
     let grandmaCost = 35;
@@ -986,6 +1059,10 @@
     let eloikPoopCost = 28000;
     let sarahPepinCost = 95000;
     let snackyIndustryCost = 180000;
+    let bobineDogCost = 420000;
+    let cheeseWhizFactoryCost = 980000;
+    let mikoCost = 2400000;
+    let technobladeCost = 9000000;
 
     let totalClicks = 0;
     let totalCookiesEarned = 0;
@@ -994,8 +1071,18 @@
     let rainActive = false;
 
     let prestigePoints = 0;
-    let prestigeMultiplier = 1;
-    let prestigeThreshold = 100000;
+    let prestigePointsSpent = 0;
+    let prestigeThreshold = 250000;
+    let runCookiesEarned = 0;
+
+    let prestigeSkills = {
+      clickPower: 0,
+      autoPower: 0,
+      goldenLuck: 0,
+      rpgForce: 0,
+      casinoLuck: 0,
+      spaghettiMastery: 0
+    };
 
     let darkForestAccessBought = false;
     let spaghettiAccessBought = false;
@@ -1070,6 +1157,10 @@
     const eloikPoopCountEl = document.getElementById("eloikPoopCount");
     const sarahPepinCountEl = document.getElementById("sarahPepinCount");
     const snackyIndustryCountEl = document.getElementById("snackyIndustryCount");
+    const bobineDogCountEl = document.getElementById("bobineDogCount");
+    const cheeseWhizFactoryCountEl = document.getElementById("cheeseWhizFactoryCount");
+    const mikoCountEl = document.getElementById("mikoCount");
+    const technobladeCountEl = document.getElementById("technobladeCount");
 
     const clickUpgradeCostEl = document.getElementById("clickUpgradeCost");
     const grandmaCostEl = document.getElementById("grandmaCost");
@@ -1081,6 +1172,10 @@
     const eloikPoopCostEl = document.getElementById("eloikPoopCost");
     const sarahPepinCostEl = document.getElementById("sarahPepinCost");
     const snackyIndustryCostEl = document.getElementById("snackyIndustryCost");
+    const bobineDogCostEl = document.getElementById("bobineDogCost");
+    const cheeseWhizFactoryCostEl = document.getElementById("cheeseWhizFactoryCost");
+    const mikoCostEl = document.getElementById("mikoCost");
+    const technobladeCostEl = document.getElementById("technobladeCost");
 
     const buyClickUpgradeBtn = document.getElementById("buyClickUpgrade");
     const buyGrandmaBtn = document.getElementById("buyGrandma");
@@ -1092,6 +1187,10 @@
     const buyEloikPoopBtn = document.getElementById("buyEloikPoop");
     const buySarahPepinBtn = document.getElementById("buySarahPepin");
     const buySnackyIndustryBtn = document.getElementById("buySnackyIndustry");
+    const buyBobineDogBtn = document.getElementById("buyBobineDog");
+    const buyCheeseWhizFactoryBtn = document.getElementById("buyCheeseWhizFactory");
+    const buyMikoBtn = document.getElementById("buyMiko");
+    const buyTechnobladeBtn = document.getElementById("buyTechnoblade");
 
     const cookieBtn = document.getElementById("cookieBtn");
     const cookieArea = document.getElementById("cookieArea");
@@ -1099,6 +1198,12 @@
     const resetBtn = document.getElementById("resetBtn");
     const prestigeBtn = document.getElementById("prestigeBtn");
     const prestigeInfo = document.getElementById("prestigeInfo");
+    const skillClickPowerBtn = document.getElementById("skillClickPowerBtn");
+    const skillAutoPowerBtn = document.getElementById("skillAutoPowerBtn");
+    const skillGoldenBtn = document.getElementById("skillGoldenBtn");
+    const skillRpgBtn = document.getElementById("skillRpgBtn");
+    const skillCasinoBtn = document.getElementById("skillCasinoBtn");
+    const skillSpaghettiBtn = document.getElementById("skillSpaghettiBtn");
 
     const darkForestStatusEl = document.getElementById("darkForestStatus");
     const buyDarkForestBtn = document.getElementById("buyDarkForestBtn");
@@ -1260,31 +1365,82 @@
       setTimeout(() => el.remove(), 1000);
     }
 
-    function effectiveClickPower() {
-      return Math.max(1, Math.floor(cookiesPerClick * prestigeMultiplier));
+
+    function getAvailablePrestigePoints() {
+      return Math.max(0, prestigePoints - prestigePointsSpent);
     }
 
-    function effectiveSecondPower() {
-      return Math.max(0, Math.floor(cookiesPerSecond * prestigeMultiplier));
+    function getSkillCost(level) {
+      return level + 1;
     }
 
     function getPrestigeGain() {
-      return Math.floor(Math.sqrt(totalCookiesEarned / 50000));
+      return Math.floor(Math.sqrt(runCookiesEarned / 125000));
+    }
+
+    function getClickSkillMultiplier() {
+      return 1 + prestigeSkills.clickPower * 0.12;
+    }
+
+    function getAutoSkillMultiplier() {
+      return 1 + prestigeSkills.autoPower * 0.12;
+    }
+
+    function getGoldenSkillMultiplier() {
+      return 1 + prestigeSkills.goldenLuck * 0.15;
+    }
+
+    function getRpgSkillMultiplier() {
+      return 1 + prestigeSkills.rpgForce * 0.12;
+    }
+
+    function getCasinoSkillMultiplier() {
+      return 1 + prestigeSkills.casinoLuck * 0.08;
+    }
+
+    function getSpaghettiSkillMultiplier() {
+      return 1 + prestigeSkills.spaghettiMastery * 0.12;
+    }
+
+    function effectiveClickPower() {
+      return Math.max(1, Math.floor(cookiesPerClick * getClickSkillMultiplier()));
+    }
+
+    function effectiveSecondPower() {
+      return Math.max(0, Math.floor(cookiesPerSecond * getAutoSkillMultiplier()));
     }
 
     function updatePrestigeUI() {
       const gain = getPrestigeGain();
-      const ready = totalCookiesEarned >= prestigeThreshold && gain > 0;
+      const ready = runCookiesEarned >= prestigeThreshold && gain > 0;
+      const available = getAvailablePrestigePoints();
 
       prestigeInfo.innerHTML = `
-        Points: <b>${prestigePoints}</b><br>
-        Bonus total: <b>x${prestigeMultiplier.toFixed(2)}</b><br>
-        Prochain prestige à: <b>${formatNumber(prestigeThreshold)}</b> cookies gagnés<br>
+        Points totaux: <b>${prestigePoints}</b><br>
+        Points dispo: <b>${available}</b><br>
+        Cookies de cette run: <b>${formatNumber(runCookiesEarned)}</b><br>
+        Prochain prestige à: <b>${formatNumber(prestigeThreshold)}</b><br>
         Gain actuel si tu reset: <b>+${gain}</b>
       `;
 
       prestigeBtn.disabled = !ready;
       prestigeBtn.textContent = ready ? `Prestige maintenant (+${gain})` : "Prestige verrouillé";
+
+      const skillButtons = [
+        [skillClickPowerBtn, "clickPower", "🖱️ Clic puissant", "+12% clic"],
+        [skillAutoPowerBtn, "autoPower", "⚙️ Production auto", "+12% auto"],
+        [skillGoldenBtn, "goldenLuck", "✨ Golden chance", "+15% golden"],
+        [skillRpgBtn, "rpgForce", "⚔️ Force RPG", "+12% RPG"],
+        [skillCasinoBtn, "casinoLuck", "🎰 Main chanceuse", "+8% gains casino"],
+        [skillSpaghettiBtn, "spaghettiMastery", "🍝 Paddle expert", "+12% mini-jeu"]
+      ];
+
+      skillButtons.forEach(([btn, key, title, desc]) => {
+        const lvl = prestigeSkills[key];
+        const cost = getSkillCost(lvl);
+        btn.disabled = available < cost;
+        btn.innerHTML = `${title}<span class="skill-owned">Niveau ${lvl} • Coût ${cost} • ${desc}</span>`;
+      });
     }
 
     function updateDarkForestUI() {
@@ -1546,6 +1702,7 @@
         philoScore++;
         cookies += q.reward;
         totalCookiesEarned += q.reward;
+        runCookiesEarned += q.reward;
         philoCookiesEarned += q.reward;
         showToast(`🧠 +${formatNumber(q.reward)} cookies`);
         logPhilo("Bonne réponse. " + q.explain);
@@ -1662,6 +1819,10 @@
       eloikPoopCountEl.textContent = eloikPoopCount;
       sarahPepinCountEl.textContent = sarahPepinCount;
       snackyIndustryCountEl.textContent = snackyIndustryCount;
+      bobineDogCountEl.textContent = bobineDogCount;
+      cheeseWhizFactoryCountEl.textContent = cheeseWhizFactoryCount;
+      mikoCountEl.textContent = mikoCount;
+      technobladeCountEl.textContent = technobladeCount;
 
       clickUpgradeCostEl.textContent = formatNumber(clickUpgradeCost);
       grandmaCostEl.textContent = formatNumber(grandmaCost);
@@ -1673,6 +1834,10 @@
       eloikPoopCostEl.textContent = formatNumber(eloikPoopCost);
       sarahPepinCostEl.textContent = formatNumber(sarahPepinCost);
       snackyIndustryCostEl.textContent = formatNumber(snackyIndustryCost);
+      bobineDogCostEl.textContent = formatNumber(bobineDogCost);
+      cheeseWhizFactoryCostEl.textContent = formatNumber(cheeseWhizFactoryCost);
+      mikoCostEl.textContent = formatNumber(mikoCost);
+      technobladeCostEl.textContent = formatNumber(technobladeCost);
 
       buyClickUpgradeBtn.disabled = cookies < clickUpgradeCost;
       buyGrandmaBtn.disabled = cookies < grandmaCost;
@@ -1684,6 +1849,10 @@
       buyEloikPoopBtn.disabled = cookies < eloikPoopCost;
       buySarahPepinBtn.disabled = cookies < sarahPepinCost;
       buySnackyIndustryBtn.disabled = cookies < snackyIndustryCost;
+      buyBobineDogBtn.disabled = cookies < bobineDogCost;
+      buyCheeseWhizFactoryBtn.disabled = cookies < cheeseWhizFactoryCost;
+      buyMikoBtn.disabled = cookies < mikoCost;
+      buyTechnobladeBtn.disabled = cookies < technobladeCost;
 
       updatePrestigeUI();
       updateDarkForestUI();
@@ -1694,6 +1863,7 @@
     function grantCookies(amount) {
       cookies += amount;
       totalCookiesEarned += amount;
+      runCookiesEarned += amount;
       updateUI();
       checkAchievements();
     }
@@ -1834,7 +2004,7 @@
       buyUpgrade(alyciaHouseCost, () => {
         alyciaHouseCount++;
         cookiesPerSecond += 150;
-        alyciaHouseCost = Math.floor(alyciaHouseCost * 1.52);
+        alyciaHouseCost = Math.floor(alyciaHouseCost * 1.68);
       });
     });
 
@@ -1842,7 +2012,7 @@
       buyUpgrade(eloikPoopCost, () => {
         eloikPoopCount++;
         cookiesPerSecond += 350;
-        eloikPoopCost = Math.floor(eloikPoopCost * 1.56);
+        eloikPoopCost = Math.floor(eloikPoopCost * 1.74);
       });
     });
 
@@ -1850,7 +2020,7 @@
       buyUpgrade(sarahPepinCost, () => {
         sarahPepinCount++;
         cookiesPerSecond += 900;
-        sarahPepinCost = Math.floor(sarahPepinCost * 1.60);
+        sarahPepinCost = Math.floor(sarahPepinCost * 1.82);
       });
     });
 
@@ -1858,7 +2028,39 @@
       buyUpgrade(snackyIndustryCost, () => {
         snackyIndustryCount++;
         cookiesPerSecond += 1400;
-        snackyIndustryCost = Math.floor(snackyIndustryCost * 1.68);
+        snackyIndustryCost = Math.floor(snackyIndustryCost * 1.92);
+      });
+    });
+
+    buyBobineDogBtn.addEventListener("click", () => {
+      buyUpgrade(bobineDogCost, () => {
+        bobineDogCount++;
+        cookiesPerSecond += 2400;
+        bobineDogCost = Math.floor(bobineDogCost * 2.05);
+      });
+    });
+
+    buyCheeseWhizFactoryBtn.addEventListener("click", () => {
+      buyUpgrade(cheeseWhizFactoryCost, () => {
+        cheeseWhizFactoryCount++;
+        cookiesPerSecond += 4200;
+        cheeseWhizFactoryCost = Math.floor(cheeseWhizFactoryCost * 2.18);
+      });
+    });
+
+    buyMikoBtn.addEventListener("click", () => {
+      buyUpgrade(mikoCost, () => {
+        mikoCount++;
+        cookiesPerSecond += 7800;
+        mikoCost = Math.floor(mikoCost * 2.34);
+      });
+    });
+
+    buyTechnobladeBtn.addEventListener("click", () => {
+      buyUpgrade(technobladeCost, () => {
+        technobladeCount++;
+        cookiesPerSecond += 20000;
+        technobladeCost = Math.floor(technobladeCost * 2.55);
       });
     });
 
@@ -1891,6 +2093,10 @@
       eloikPoopCount = 0;
       sarahPepinCount = 0;
       snackyIndustryCount = 0;
+      bobineDogCount = 0;
+      cheeseWhizFactoryCount = 0;
+      mikoCount = 0;
+      technobladeCount = 0;
 
       clickUpgradeCost = 40;
       grandmaCost = 35;
@@ -1902,6 +2108,10 @@
       eloikPoopCost = 28000;
       sarahPepinCost = 95000;
       snackyIndustryCost = 180000;
+      bobineDogCost = 420000;
+      cheeseWhizFactoryCost = 980000;
+      mikoCost = 2400000;
+      technobladeCost = 9000000;
 
       totalClicks = 0;
       comboCount = 0;
@@ -1914,6 +2124,26 @@
     }
 
     prestigeBtn.addEventListener("click", tryPrestige);
+
+    function buyPrestigeSkill(key) {
+      const cost = getSkillCost(prestigeSkills[key]);
+      if (getAvailablePrestigePoints() < cost) {
+        showToast("Pas assez de points");
+        return;
+      }
+      prestigePointsSpent += cost;
+      prestigeSkills[key]++;
+      showToast("Skill amélioré");
+      updateUI();
+      saveGame();
+    }
+
+    skillClickPowerBtn.addEventListener("click", () => buyPrestigeSkill("clickPower"));
+    skillAutoPowerBtn.addEventListener("click", () => buyPrestigeSkill("autoPower"));
+    skillGoldenBtn.addEventListener("click", () => buyPrestigeSkill("goldenLuck"));
+    skillRpgBtn.addEventListener("click", () => buyPrestigeSkill("rpgForce"));
+    skillCasinoBtn.addEventListener("click", () => buyPrestigeSkill("casinoLuck"));
+    skillSpaghettiBtn.addEventListener("click", () => buyPrestigeSkill("spaghettiMastery"));
 
     saveBtn.addEventListener("click", () => {
       saveGame();
@@ -1957,7 +2187,7 @@
       golden.style.top = top + "px";
 
       golden.addEventListener("click", () => {
-        const bonus = Math.max(45, Math.floor(effectiveSecondPower() * 10 + effectiveClickPower() * 7));
+        const bonus = Math.max(45, Math.floor((effectiveSecondPower() * 10 + effectiveClickPower() * 7) * getGoldenSkillMultiplier()));
         cookies += bonus;
         totalCookiesEarned += bonus;
         goldenCaught++;
@@ -2002,7 +2232,7 @@
       let spawned = 0;
 
       const interval = setInterval(() => {
-        const bonus = Math.max(5, Math.floor(effectiveClickPower() * 2 + effectiveSecondPower() * 0.45));
+        const bonus = Math.max(5, Math.floor((effectiveClickPower() * 2 + effectiveSecondPower() * 0.45) * getGoldenSkillMultiplier()));
         const x = Math.floor(Math.random() * (window.innerWidth - 80)) + 20;
         const y = Math.floor(Math.random() * 180) + 80;
 
@@ -2131,11 +2361,11 @@
     }
 
     function getRpgAttack() {
-      return rpgBaseAttack + (rpgSword * 6) + Math.floor(rpgLevel * 2);
+      return Math.floor((rpgBaseAttack + (rpgSword * 6) + Math.floor(rpgLevel * 2)) * getRpgSkillMultiplier());
     }
 
     function getRpgDefense() {
-      return rpgBaseDefense + (rpgArmor * 4) + Math.floor(rpgLevel);
+      return Math.floor((rpgBaseDefense + (rpgArmor * 4) + Math.floor(rpgLevel)) * (1 + prestigeSkills.rpgForce * 0.06));
     }
 
     function logRpg(text) {
@@ -2269,6 +2499,7 @@
 
         cookies += reward;
         totalCookiesEarned += reward;
+        runCookiesEarned += reward;
         rpgCookiesEarned += reward;
         gainRpgXp(xp);
 
@@ -2276,6 +2507,7 @@
           bossesKilled++;
           cookies += Math.floor(reward * 0.18);
           totalCookiesEarned += Math.floor(reward * 0.18);
+          runCookiesEarned += Math.floor(reward * 0.18);
           rpgCookiesEarned += Math.floor(reward * 0.18);
           logRpg(`Tu détruis ${currentEnemy.name} et gagnes ${formatNumber(reward)} cookies + bonus boss + ${formatNumber(Math.floor(reward * 0.18))} + ${formatNumber(xp)} XP.`);
           showToast(`👑 Boss vaincu!`);
@@ -2561,9 +2793,10 @@
         spaghettiHits++;
         spaghettiScore += 10;
 
-        const reward = 55 + (spaghettiHits * 4);
+        const reward = Math.floor((55 + (spaghettiHits * 4)) * getSpaghettiSkillMultiplier());
         cookies += reward;
         totalCookiesEarned += reward;
+        runCookiesEarned += reward;
         spaghettiCookiesEarned += reward;
 
         const hitPos = (ballCenterX - spaghettiPaddleX) / paddleW - 0.5;
@@ -2614,8 +2847,10 @@
       casinoBetTotal += amount;
 
       if (Math.random() < 0.49) {
-        const winnings = Math.floor(amount * 1.85);
+        const winnings = Math.floor(amount * (1.85 + (prestigeSkills.casinoLuck * 0.05)));
         cookies += winnings;
+        totalCookiesEarned += winnings;
+        runCookiesEarned += winnings;
         casinoWonTotal += winnings;
         casinoWins++;
         logCasino(`🎰 Jackpot relatif! Tu gagnes ${formatNumber(winnings)} cookies.`);
@@ -2655,8 +2890,10 @@
       }
 
       if (choice === winningCup) {
-        const winnings = Math.floor(currentCupBet * 1.9);
+        const winnings = Math.floor(currentCupBet * (1.9 + prestigeSkills.casinoLuck * 0.04));
         cookies += winnings;
+        totalCookiesEarned += winnings;
+        runCookiesEarned += winnings;
         casinoWonTotal += winnings;
         casinoWins++;
         logCasino(`🥃 Tu trouves le bon verre! Gain de ${formatNumber(winnings)} cookies.`);
@@ -2703,6 +2940,10 @@
         eloikPoopCount,
         sarahPepinCount,
         snackyIndustryCount,
+        bobineDogCount,
+        cheeseWhizFactoryCount,
+        mikoCount,
+        technobladeCount,
 
         clickUpgradeCost,
         grandmaCost,
@@ -2714,14 +2955,20 @@
         eloikPoopCost,
         sarahPepinCost,
         snackyIndustryCost,
+        bobineDogCost,
+        cheeseWhizFactoryCost,
+        mikoCost,
+        technobladeCost,
 
         totalClicks,
         totalCookiesEarned,
         comboCount,
         achievements,
         prestigePoints,
-        prestigeMultiplier,
+        prestigePointsSpent,
         prestigeThreshold,
+        runCookiesEarned,
+        prestigeSkills,
 
         darkForestAccessBought,
         spaghettiAccessBought,
@@ -2781,6 +3028,10 @@
       eloikPoopCount = data.eloikPoopCount ?? 0;
       sarahPepinCount = data.sarahPepinCount ?? 0;
       snackyIndustryCount = data.snackyIndustryCount ?? 0;
+      bobineDogCount = data.bobineDogCount ?? 0;
+      cheeseWhizFactoryCount = data.cheeseWhizFactoryCount ?? 0;
+      mikoCount = data.mikoCount ?? 0;
+      technobladeCount = data.technobladeCount ?? 0;
 
       clickUpgradeCost = data.clickUpgradeCost ?? 40;
       grandmaCost = data.grandmaCost ?? 35;
@@ -2792,6 +3043,10 @@
       eloikPoopCost = data.eloikPoopCost ?? 28000;
       sarahPepinCost = data.sarahPepinCost ?? 95000;
       snackyIndustryCost = data.snackyIndustryCost ?? 180000;
+      bobineDogCost = data.bobineDogCost ?? 420000;
+      cheeseWhizFactoryCost = data.cheeseWhizFactoryCost ?? 980000;
+      mikoCost = data.mikoCost ?? 2400000;
+      technobladeCost = data.technobladeCost ?? 9000000;
 
       totalClicks = data.totalClicks ?? 0;
       totalCookiesEarned = data.totalCookiesEarned ?? 0;
@@ -2799,8 +3054,10 @@
       achievements = data.achievements ?? achievements;
 
       prestigePoints = data.prestigePoints ?? 0;
-      prestigeMultiplier = data.prestigeMultiplier ?? (1 + prestigePoints * 0.12);
-      prestigeThreshold = data.prestigeThreshold ?? 100000;
+      prestigePointsSpent = data.prestigePointsSpent ?? 0;
+      prestigeThreshold = data.prestigeThreshold ?? 250000;
+      runCookiesEarned = data.runCookiesEarned ?? 0;
+      prestigeSkills = data.prestigeSkills ?? prestigeSkills;
 
       darkForestAccessBought = data.darkForestAccessBought ?? false;
       spaghettiAccessBought = data.spaghettiAccessBought ?? false;
