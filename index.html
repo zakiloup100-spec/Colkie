@@ -1,141 +1,743 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mini Cookie Clicker</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Colkie Clicker</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-<style>
-body {
-  margin: 0;
-  background: #2b1d12;
-  color: white;
-  font-family: Arial;
-  text-align: center;
-}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: white;
+      background:
+        radial-gradient(circle at top, #5a3416 0%, #2b1d12 45%, #18100a 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-.container {
-  padding: 20px;
-}
+    .wrapper {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 18px 14px 40px;
+    }
 
-.cookie {
-  font-size: 80px;
-  cursor: pointer;
-}
+    .title {
+      text-align: center;
+      font-size: 2rem;
+      margin: 8px 0 4px;
+    }
 
-button {
-  padding: 10px;
-  margin: 5px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-}
+    .subtitle {
+      text-align: center;
+      opacity: 0.85;
+      margin-bottom: 18px;
+    }
 
-</style>
+    .game-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 16px;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .stat-box {
+      background: rgba(0,0,0,0.18);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 1.15rem;
+      font-weight: bold;
+    }
+
+    .cookie-area {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 420px;
+      overflow: hidden;
+    }
+
+    .cookie-btn {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      font-size: 5rem;
+      background:
+        radial-gradient(circle at 35% 30%, #e8a25b 0%, #c8772d 45%, #7a4016 100%);
+      box-shadow:
+        inset -8px -10px 16px rgba(0,0,0,0.18),
+        0 16px 35px rgba(0,0,0,0.35);
+      transition: transform 0.08s ease, filter 0.15s ease;
+      position: relative;
+      z-index: 2;
+    }
+
+    .cookie-btn:hover {
+      filter: brightness(1.05);
+    }
+
+    .cookie-btn:active,
+    .cookie-btn.clicked {
+      transform: scale(0.94);
+    }
+
+    .cookie-note {
+      margin-top: 14px;
+      opacity: 0.85;
+      text-align: center;
+    }
+
+    .shop-title, .section-title {
+      margin: 0 0 12px;
+      font-size: 1.25rem;
+    }
+
+    .shop-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .upgrade {
+      background: rgba(0,0,0,0.18);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .upgrade-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .upgrade-name {
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .upgrade-owned {
+      font-size: 0.92rem;
+      opacity: 0.8;
+    }
+
+    .upgrade-desc {
+      font-size: 0.92rem;
+      opacity: 0.9;
+      margin-bottom: 8px;
+    }
+
+    .upgrade button,
+    .small-btn,
+    .lore-btn {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #ffbf66;
+      color: #1c130b;
+      transition: transform 0.08s ease, filter 0.15s ease;
+    }
+
+    .upgrade button:hover,
+    .small-btn:hover,
+    .lore-btn:hover {
+      filter: brightness(1.05);
+    }
+
+    .upgrade button:active,
+    .small-btn:active,
+    .lore-btn:active {
+      transform: scale(0.98);
+    }
+
+    .upgrade button:disabled {
+      background: #7c746f;
+      color: #ddd;
+      cursor: not-allowed;
+      filter: none;
+    }
+
+    .small-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .small-btn.reset {
+      background: #ff8b8b;
+      color: #2d0b0b;
+    }
+
+    .golden-cookie {
+      position: absolute;
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      font-size: 2rem;
+      background:
+        radial-gradient(circle at 35% 30%, #fff4a8 0%, #ffd84e 50%, #d69d00 100%);
+      box-shadow:
+        0 0 14px rgba(255, 214, 68, 0.85),
+        0 0 35px rgba(255, 214, 68, 0.35);
+      animation: pulseGolden 1s infinite alternate;
+      z-index: 4;
+    }
+
+    @keyframes pulseGolden {
+      from {
+        transform: scale(1);
+      }
+      to {
+        transform: scale(1.08);
+      }
+    }
+
+    .floating-text {
+      position: absolute;
+      font-weight: bold;
+      pointer-events: none;
+      animation: floatUp 1s forwards;
+      z-index: 6;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.45);
+      white-space: nowrap;
+    }
+
+    .floating-normal {
+      color: #ffe08f;
+      font-size: 1.05rem;
+    }
+
+    .floating-gold {
+      color: #fff16f;
+      font-size: 1.2rem;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-70px);
+      }
+    }
+
+    .lore-box {
+      display: none;
+      margin-top: 14px;
+      background: rgba(0,0,0,0.25);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .lore-text {
+      min-height: 48px;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .footer-tip {
+      text-align: center;
+      margin-top: 18px;
+      opacity: 0.72;
+      font-size: 0.92rem;
+    }
+
+    @media (min-width: 900px) {
+      .game-layout {
+        grid-template-columns: 1.2fr 0.95fr;
+        align-items: start;
+      }
+
+      .cookie-btn {
+        width: 260px;
+        height: 260px;
+        font-size: 6rem;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="wrapper">
+    <h1 class="title">🍪 Colkie Clicker</h1>
+    <div class="subtitle">Version plus grosse, plus clean, plus vivante</div>
 
-<div class="container">
-  <h1>🍪 Cookie Clicker</h1>
-  
-  <h2 id="cookies">0</h2>
-  <p>Par clic : <span id="perClick">1</span></p>
-  <p>Par seconde : <span id="perSecond">0</span></p>
+    <div class="game-layout">
+      <section class="panel">
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-label">Cookies</div>
+            <div class="stat-value" id="cookies">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Par clic</div>
+            <div class="stat-value" id="perClick">1</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Par seconde</div>
+            <div class="stat-value" id="perSecond">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Golden bonus</div>
+            <div class="stat-value" id="goldenCount">0</div>
+          </div>
+        </div>
 
-  <div class="cookie" onclick="clickCookie()">🍪</div>
+        <div class="cookie-area" id="cookieArea">
+          <button class="cookie-btn" id="cookieBtn">🍪</button>
+        </div>
 
-  <h3>Shop</h3>
-  <button onclick="buyGrandma()">👵 Grandma (25)</button>
-  <button onclick="buyFactory()">🏭 Factory (100)</button>
-</div>
+        <div class="cookie-note">
+          Clique le cookie. De temps en temps, un <b>golden cookie</b> apparaît.
+        </div>
 
-<hr>
+        <div class="small-actions">
+          <button class="small-btn" id="saveBtn">Sauvegarder</button>
+          <button class="small-btn reset" id="resetBtn">Reset</button>
+        </div>
 
-<div>
-  <button id="startLore">Mode Secret 👁️</button>
-</div>
+        <div style="margin-top: 16px;">
+          <button class="lore-btn" id="startLore">Mode Secret 👁️</button>
+          <div class="lore-box" id="loreBox">
+            <div class="lore-text" id="loreText">...</div>
+            <button class="small-btn" id="nextLoreBtn">Continuer</button>
+          </div>
+        </div>
+      </section>
 
-<div id="loreBox" style="display:none;">
-  <p id="loreText">...</p>
-  <button onclick="nextLore()">Continuer</button>
-</div>
+      <aside class="panel">
+        <h2 class="shop-title">Boutique</h2>
+        <div class="shop-list">
+          <div class="upgrade">
+            <div class="upgrade-top">
+              <div class="upgrade-name">🖱️ Doigt rapide</div>
+              <div class="upgrade-owned">Possédé : <span id="clickUpgradeCount">0</span></div>
+            </div>
+            <div class="upgrade-desc">+1 cookie par clic</div>
+            <button id="buyClickUpgrade">Acheter — <span id="clickUpgradeCost">25</span></button>
+          </div>
 
-<script>
+          <div class="upgrade">
+            <div class="upgrade-top">
+              <div class="upgrade-name">👵 Grandma</div>
+              <div class="upgrade-owned">Possédé : <span id="grandmaCount">0</span></div>
+            </div>
+            <div class="upgrade-desc">+1 cookie par seconde</div>
+            <button id="buyGrandma">Acheter — <span id="grandmaCost">20</span></button>
+          </div>
 
-// ===== COOKIE GAME =====
-let cookies = 0;
-let perClick = 1;
-let perSecond = 0;
+          <div class="upgrade">
+            <div class="upgrade-top">
+              <div class="upgrade-name">🏭 Factory</div>
+              <div class="upgrade-owned">Possédé : <span id="factoryCount">0</span></div>
+            </div>
+            <div class="upgrade-desc">+5 cookies par seconde</div>
+            <button id="buyFactory">Acheter — <span id="factoryCost">100</span></button>
+          </div>
 
-function clickCookie() {
-  cookies += perClick;
-  updateUI();
-}
+          <div class="upgrade">
+            <div class="upgrade-top">
+              <div class="upgrade-name">🚜 Ferme à biscuits</div>
+              <div class="upgrade-owned">Possédé : <span id="farmCount">0</span></div>
+            </div>
+            <div class="upgrade-desc">+12 cookies par seconde</div>
+            <button id="buyFarm">Acheter — <span id="farmCost">250</span></button>
+          </div>
 
-function buyGrandma() {
-  if (cookies >= 25) {
-    cookies -= 25;
-    perSecond += 1;
+          <div class="upgrade">
+            <div class="upgrade-top">
+              <div class="upgrade-name">🏦 Banque sucrée</div>
+              <div class="upgrade-owned">Possédé : <span id="bankCount">0</span></div>
+            </div>
+            <div class="upgrade-desc">+30 cookies par seconde</div>
+            <button id="buyBank">Acheter — <span id="bankCost">700</span></button>
+          </div>
+
+          <div class="upgrade">
+            <div class="upgrade-top">
+              <div class="upgrade-name">👑 Royaume du cookie</div>
+              <div class="upgrade-owned">Possédé : <span id="kingdomCount">0</span></div>
+            </div>
+            <div class="upgrade-desc">+80 cookies par seconde</div>
+            <button id="buyKingdom">Acheter — <span id="kingdomCost">2000</span></button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="footer-tip">
+      Sauvegarde auto chaque seconde. Le golden cookie donne un gros bonus quand tu le touches.
+    </div>
+  </div>
+
+  <script>
+    let cookies = 0;
+    let cookiesPerClick = 1;
+    let cookiesPerSecond = 0;
+    let goldenCaught = 0;
+
+    let clickUpgradeCount = 0;
+    let grandmaCount = 0;
+    let factoryCount = 0;
+    let farmCount = 0;
+    let bankCount = 0;
+    let kingdomCount = 0;
+
+    let clickUpgradeCost = 25;
+    let grandmaCost = 20;
+    let factoryCost = 100;
+    let farmCost = 250;
+    let bankCost = 700;
+    let kingdomCost = 2000;
+
+    const cookiesEl = document.getElementById("cookies");
+    const perClickEl = document.getElementById("perClick");
+    const perSecondEl = document.getElementById("perSecond");
+    const goldenCountEl = document.getElementById("goldenCount");
+
+    const clickUpgradeCountEl = document.getElementById("clickUpgradeCount");
+    const grandmaCountEl = document.getElementById("grandmaCount");
+    const factoryCountEl = document.getElementById("factoryCount");
+    const farmCountEl = document.getElementById("farmCount");
+    const bankCountEl = document.getElementById("bankCount");
+    const kingdomCountEl = document.getElementById("kingdomCount");
+
+    const clickUpgradeCostEl = document.getElementById("clickUpgradeCost");
+    const grandmaCostEl = document.getElementById("grandmaCost");
+    const factoryCostEl = document.getElementById("factoryCost");
+    const farmCostEl = document.getElementById("farmCost");
+    const bankCostEl = document.getElementById("bankCost");
+    const kingdomCostEl = document.getElementById("kingdomCost");
+
+    const buyClickUpgradeBtn = document.getElementById("buyClickUpgrade");
+    const buyGrandmaBtn = document.getElementById("buyGrandma");
+    const buyFactoryBtn = document.getElementById("buyFactory");
+    const buyFarmBtn = document.getElementById("buyFarm");
+    const buyBankBtn = document.getElementById("buyBank");
+    const buyKingdomBtn = document.getElementById("buyKingdom");
+
+    const cookieBtn = document.getElementById("cookieBtn");
+    const cookieArea = document.getElementById("cookieArea");
+    const saveBtn = document.getElementById("saveBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    function formatNumber(num) {
+      return Math.floor(num).toLocaleString("fr-CA");
+    }
+
+    function updateUI() {
+      cookiesEl.textContent = formatNumber(cookies);
+      perClickEl.textContent = formatNumber(cookiesPerClick);
+      perSecondEl.textContent = formatNumber(cookiesPerSecond);
+      goldenCountEl.textContent = formatNumber(goldenCaught);
+
+      clickUpgradeCountEl.textContent = clickUpgradeCount;
+      grandmaCountEl.textContent = grandmaCount;
+      factoryCountEl.textContent = factoryCount;
+      farmCountEl.textContent = farmCount;
+      bankCountEl.textContent = bankCount;
+      kingdomCountEl.textContent = kingdomCount;
+
+      clickUpgradeCostEl.textContent = formatNumber(clickUpgradeCost);
+      grandmaCostEl.textContent = formatNumber(grandmaCost);
+      factoryCostEl.textContent = formatNumber(factoryCost);
+      farmCostEl.textContent = formatNumber(farmCost);
+      bankCostEl.textContent = formatNumber(bankCost);
+      kingdomCostEl.textContent = formatNumber(kingdomCost);
+
+      buyClickUpgradeBtn.disabled = cookies < clickUpgradeCost;
+      buyGrandmaBtn.disabled = cookies < grandmaCost;
+      buyFactoryBtn.disabled = cookies < factoryCost;
+      buyFarmBtn.disabled = cookies < farmCost;
+      buyBankBtn.disabled = cookies < bankCost;
+      buyKingdomBtn.disabled = cookies < kingdomCost;
+    }
+
+    function showFloatingText(text, x, y, isGold = false) {
+      const el = document.createElement("div");
+      el.className = `floating-text ${isGold ? "floating-gold" : "floating-normal"}`;
+      el.textContent = text;
+      el.style.left = x + "px";
+      el.style.top = y + "px";
+      document.body.appendChild(el);
+
+      setTimeout(() => {
+        el.remove();
+      }, 1000);
+    }
+
+    cookieBtn.addEventListener("click", (e) => {
+      cookies += cookiesPerClick;
+      updateUI();
+
+      cookieBtn.classList.add("clicked");
+      setTimeout(() => cookieBtn.classList.remove("clicked"), 90);
+
+      showFloatingText(
+        `+${formatNumber(cookiesPerClick)}`,
+        e.clientX - 10,
+        e.clientY - 10,
+        false
+      );
+    });
+
+    function buyUpgrade(cost, onBuy) {
+      if (cookies >= cost) {
+        cookies -= cost;
+        onBuy();
+        updateUI();
+      }
+    }
+
+    buyClickUpgradeBtn.addEventListener("click", () => {
+      buyUpgrade(clickUpgradeCost, () => {
+        clickUpgradeCount++;
+        cookiesPerClick += 1;
+        clickUpgradeCost = Math.floor(clickUpgradeCost * 1.35);
+      });
+    });
+
+    buyGrandmaBtn.addEventListener("click", () => {
+      buyUpgrade(grandmaCost, () => {
+        grandmaCount++;
+        cookiesPerSecond += 1;
+        grandmaCost = Math.floor(grandmaCost * 1.2);
+      });
+    });
+
+    buyFactoryBtn.addEventListener("click", () => {
+      buyUpgrade(factoryCost, () => {
+        factoryCount++;
+        cookiesPerSecond += 5;
+        factoryCost = Math.floor(factoryCost * 1.22);
+      });
+    });
+
+    buyFarmBtn.addEventListener("click", () => {
+      buyUpgrade(farmCost, () => {
+        farmCount++;
+        cookiesPerSecond += 12;
+        farmCost = Math.floor(farmCost * 1.24);
+      });
+    });
+
+    buyBankBtn.addEventListener("click", () => {
+      buyUpgrade(bankCost, () => {
+        bankCount++;
+        cookiesPerSecond += 30;
+        bankCost = Math.floor(bankCost * 1.26);
+      });
+    });
+
+    buyKingdomBtn.addEventListener("click", () => {
+      buyUpgrade(kingdomCost, () => {
+        kingdomCount++;
+        cookiesPerSecond += 80;
+        kingdomCost = Math.floor(kingdomCost * 1.3);
+      });
+    });
+
+    setInterval(() => {
+      cookies += cookiesPerSecond;
+      updateUI();
+      saveGame();
+    }, 1000);
+
+    function saveGame() {
+      const data = {
+        cookies,
+        cookiesPerClick,
+        cookiesPerSecond,
+        goldenCaught,
+        clickUpgradeCount,
+        grandmaCount,
+        factoryCount,
+        farmCount,
+        bankCount,
+        kingdomCount,
+        clickUpgradeCost,
+        grandmaCost,
+        factoryCost,
+        farmCost,
+        bankCost,
+        kingdomCost
+      };
+      localStorage.setItem("colkieClickerSave", JSON.stringify(data));
+    }
+
+    function loadGame() {
+      const raw = localStorage.getItem("colkieClickerSave");
+      if (!raw) return;
+
+      const data = JSON.parse(raw);
+
+      cookies = data.cookies ?? 0;
+      cookiesPerClick = data.cookiesPerClick ?? 1;
+      cookiesPerSecond = data.cookiesPerSecond ?? 0;
+      goldenCaught = data.goldenCaught ?? 0;
+
+      clickUpgradeCount = data.clickUpgradeCount ?? 0;
+      grandmaCount = data.grandmaCount ?? 0;
+      factoryCount = data.factoryCount ?? 0;
+      farmCount = data.farmCount ?? 0;
+      bankCount = data.bankCount ?? 0;
+      kingdomCount = data.kingdomCount ?? 0;
+
+      clickUpgradeCost = data.clickUpgradeCost ?? 25;
+      grandmaCost = data.grandmaCost ?? 20;
+      factoryCost = data.factoryCost ?? 100;
+      farmCost = data.farmCost ?? 250;
+      bankCost = data.bankCost ?? 700;
+      kingdomCost = data.kingdomCost ?? 2000;
+    }
+
+    saveBtn.addEventListener("click", () => {
+      saveGame();
+      alert("Sauvegarde faite.");
+    });
+
+    resetBtn.addEventListener("click", () => {
+      const ok = confirm("Tu veux vraiment reset le jeu ?");
+      if (!ok) return;
+      localStorage.removeItem("colkieClickerSave");
+      location.reload();
+    });
+
+    let goldenCookieActive = false;
+    let goldenCookieTimeout = null;
+
+    function spawnGoldenCookie() {
+      if (goldenCookieActive) return;
+
+      goldenCookieActive = true;
+
+      const golden = document.createElement("button");
+      golden.className = "golden-cookie";
+      golden.textContent = "✨";
+
+      const areaRect = cookieArea.getBoundingClientRect();
+      const size = 82;
+      const minLeft = 12;
+      const maxLeft = Math.max(12, areaRect.width - size - 12);
+      const minTop = 20;
+      const maxTop = Math.max(20, areaRect.height - size - 20);
+
+      const left = Math.floor(Math.random() * (maxLeft - minLeft + 1)) + minLeft;
+      const top = Math.floor(Math.random() * (maxTop - minTop + 1)) + minTop;
+
+      golden.style.left = left + "px";
+      golden.style.top = top + "px";
+
+      golden.addEventListener("click", () => {
+        const bonus = Math.max(25, Math.floor(cookiesPerSecond * 20 + cookiesPerClick * 12));
+        cookies += bonus;
+        goldenCaught++;
+        updateUI();
+
+        const rect = golden.getBoundingClientRect();
+        showFloatingText(`+${formatNumber(bonus)} GOLD`, rect.left, rect.top, true);
+
+        golden.remove();
+        goldenCookieActive = false;
+        if (goldenCookieTimeout) clearTimeout(goldenCookieTimeout);
+      });
+
+      cookieArea.appendChild(golden);
+
+      goldenCookieTimeout = setTimeout(() => {
+        if (golden.parentNode) golden.remove();
+        goldenCookieActive = false;
+      }, 5000);
+    }
+
+    function scheduleGoldenCookie() {
+      const delay = Math.floor(Math.random() * 9000) + 6000;
+      setTimeout(() => {
+        spawnGoldenCookie();
+        scheduleGoldenCookie();
+      }, delay);
+    }
+
+    const loreBtn = document.getElementById("startLore");
+    const loreBox = document.getElementById("loreBox");
+    const loreText = document.getElementById("loreText");
+    const nextLoreBtn = document.getElementById("nextLoreBtn");
+
+    let loreStep = 0;
+
+    const loreLines = [
+      "Tu trouves un vieux passage caché derrière l’usine...",
+      "L’air devient froid. Trop froid.",
+      "Une silhouette immobile te regarde au loin.",
+      "Ses yeux deviennent rouges pendant une seconde.",
+      "Le royaume semble faux. Comme une scène vide.",
+      "Quelqu’un a menti sur tout depuis le début.",
+      "Tu entends: continue de cliquer.",
+      "Le cookie te regarde aussi.",
+      "GAME OVER."
+    ];
+
+    loreBtn.addEventListener("click", () => {
+      loreBox.style.display = "block";
+      loreStep = 0;
+      loreText.textContent = loreLines[loreStep];
+    });
+
+    nextLoreBtn.addEventListener("click", () => {
+      loreStep++;
+      if (loreStep < loreLines.length) {
+        loreText.textContent = loreLines[loreStep];
+      } else {
+        loreText.textContent = "GAME OVER.";
+        document.body.style.background = "black";
+      }
+    });
+
+    loadGame();
     updateUI();
-  }
-}
-
-function buyFactory() {
-  if (cookies >= 100) {
-    cookies -= 100;
-    perSecond += 5;
-    updateUI();
-  }
-}
-
-function updateUI() {
-  document.getElementById("cookies").textContent = cookies;
-  document.getElementById("perClick").textContent = perClick;
-  document.getElementById("perSecond").textContent = perSecond;
-}
-
-setInterval(() => {
-  cookies += perSecond;
-  updateUI();
-}, 1000);
-
-// ===== LORE DARK =====
-const loreBtn = document.getElementById("startLore");
-const loreBox = document.getElementById("loreBox");
-const loreText = document.getElementById("loreText");
-
-let loreStep = 0;
-
-const loreLines = [
-  "Tu trouves un vieux tuyau...",
-  "Le monde devient silencieux...",
-  "Une silhouette apparaît...",
-  "Ses yeux deviennent rouges...",
-  "Elle te regarde sans bouger...",
-  "Tu n’es pas seul ici.",
-  "Le château n'existe pas.",
-  "Tout est faux.",
-  "GAME OVER."
-];
-
-loreBtn.addEventListener("click", () => {
-  loreBox.style.display = "block";
-  loreStep = 0;
-  loreText.textContent = loreLines[loreStep];
-});
-
-function nextLore() {
-  loreStep++;
-  if (loreStep < loreLines.length) {
-    loreText.textContent = loreLines[loreStep];
-  } else {
-    document.body.style.background = "black";
-    loreText.textContent = "GAME OVER.";
-  }
-}
-
-</script>
-
+    scheduleGoldenCookie();
+  </script>
 </body>
 </html>
