@@ -454,6 +454,39 @@
     firstPrestige: false
   };
 
+  const customBuildings = [
+    {
+      key: "alyciaHouse",
+      name: "🏠 Maison de Alycia (italienne)",
+      desc: "+150 cookies/seconde",
+      baseCost: 9000,
+      cps: 150,
+      growth: 1.5,
+      count: 0,
+      cost: 9000
+    },
+    {
+      key: "eloikPoop",
+      name: "💩 Caca à Éloik",
+      desc: "+350 cookies/seconde",
+      baseCost: 28000,
+      cps: 350,
+      growth: 1.55,
+      count: 0,
+      cost: 28000
+    },
+    {
+      key: "sarahPepin",
+      name: "🌟 Sarah Pepin",
+      desc: "+900 cookies/seconde",
+      baseCost: 95000,
+      cps: 900,
+      growth: 1.6,
+      count: 0,
+      cost: 95000
+    }
+  ];
+
   const cookiesEl = document.getElementById("cookies");
   const perClickEl = document.getElementById("perClick");
   const perSecondEl = document.getElementById("perSecond");
@@ -484,6 +517,13 @@
   const cookieArea = document.getElementById("cookieArea");
   const saveBtn = document.getElementById("saveBtn");
   const resetBtn = document.getElementById("resetBtn");
+  const prestigeBtn = document.getElementById("prestigeBtn");
+  const prestigeInfo = document.getElementById("prestigeInfo");
+
+  const loreBtn = document.getElementById("startLore");
+  const loreBox = document.getElementById("loreBox");
+  const loreText = document.getElementById("loreText");
+  const nextLoreBtn = document.getElementById("nextLoreBtn");
 
   function formatNumber(num) {
     return Math.floor(num).toLocaleString("fr-CA");
@@ -548,57 +588,85 @@
     }, 1000);
   }
 
-  function createPrestigeUI() {
-    if (document.getElementById("prestigeWrap")) return;
-
-    const anchor = document.querySelector(".small-actions") || saveBtn?.parentElement || document.body;
-
-    const wrap = document.createElement("div");
-    wrap.id = "prestigeWrap";
-    wrap.style.marginTop = "14px";
-    wrap.style.background = "rgba(0,0,0,0.18)";
-    wrap.style.borderRadius = "14px";
-    wrap.style.padding = "12px";
-    wrap.style.textAlign = "center";
-
-    wrap.innerHTML = `
-      <div style="font-weight:bold; margin-bottom:6px;">🌌 Prestige</div>
-      <div id="prestigeInfo" style="opacity:0.88; font-size:0.95rem; line-height:1.4; margin-bottom:10px;"></div>
-      <button id="prestigeBtn" class="small-btn" style="width:100%;">Prestige</button>
-    `;
-
-    anchor.insertAdjacentElement("afterend", wrap);
-
-    document.getElementById("prestigeBtn").addEventListener("click", tryPrestige);
-  }
-
   function getPrestigeGain() {
     return Math.floor(Math.sqrt(totalCookiesEarned / 50000));
   }
 
   function updatePrestigeUI() {
-    const info = document.getElementById("prestigeInfo");
-    const btn = document.getElementById("prestigeBtn");
-    if (!info || !btn) return;
+    if (!prestigeInfo || !prestigeBtn) return;
 
     const gain = getPrestigeGain();
     const ready = totalCookiesEarned >= prestigeThreshold && gain > 0;
 
-    info.innerHTML = `
+    prestigeInfo.innerHTML = `
       Points: <b>${prestigePoints}</b><br>
       Bonus total: <b>x${prestigeMultiplier.toFixed(2)}</b><br>
       Prochain prestige possible à: <b>${formatNumber(prestigeThreshold)}</b> cookies gagnés<br>
       Gain actuel si tu reset: <b>+${gain}</b>
     `;
 
-    btn.disabled = !ready;
-    btn.textContent = ready ? `Prestige maintenant (+${gain})` : "Prestige verrouillé";
+    prestigeBtn.disabled = !ready;
+    prestigeBtn.textContent = ready ? `Prestige maintenant (+${gain})` : "Prestige verrouillé";
+  }
+
+  function effectiveClickPower() {
+    return Math.max(1, Math.floor(cookiesPerClick * prestigeMultiplier));
+  }
+
+  function effectiveSecondPower() {
+    return Math.max(0, Math.floor(cookiesPerSecond * prestigeMultiplier));
+  }
+
+  function createCustomBuildings() {
+    const shopList = document.querySelector(".shop-list");
+    if (!shopList) return;
+
+    customBuildings.forEach((building) => {
+      if (document.getElementById(`buy-${building.key}`)) return;
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "upgrade";
+      wrapper.innerHTML = `
+        <div class="upgrade-top">
+          <div class="upgrade-name">${building.name}</div>
+          <div class="upgrade-owned">Possédé : <span id="count-${building.key}">0</span></div>
+        </div>
+        <div class="upgrade-desc">${building.desc}</div>
+        <button id="buy-${building.key}">Acheter — <span id="cost-${building.key}">${formatNumber(building.cost)}</span></button>
+      `;
+
+      shopList.appendChild(wrapper);
+
+      const btn = wrapper.querySelector(`#buy-${building.key}`);
+      btn.addEventListener("click", () => {
+        if (cookies >= building.cost) {
+          cookies -= building.cost;
+          building.count++;
+          cookiesPerSecond += building.cps;
+          building.cost = Math.floor(building.cost * building.growth);
+          updateUI();
+          checkAchievements();
+        }
+      });
+    });
+  }
+
+  function updateCustomBuildingsUI() {
+    customBuildings.forEach((building) => {
+      const countEl = document.getElementById(`count-${building.key}`);
+      const costEl = document.getElementById(`cost-${building.key}`);
+      const btn = document.getElementById(`buy-${building.key}`);
+
+      if (countEl) countEl.textContent = building.count;
+      if (costEl) costEl.textContent = formatNumber(building.cost);
+      if (btn) btn.disabled = cookies < building.cost;
+    });
   }
 
   function updateUI() {
     cookiesEl.textContent = formatNumber(cookies);
-    perClickEl.textContent = formatNumber(cookiesPerClick * prestigeMultiplier);
-    perSecondEl.textContent = formatNumber(cookiesPerSecond * prestigeMultiplier);
+    perClickEl.textContent = formatNumber(effectiveClickPower());
+    perSecondEl.textContent = formatNumber(effectiveSecondPower());
     goldenCountEl.textContent = formatNumber(goldenCaught);
 
     clickUpgradeCountEl.textContent = clickUpgradeCount;
@@ -622,6 +690,7 @@
     buyBankBtn.disabled = cookies < bankCost;
     buyKingdomBtn.disabled = cookies < kingdomCost;
 
+    updateCustomBuildingsUI();
     updatePrestigeUI();
   }
 
@@ -630,14 +699,6 @@
     totalCookiesEarned += amount;
     updateUI();
     checkAchievements();
-  }
-
-  function effectiveClickPower() {
-    return Math.max(1, Math.floor(cookiesPerClick * prestigeMultiplier));
-  }
-
-  function effectiveSecondPower() {
-    return Math.max(0, Math.floor(cookiesPerSecond * prestigeMultiplier));
   }
 
   function checkAchievements() {
@@ -715,12 +776,7 @@
     cookieBtn.classList.add("clicked");
     setTimeout(() => cookieBtn.classList.remove("clicked"), 90);
 
-    showFloatingText(
-      `+${formatNumber(gain)}`,
-      e.clientX - 10,
-      e.clientY - 10,
-      crit
-    );
+    showFloatingText(`+${formatNumber(gain)}`, e.clientX - 10, e.clientY - 10, crit);
   });
 
   function buyUpgrade(cost, onBuy) {
@@ -818,6 +874,11 @@
     bankCost = 1200;
     kingdomCost = 4200;
 
+    customBuildings.forEach((building) => {
+      building.count = 0;
+      building.cost = building.baseCost;
+    });
+
     totalClicks = 0;
     comboCount = 0;
     prestigeThreshold = Math.floor(prestigeThreshold * 2.35);
@@ -829,6 +890,14 @@
   }
 
   function saveGame() {
+    const customBuildingsSave = {};
+    customBuildings.forEach((building) => {
+      customBuildingsSave[building.key] = {
+        count: building.count,
+        cost: building.cost
+      };
+    });
+
     const data = {
       cookies,
       cookiesPerClick,
@@ -853,6 +922,7 @@
       prestigePoints,
       prestigeMultiplier,
       prestigeThreshold,
+      customBuildingsSave,
       lastSavedAt: Date.now()
     };
     localStorage.setItem("colkieClickerSave", JSON.stringify(data));
@@ -892,6 +962,16 @@
     prestigeMultiplier = data.prestigeMultiplier ?? (1 + prestigePoints * 0.12);
     prestigeThreshold = data.prestigeThreshold ?? 100000;
 
+    if (data.customBuildingsSave) {
+      customBuildings.forEach((building) => {
+        const saved = data.customBuildingsSave[building.key];
+        if (saved) {
+          building.count = saved.count ?? 0;
+          building.cost = saved.cost ?? building.baseCost;
+        }
+      });
+    }
+
     const lastSavedAt = data.lastSavedAt ?? Date.now();
     const secondsAway = Math.floor((Date.now() - lastSavedAt) / 1000);
 
@@ -914,6 +994,10 @@
     localStorage.removeItem("colkieClickerSave");
     location.reload();
   });
+
+  if (prestigeBtn) {
+    prestigeBtn.addEventListener("click", tryPrestige);
+  }
 
   let goldenCookieActive = false;
   let goldenCookieTimeout = null;
@@ -1005,11 +1089,6 @@
     }, 320);
   }
 
-  const loreBtn = document.getElementById("startLore");
-  const loreBox = document.getElementById("loreBox");
-  const loreText = document.getElementById("loreText");
-  const nextLoreBtn = document.getElementById("nextLoreBtn");
-
   let loreStep = 0;
 
   const loreLines = [
@@ -1024,24 +1103,26 @@
     "GAME OVER."
   ];
 
-  loreBtn.addEventListener("click", () => {
-    loreBox.style.display = "block";
-    loreStep = 0;
-    loreText.textContent = loreLines[loreStep];
-  });
-
-  nextLoreBtn.addEventListener("click", () => {
-    loreStep++;
-    if (loreStep < loreLines.length) {
+  if (loreBtn && loreBox && loreText && nextLoreBtn) {
+    loreBtn.addEventListener("click", () => {
+      loreBox.style.display = "block";
+      loreStep = 0;
       loreText.textContent = loreLines[loreStep];
-    } else {
-      loreText.textContent = "GAME OVER.";
-      document.body.style.background = "black";
-      showToast("👁️ Le secret est terminé");
-    }
-  });
+    });
 
-  createPrestigeUI();
+    nextLoreBtn.addEventListener("click", () => {
+      loreStep++;
+      if (loreStep < loreLines.length) {
+        loreText.textContent = loreLines[loreStep];
+      } else {
+        loreText.textContent = "GAME OVER.";
+        document.body.style.background = "black";
+        showToast("👁️ Le secret est terminé");
+      }
+    });
+  }
+
+  createCustomBuildings();
   loadGame();
   updateUI();
   checkAchievements();
