@@ -593,6 +593,10 @@
           <div class="stat-value" id="rpgCookiesEarned">0</div>
         </div>
         <div class="stat-box">
+          <div class="stat-label">Boss tués</div>
+          <div class="stat-value" id="bossesKilled">0</div>
+        </div>
+        <div class="stat-box">
           <div class="stat-label">Attaque</div>
           <div class="stat-value" id="rpgAttack">10</div>
         </div>
@@ -632,6 +636,11 @@
       </div>
 
       <div class="small-actions">
+        <button class="small-btn secondary" id="toggleMusicBtn">🎵 Musique: OFF</button>
+        <button class="small-btn" id="spawnBossBtn">👹 Boss spécial</button>
+      </div>
+
+      <div class="small-actions">
         <button class="small-btn secondary" id="leaveDarkForestBtn">Retour au clicker</button>
         <button class="small-btn reset" id="rpgResetFightBtn">Reset combat</button>
       </div>
@@ -639,6 +648,53 @@
       <div class="rpg-log-box" id="rpgLog">La forêt te regarde...</div>
     </div>
   </div>
+
+<div class="panel rpg-panel" id="spaghettiPanel">
+  <h2 class="section-title">🍝 Dimension Spaghettis</h2>
+  <div class="subtitle" style="margin-bottom:14px;">Mini-jeu pizza ping-pong pour farmer des cookies</div>
+
+  <div class="rpg-grid">
+    <div class="stat-box">
+      <div class="stat-label">Score</div>
+      <div class="stat-value" id="spaghettiScore">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Combo</div>
+      <div class="stat-value" id="spaghettiCombo">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Cookies gagnés</div>
+      <div class="stat-value" id="spaghettiCookiesEarned">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Meilleur score</div>
+      <div class="stat-value" id="spaghettiBest">0</div>
+    </div>
+  </div>
+
+  <div id="spaghettiGame" style="position:relative; height:360px; border-radius:16px; overflow:hidden; background:linear-gradient(to bottom, #d84e2f 0%, #b5301d 45%, #7e1f14 100%); border:1px solid rgba(255,255,255,0.08); margin-bottom:14px;">
+    <div style="position:absolute; inset:0; background:
+      radial-gradient(circle at 15% 20%, rgba(255,225,120,0.18), transparent 20%),
+      radial-gradient(circle at 70% 30%, rgba(255,225,120,0.14), transparent 18%),
+      radial-gradient(circle at 45% 75%, rgba(255,225,120,0.12), transparent 16%);"></div>
+    <div id="pizzaBall" style="position:absolute; left:180px; top:150px; width:28px; height:28px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #ffd37a 0%, #f6b64b 55%, #cf7e1c 100%); box-shadow:0 0 10px rgba(255,225,120,0.25);"></div>
+    <div id="leftPaddle" style="position:absolute; left:14px; top:130px; width:16px; height:90px; border-radius:12px; background:#f3e3c0;"></div>
+    <div id="rightPaddle" style="position:absolute; right:14px; top:130px; width:16px; height:90px; border-radius:12px; background:#d1f0c8;"></div>
+    <div style="position:absolute; left:50%; top:0; width:2px; height:100%; transform:translateX(-50%); background:rgba(255,255,255,0.08);"></div>
+  </div>
+
+  <div class="small-actions">
+    <button class="small-btn" id="startSpaghettiBtn">▶️ Lancer la partie</button>
+    <button class="small-btn" id="claimSpaghettiBtn">🍪 Réclamer les cookies</button>
+  </div>
+
+  <div class="small-actions">
+    <button class="small-btn secondary" id="leaveSpaghettiBtn">Retour au clicker</button>
+    <button class="small-btn reset" id="resetSpaghettiBtn">Reset mini-jeu</button>
+  </div>
+
+  <div class="rpg-log-box" id="spaghettiLog">Des pizzas flottent partout...</div>
+</div>
 
   <script>
     let cookies = 0;
@@ -690,6 +746,26 @@
     let rpgCookiesEarned = 0;
     let rpgGuarding = false;
     let currentEnemy = null;
+    let bossesKilled = 0;
+    let musicEnabled = false;
+
+    let spaghettiAccessBought = false;
+    let spaghettiScore = 0;
+    let spaghettiCombo = 0;
+    let spaghettiCookiesEarned = 0;
+    let spaghettiBest = 0;
+    let spaghettiClaimable = 0;
+    let spaghettiRunning = false;
+    let spaghettiAnimation = null;
+    let ballX = 180;
+    let ballY = 150;
+    let ballVX = 3.8;
+    let ballVY = 2.8;
+    let leftPaddleY = 130;
+    let rightPaddleY = 130;
+    let audioCtx = null;
+    let musicInterval = null;
+    let activeMusicNodes = [];
 
     let achievements = {
       firstClick: false,
@@ -753,10 +829,28 @@
     const darkForestUnlockPanel = document.getElementById("darkForestUnlockPanel");
     const mainGameSection = document.getElementById("mainGameSection");
 
+    const spaghettiStatusEl = document.getElementById("spaghettiStatus");
+    const buySpaghettiBtn = document.getElementById("buySpaghettiBtn");
+    const enterSpaghettiBtn = document.getElementById("enterSpaghettiBtn");
+    const leaveSpaghettiBtn = document.getElementById("leaveSpaghettiBtn");
+    const spaghettiPanel = document.getElementById("spaghettiPanel");
+    const spaghettiScoreEl = document.getElementById("spaghettiScore");
+    const spaghettiComboEl = document.getElementById("spaghettiCombo");
+    const spaghettiCookiesEarnedEl = document.getElementById("spaghettiCookiesEarned");
+    const spaghettiBestEl = document.getElementById("spaghettiBest");
+    const spaghettiLogEl = document.getElementById("spaghettiLog");
+    const startSpaghettiBtn = document.getElementById("startSpaghettiBtn");
+    const claimSpaghettiBtn = document.getElementById("claimSpaghettiBtn");
+    const resetSpaghettiBtn = document.getElementById("resetSpaghettiBtn");
+    const pizzaBallEl = document.getElementById("pizzaBall");
+    const leftPaddleEl = document.getElementById("leftPaddle");
+    const rightPaddleEl = document.getElementById("rightPaddle");
+
     const rpgLevelEl = document.getElementById("rpgLevel");
     const rpgXpEl = document.getElementById("rpgXp");
     const rpgHpEl = document.getElementById("rpgHp");
     const rpgCookiesEarnedEl = document.getElementById("rpgCookiesEarned");
+    const bossesKilledEl = document.getElementById("bossesKilled");
     const rpgAttackEl = document.getElementById("rpgAttack");
     const rpgDefenseEl = document.getElementById("rpgDefense");
     const rpgSwordEl = document.getElementById("rpgSword");
@@ -774,6 +868,8 @@
     const buySwordBtn = document.getElementById("buySwordBtn");
     const buyArmorBtn = document.getElementById("buyArmorBtn");
     const spawnEnemyBtn = document.getElementById("spawnEnemyBtn");
+    const spawnBossBtn = document.getElementById("spawnBossBtn");
+    const toggleMusicBtn = document.getElementById("toggleMusicBtn");
     const rpgResetFightBtn = document.getElementById("rpgResetFightBtn");
 
     const loreBtn = document.getElementById("startLore");
@@ -892,6 +988,7 @@
       rpgXpEl.textContent = `${formatNumber(rpgXp)} / ${formatNumber(rpgXpToNext)}`;
       rpgHpEl.textContent = `${formatNumber(rpgHp)} / ${formatNumber(rpgMaxHp)}`;
       rpgCookiesEarnedEl.textContent = formatNumber(rpgCookiesEarned);
+      bossesKilledEl.textContent = formatNumber(bossesKilled);
       rpgAttackEl.textContent = formatNumber(getRpgAttack());
       rpgDefenseEl.textContent = formatNumber(getRpgDefense());
       rpgSwordEl.textContent = rpgSword;
@@ -899,6 +996,7 @@
 
       buySwordBtn.disabled = cookies < 25000;
       buyArmorBtn.disabled = cookies < 25000;
+      toggleMusicBtn.textContent = musicEnabled ? "🎵 Musique: ON" : "🎵 Musique: OFF";
 
       if (currentEnemy) {
         enemyLabelEl.textContent = currentEnemy.name;
@@ -947,6 +1045,7 @@
 
       updatePrestigeUI();
       updateDarkForestUI();
+      updateSpaghettiUI();
     }
 
     function grantCookies(amount) {
@@ -1299,6 +1398,85 @@
       }
     });
 
+
+    function stopForestMusic() {
+      if (musicInterval) {
+        clearInterval(musicInterval);
+        musicInterval = null;
+      }
+      activeMusicNodes.forEach(node => {
+        try { node.stop && node.stop(); } catch (e) {}
+        try { node.disconnect && node.disconnect(); } catch (e) {}
+      });
+      activeMusicNodes = [];
+    }
+
+    function playForestChord() {
+      if (!musicEnabled) return;
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+
+      if (!audioCtx) audioCtx = new Ctx();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+
+      const now = audioCtx.currentTime;
+      const master = audioCtx.createGain();
+      master.gain.value = 0.035;
+      master.connect(audioCtx.destination);
+      activeMusicNodes.push(master);
+
+      const chordSets = [
+        [110, 146.83, 220],
+        [98, 130.81, 196],
+        [87.31, 130.81, 174.61],
+        [123.47, 164.81, 246.94]
+      ];
+      const chord = chordSets[Math.floor(Math.random() * chordSets.length)];
+
+      chord.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = i === 0 ? "sine" : (i === 1 ? "triangle" : "sawtooth");
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(0.015 - i * 0.003, now + 1.4);
+        gain.gain.linearRampToValueAtTime(0.010 - i * 0.002, now + 4.5);
+        gain.gain.linearRampToValueAtTime(0.0001, now + 7.5);
+        osc.connect(gain);
+        gain.connect(master);
+        osc.start(now);
+        osc.stop(now + 7.6);
+        activeMusicNodes.push(osc, gain);
+      });
+
+      const low = audioCtx.createOscillator();
+      const lowGain = audioCtx.createGain();
+      low.type = "square";
+      low.frequency.value = chord[0] / 2;
+      lowGain.gain.setValueAtTime(0.0001, now);
+      lowGain.gain.linearRampToValueAtTime(0.006, now + 0.8);
+      lowGain.gain.linearRampToValueAtTime(0.0001, now + 3.5);
+      low.connect(lowGain);
+      lowGain.connect(master);
+      low.start(now);
+      low.stop(now + 3.6);
+      activeMusicNodes.push(low, lowGain);
+    }
+
+    function toggleForestMusic() {
+      musicEnabled = !musicEnabled;
+      if (!musicEnabled) {
+        stopForestMusic();
+        updateDarkForestUI();
+        return;
+      }
+      playForestChord();
+      musicInterval = setInterval(() => {
+        if (musicEnabled) playForestChord();
+      }, 6000);
+      updateDarkForestUI();
+    }
+
     function getRpgAttack() {
       return rpgBaseAttack + (rpgSword * 6) + Math.floor(rpgLevel * 2);
     }
@@ -1338,6 +1516,35 @@
 
       rpgEnemyEl.style.background = currentEnemy.color;
       logRpg(`Un ${currentEnemy.name} sort de la brume...`);
+      updateDarkForestUI();
+    }
+
+
+    function spawnBossEnemy() {
+      const bosses = [
+        { name: "Roi des Loups", hp: 950, attack: 45, defense: 16, reward: 160000, xp: 420, color: "#8b1717" },
+        { name: "Abomination de Sève", hp: 1400, attack: 52, defense: 22, reward: 260000, xp: 650, color: "#355f2a" },
+        { name: "Veilleur Sans Visage", hp: 2200, attack: 68, defense: 28, reward: 420000, xp: 1000, color: "#3b315f" }
+      ];
+      const idx = Math.min(bosses.length - 1, Math.floor((rpgLevel - 1) / 4));
+      const base = bosses[idx];
+      const scale = 1 + (rpgLevel - 1) * 0.22;
+
+      currentEnemy = {
+        name: "BOSS • " + base.name,
+        hp: Math.floor(base.hp * scale),
+        maxHp: Math.floor(base.hp * scale),
+        attack: Math.floor(base.attack * scale),
+        defense: Math.floor(base.defense * scale),
+        reward: Math.floor(base.reward * scale),
+        xp: Math.floor(base.xp * scale),
+        color: base.color,
+        isBoss: true
+      };
+
+      rpgEnemyEl.style.background = currentEnemy.color;
+      logRpg(`👹 Un boss apparaît: ${currentEnemy.name}`);
+      showToast("👹 Boss spécial!");
       updateDarkForestUI();
     }
 
@@ -1405,14 +1612,25 @@
         currentEnemy.hp = 0;
         const reward = currentEnemy.reward;
         const xp = currentEnemy.xp;
+        const wasBoss = !!currentEnemy.isBoss;
 
         cookies += reward;
         totalCookiesEarned += reward;
         rpgCookiesEarned += reward;
         gainRpgXp(xp);
 
-        logRpg(`Tu tues ${currentEnemy.name} et gagnes ${formatNumber(reward)} cookies + ${formatNumber(xp)} XP.`);
-        showToast(`🍪 +${formatNumber(reward)}`);
+        if (wasBoss) {
+          bossesKilled++;
+          cookies += Math.floor(reward * 0.35);
+          totalCookiesEarned += Math.floor(reward * 0.35);
+          rpgCookiesEarned += Math.floor(reward * 0.35);
+          logRpg(`Tu détruis ${currentEnemy.name} et gagnes ${formatNumber(reward)} cookies + bonus boss + ${formatNumber(Math.floor(reward * 0.35))} + ${formatNumber(xp)} XP.`);
+          showToast(`👑 Boss vaincu!`);
+        } else {
+          logRpg(`Tu tues ${currentEnemy.name} et gagnes ${formatNumber(reward)} cookies + ${formatNumber(xp)} XP.`);
+          showToast(`🍪 +${formatNumber(reward)}`);
+        }
+
         spawnRpgEnemy();
       } else {
         logRpg(`${heavy ? "Heavy Slash" : "Attaque"}: ${formatNumber(damage)} dégâts à ${currentEnemy.name}.`);
@@ -1433,6 +1651,8 @@
     function leaveDarkForest() {
       darkForestPanel.style.display = "none";
       mainGameSection.classList.remove("hidden");
+      stopForestMusic();
+      musicEnabled = false;
       updateDarkForestUI();
     }
 
@@ -1498,6 +1718,8 @@
     });
 
     spawnEnemyBtn.addEventListener("click", spawnRpgEnemy);
+    spawnBossBtn.addEventListener("click", spawnBossEnemy);
+    toggleMusicBtn.addEventListener("click", toggleForestMusic);
 
     rpgResetFightBtn.addEventListener("click", () => {
       rpgHp = rpgMaxHp;
@@ -1505,6 +1727,65 @@
       updateDarkForestUI();
       logRpg("Le combat a été réinitialisé.");
     });
+
+buySpaghettiBtn.addEventListener("click", () => {
+  if (spaghettiAccessBought) return;
+  if (cookies >= 20000) {
+    cookies -= 20000;
+    spaghettiAccessBought = true;
+    showToast("🍝 Dimension Spaghettis débloquée");
+    updateUI();
+  } else {
+    showToast("Pas assez de cookies.");
+  }
+});
+
+enterSpaghettiBtn.addEventListener("click", enterSpaghetti);
+leaveSpaghettiBtn.addEventListener("click", leaveSpaghetti);
+
+startSpaghettiBtn.addEventListener("click", startSpaghettiGame);
+
+claimSpaghettiBtn.addEventListener("click", () => {
+  if (spaghettiClaimable <= 0) {
+    logSpaghetti("Aucun cookie à réclamer.");
+    return;
+  }
+  cookies += spaghettiClaimable;
+  totalCookiesEarned += spaghettiClaimable;
+  spaghettiCookiesEarned += spaghettiClaimable;
+  showToast(`🍪 +${formatNumber(spaghettiClaimable)}`);
+  spaghettiClaimable = 0;
+  updateUI();
+  logSpaghetti("Récompense récupérée.");
+});
+
+resetSpaghettiBtn.addEventListener("click", () => {
+  spaghettiRunning = false;
+  if (spaghettiAnimation) cancelAnimationFrame(spaghettiAnimation);
+  spaghettiScore = 0;
+  spaghettiCombo = 0;
+  spaghettiClaimable = 0;
+  resetSpaghettiBall();
+  updateSpaghettiUI();
+  logSpaghetti("Mini-jeu reset.");
+});
+
+function moveLeftPaddle(clientY) {
+  const rect = document.getElementById("spaghettiGame").getBoundingClientRect();
+  const localY = clientY - rect.top;
+  leftPaddleY = Math.max(0, Math.min(360 - 90, localY - 45));
+  renderSpaghetti();
+}
+
+document.getElementById("spaghettiGame").addEventListener("mousemove", (e) => {
+  if (spaghettiPanel.style.display === "block") moveLeftPaddle(e.clientY);
+});
+
+document.getElementById("spaghettiGame").addEventListener("touchmove", (e) => {
+  if (spaghettiPanel.style.display === "block" && e.touches[0]) {
+    moveLeftPaddle(e.touches[0].clientY);
+  }
+}, {passive: true});
 
     function saveGame() {
       const data = {
@@ -1553,6 +1834,12 @@
         rpgSword,
         rpgArmor,
         rpgCookiesEarned,
+        bossesKilled,
+        musicEnabled,
+
+        spaghettiAccessBought,
+        spaghettiCookiesEarned,
+        spaghettiBest,
 
         lastSavedAt: Date.now()
       };
@@ -1612,6 +1899,12 @@
       rpgSword = data.rpgSword ?? 0;
       rpgArmor = data.rpgArmor ?? 0;
       rpgCookiesEarned = data.rpgCookiesEarned ?? 0;
+      bossesKilled = data.bossesKilled ?? 0;
+      musicEnabled = false;
+
+      spaghettiAccessBought = data.spaghettiAccessBought ?? false;
+      spaghettiCookiesEarned = data.spaghettiCookiesEarned ?? 0;
+      spaghettiBest = data.spaghettiBest ?? 0;
 
       const lastSavedAt = data.lastSavedAt ?? Date.now();
       const secondsAway = Math.floor((Date.now() - lastSavedAt) / 1000);
