@@ -3,34 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Colkie Clicker</title>
+  <title>Colkie Clicker Ultimate</title>
   <style>
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
     }
 
+    :root{
+      --bg1:#4f3118;
+      --bg2:#24160d;
+      --panel:rgba(255,255,255,0.08);
+      --panel-strong:rgba(0,0,0,0.2);
+      --border:rgba(255,255,255,0.08);
+      --text:#ffffff;
+      --soft:#e9d9c5;
+      --accent:#ffbf66;
+      --accent-dark:#1f150b;
+      --danger:#ff8b8b;
+      --danger-dark:#2d0b0b;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      color: white;
+      color: var(--text);
       background:
-        radial-gradient(circle at top, #5a3416 0%, #2b1d12 45%, #18100a 100%);
+        radial-gradient(circle at top, #6c421f 0%, var(--bg1) 18%, var(--bg2) 60%, #130d08 100%);
       min-height: 100vh;
       overflow-x: hidden;
     }
 
     .wrapper {
       width: 100%;
-      max-width: 1200px;
+      max-width: 1250px;
       margin: 0 auto;
-      padding: 18px 14px 40px;
+      padding: 18px 14px 42px;
     }
 
     .title {
       text-align: center;
-      font-size: 2rem;
+      font-size: 2.15rem;
       margin: 8px 0 4px;
+      letter-spacing: 0.3px;
     }
 
     .subtitle {
@@ -46,12 +61,12 @@
     }
 
     .panel {
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--panel);
+      border: 1px solid var(--border);
       border-radius: 18px;
       padding: 16px;
-      backdrop-filter: blur(4px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+      backdrop-filter: blur(5px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.22);
     }
 
     .stats-grid {
@@ -75,7 +90,7 @@
     }
 
     .stat-value {
-      font-size: 1.15rem;
+      font-size: 1.12rem;
       font-weight: bold;
     }
 
@@ -85,19 +100,20 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 420px;
+      min-height: 425px;
       overflow: hidden;
+      border-radius: 16px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.03), rgba(0,0,0,0.07));
     }
 
     .cookie-btn {
-      width: 220px;
-      height: 220px;
+      width: 230px;
+      height: 230px;
       border-radius: 50%;
       border: none;
       cursor: pointer;
-      font-size: 5rem;
-      background:
-        radial-gradient(circle at 35% 30%, #e8a25b 0%, #c8772d 45%, #7a4016 100%);
+      font-size: 5.35rem;
+      background: radial-gradient(circle at 35% 30%, #ebb06a 0%, #cc7a2e 45%, #7d4317 100%);
       box-shadow:
         inset -8px -10px 16px rgba(0,0,0,0.18),
         0 16px 35px rgba(0,0,0,0.35);
@@ -106,19 +122,15 @@
       z-index: 2;
     }
 
-    .cookie-btn:hover {
-      filter: brightness(1.05);
-    }
-
+    .cookie-btn:hover { filter: brightness(1.04); }
     .cookie-btn:active,
-    .cookie-btn.clicked {
-      transform: scale(0.94);
-    }
+    .cookie-btn.clicked { transform: scale(0.94); }
 
     .cookie-note {
       margin-top: 14px;
-      opacity: 0.85;
+      opacity: 0.88;
       text-align: center;
+      line-height: 1.35;
     }
 
     .shop-title, .section-title {
@@ -159,6 +171,7 @@
       font-size: 0.92rem;
       opacity: 0.9;
       margin-bottom: 8px;
+      line-height: 1.35;
     }
 
     .upgrade button,
@@ -170,25 +183,23 @@
       padding: 11px 12px;
       font-weight: bold;
       cursor: pointer;
-      background: #ffbf66;
-      color: #1c130b;
+      background: var(--accent);
+      color: var(--accent-dark);
       transition: transform 0.08s ease, filter 0.15s ease;
     }
 
     .upgrade button:hover,
     .small-btn:hover,
-    .lore-btn:hover {
-      filter: brightness(1.05);
-    }
+    .lore-btn:hover { filter: brightness(1.05); }
 
     .upgrade button:active,
     .small-btn:active,
-    .lore-btn:active {
-      transform: scale(0.98);
-    }
+    .lore-btn:active { transform: scale(0.98); }
 
-    .upgrade button:disabled {
-      background: #7c746f;
+    .upgrade button:disabled,
+    .small-btn:disabled,
+    .lore-btn:disabled {
+      background: #7a726b;
       color: #ddd;
       cursor: not-allowed;
       filter: none;
@@ -202,8 +213,13 @@
     }
 
     .small-btn.reset {
-      background: #ff8b8b;
-      color: #2d0b0b;
+      background: var(--danger);
+      color: var(--danger-dark);
+    }
+
+    .small-btn.secondary {
+      background: #c9dbff;
+      color: #16233f;
     }
 
     .golden-cookie {
@@ -224,20 +240,16 @@
     }
 
     @keyframes pulseGolden {
-      from {
-        transform: scale(1);
-      }
-      to {
-        transform: scale(1.08);
-      }
+      from { transform: scale(1); }
+      to { transform: scale(1.08); }
     }
 
     .floating-text {
-      position: absolute;
+      position: fixed;
       font-weight: bold;
       pointer-events: none;
       animation: floatUp 1s forwards;
-      z-index: 6;
+      z-index: 9999;
       text-shadow: 0 2px 5px rgba(0,0,0,0.45);
       white-space: nowrap;
     }
@@ -249,31 +261,28 @@
 
     .floating-gold {
       color: #fff16f;
-      font-size: 1.2rem;
+      font-size: 1.15rem;
     }
 
     @keyframes floatUp {
-      0% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(-70px);
-      }
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-70px); }
     }
 
-    .lore-box {
-      display: none;
+    .prestige-box,
+    .unlock-box,
+    .lore-box,
+    .rpg-log-box {
       margin-top: 14px;
-      background: rgba(0,0,0,0.25);
+      background: rgba(0,0,0,0.22);
       border-radius: 14px;
       padding: 12px;
       text-align: center;
     }
 
+    .lore-box { display:none; }
     .lore-text {
-      min-height: 48px;
+      min-height: 52px;
       margin-bottom: 10px;
       line-height: 1.4;
     }
@@ -285,825 +294,994 @@
       font-size: 0.92rem;
     }
 
-    @media (min-width: 900px) {
+    .hidden { display:none !important; }
+
+    .rpg-panel {
+      display: none;
+      margin-top: 16px;
+    }
+
+    .rpg-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .dark-forest-scene {
+      position: relative;
+      height: 330px;
+      border-radius: 16px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top, rgba(45,75,45,0.5), rgba(5,10,5,0.98)),
+        linear-gradient(to bottom, #132014 0%, #0b120b 55%, #050805 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 14px;
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.25);
+    }
+
+    .forest-fog {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,0.02) 0px,
+        rgba(255,255,255,0.055) 70px,
+        rgba(255,255,255,0.02) 140px
+      );
+      opacity: 0.24;
+      pointer-events: none;
+    }
+
+    .player-sprite {
+      position: absolute;
+      left: 38px;
+      bottom: 30px;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #f0f0f0, #9e9e9e);
+      box-shadow: 0 0 10px rgba(255,255,255,0.18);
+    }
+
+    .enemy-sprite {
+      position: absolute;
+      right: 52px;
+      bottom: 30px;
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: #701313;
+      box-shadow: 0 0 14px rgba(255,0,0,0.28);
+    }
+
+    .scene-tag {
+      position:absolute;
+      right:14px;
+      background:rgba(0,0,0,0.42);
+      padding:8px 10px;
+      border-radius:10px;
+      max-width: 70%;
+    }
+
+    #enemyLabel { top: 14px; font-weight: bold; }
+    #enemyHpLabel { top: 56px; }
+
+    .rpg-actions {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .rpg-equip {
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    @keyframes forestShake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(-3px); }
+      100% { transform: translateX(0); }
+    }
+
+    .rpg-hit {
+      animation: forestShake 0.25s ease;
+    }
+
+    @media (min-width: 950px) {
       .game-layout {
-        grid-template-columns: 1.2fr 0.95fr;
+        grid-template-columns: 1.15fr 0.95fr;
         align-items: start;
       }
 
       .cookie-btn {
-        width: 260px;
-        height: 260px;
+        width: 265px;
+        height: 265px;
         font-size: 6rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .rpg-grid {
+        grid-template-columns: repeat(4, 1fr);
       }
     }
   </style>
 </head>
 <body>
   <div class="wrapper">
-    <h1 class="title">🍪 Colkie Clicker</h1>
-    <div class="subtitle">Version plus grosse, plus clean, plus vivante</div>
+    <h1 class="title">🍪 Colkie Clicker Ultimate</h1>
+    <div class="subtitle">Version finale combinée • clicker + prestige + forêt dark horror RPG</div>
 
-    <div class="game-layout">
-      <section class="panel">
-        <div class="stats-grid">
-          <div class="stat-box">
-            <div class="stat-label">Cookies</div>
-            <div class="stat-value" id="cookies">0</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Par clic</div>
-            <div class="stat-value" id="perClick">1</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Par seconde</div>
-            <div class="stat-value" id="perSecond">0</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Golden bonus</div>
-            <div class="stat-value" id="goldenCount">0</div>
-          </div>
-        </div>
-
-        <div class="cookie-area" id="cookieArea">
-          <button class="cookie-btn" id="cookieBtn">🍪</button>
-        </div>
-
-        <div class="cookie-note">
-          Clique le cookie. De temps en temps, un <b>golden cookie</b> apparaît.
-        </div>
-
-        <div class="small-actions">
-          <button class="small-btn" id="saveBtn">Sauvegarder</button>
-          <button class="small-btn reset" id="resetBtn">Reset</button>
-        </div>
-
-        <div style="margin-top: 16px;">
-          <button class="lore-btn" id="startLore">Mode Secret 👁️</button>
-          <div class="lore-box" id="loreBox">
-            <div class="lore-text" id="loreText">...</div>
-            <button class="small-btn" id="nextLoreBtn">Continuer</button>
-          </div>
-        </div>
-      </section>
-
-      <aside class="panel">
-        <h2 class="shop-title">Boutique</h2>
-        <div class="shop-list">
-          <div class="upgrade">
-            <div class="upgrade-top">
-              <div class="upgrade-name">🖱️ Doigt rapide</div>
-              <div class="upgrade-owned">Possédé : <span id="clickUpgradeCount">0</span></div>
+    <div id="mainGameSection">
+      <div class="game-layout">
+        <section class="panel">
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="stat-label">Cookies</div>
+              <div class="stat-value" id="cookies">0</div>
             </div>
-            <div class="upgrade-desc">+1 cookie par clic</div>
-            <button id="buyClickUpgrade">Acheter — <span id="clickUpgradeCost">25</span></button>
+            <div class="stat-box">
+              <div class="stat-label">Par clic</div>
+              <div class="stat-value" id="perClick">1</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Par seconde</div>
+              <div class="stat-value" id="perSecond">0</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Golden bonus</div>
+              <div class="stat-value" id="goldenCount">0</div>
+            </div>
           </div>
 
-          <div class="upgrade">
-            <div class="upgrade-top">
-              <div class="upgrade-name">👵 Grandma</div>
-              <div class="upgrade-owned">Possédé : <span id="grandmaCount">0</span></div>
-            </div>
-            <div class="upgrade-desc">+1 cookie par seconde</div>
-            <button id="buyGrandma">Acheter — <span id="grandmaCost">20</span></button>
+          <div class="cookie-area" id="cookieArea">
+            <button class="cookie-btn" id="cookieBtn">🍪</button>
           </div>
 
-          <div class="upgrade">
-            <div class="upgrade-top">
-              <div class="upgrade-name">🏭 Factory</div>
-              <div class="upgrade-owned">Possédé : <span id="factoryCount">0</span></div>
-            </div>
-            <div class="upgrade-desc">+5 cookies par seconde</div>
-            <button id="buyFactory">Acheter — <span id="factoryCost">100</span></button>
+          <div class="cookie-note">
+            Clique le cookie. Des golden cookies rares peuvent apparaître.
           </div>
 
-          <div class="upgrade">
-            <div class="upgrade-top">
-              <div class="upgrade-name">🚜 Ferme à biscuits</div>
-              <div class="upgrade-owned">Possédé : <span id="farmCount">0</span></div>
-            </div>
-            <div class="upgrade-desc">+12 cookies par seconde</div>
-            <button id="buyFarm">Acheter — <span id="farmCost">250</span></button>
+          <div class="small-actions">
+            <button class="small-btn" id="saveBtn">Sauvegarder</button>
+            <button class="small-btn reset" id="resetBtn">Reset</button>
           </div>
 
-          <div class="upgrade">
-            <div class="upgrade-top">
-              <div class="upgrade-name">🏦 Banque sucrée</div>
-              <div class="upgrade-owned">Possédé : <span id="bankCount">0</span></div>
-            </div>
-            <div class="upgrade-desc">+30 cookies par seconde</div>
-            <button id="buyBank">Acheter — <span id="bankCost">700</span></button>
+          <div class="prestige-box" id="prestigeWrap">
+            <div style="font-weight:bold; margin-bottom:6px;">🌌 Prestige</div>
+            <div id="prestigeInfo" style="opacity:0.88; font-size:0.95rem; line-height:1.45; margin-bottom:10px;"></div>
+            <button id="prestigeBtn" class="small-btn">Prestige</button>
           </div>
 
-          <div class="upgrade">
-            <div class="upgrade-top">
-              <div class="upgrade-name">👑 Royaume du cookie</div>
-              <div class="upgrade-owned">Possédé : <span id="kingdomCount">0</span></div>
-            </div>
-            <div class="upgrade-desc">+80 cookies par seconde</div>
-            <button id="buyKingdom">Acheter — <span id="kingdomCost">2000</span></button>
+          <div class="unlock-box" id="darkForestUnlockPanel">
+            <div style="font-weight:bold; margin-bottom:6px;">🌲 Dimension Dark Forest</div>
+            <p id="darkForestStatus" style="margin:6px 0 10px;">Verrouillée</p>
+            <button class="small-btn" id="buyDarkForestBtn">Acheter l’accès — 2 500 000</button>
+            <button class="small-btn secondary hidden" id="enterDarkForestBtn" style="margin-top:10px;">
+              Entrer dans la forêt dark horror
+            </button>
           </div>
-        </div>
-      </aside>
+
+          <div style="margin-top: 14px;">
+            <button class="lore-btn" id="startLore">Mode Secret 👁️</button>
+            <div class="lore-box" id="loreBox">
+              <div class="lore-text" id="loreText">...</div>
+              <button class="small-btn" id="nextLoreBtn">Continuer</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <h2 class="shop-title">Boutique</h2>
+          <div class="shop-list">
+            <div class="upgrade">
+              <div class="upgrade-top">
+                <div class="upgrade-name">🖱️ Doigt rapide</div>
+                <div class="upgrade-owned">Possédé : <span id="clickUpgradeCount">0</span></div>
+              </div>
+              <div class="upgrade-desc">+1 cookie par clic</div>
+              <button id="buyClickUpgrade">Acheter — <span id="clickUpgradeCost">40</span></button>
+            </div>
+
+            <div class="upgrade">
+              <div class="upgrade-top">
+                <div class="upgrade-name">👵 Grandma</div>
+                <div class="upgrade-owned">Possédé : <span id="grandmaCount">0</span></div>
+              </div>
+              <div class="upgrade-desc">+1 cookie par seconde</div>
+              <button id="buyGrandma">Acheter — <span id="grandmaCost">35</span></button>
+            </div>
+
+            <div class="upgrade">
+              <div class="upgrade-top">
+                <div class="upgrade-name">🏭 Factory</div>
+                <div class="upgrade-owned">Possédé : <span id="factoryCount">0</span></div>
+              </div>
+              <div class="upgrade-desc">+4 cookies par seconde</div>
+              <button id="buyFactory">Acheter — <span id="factoryCost">160</span></button>
+            </div>
+
+            <div class="upgrade">
+              <div class="upgrade-top">
+                <div class="upgrade-name">🚜 Ferme à biscuits</div>
+                <div class="upgrade-owned">Possédé : <span id="farmCount">0</span></div>
+              </div>
+              <div class="upgrade-desc">+10 cookies par seconde</div>
+              <button id="buyFarm">Acheter — <span id="farmCost">420</span></button>
+            </div>
+
+            <div class="upgrade">
+              <div class="upgrade-top">
+                <div class="upgrade-name">🏦 Banque sucrée</div>
+                <div class="upgrade-owned">Possédé : <span id="bankCount">0</span></div>
+              </div>
+              <div class="upgrade-desc">+24 cookies par seconde</div>
+              <button id="buyBank">Acheter — <span id="bankCost">1200</span></button>
+            </div>
+
+            <div class="upgrade">
+              <div class="upgrade-top">
+                <div class="upgrade-name">👑 Royaume du cookie</div>
+                <div class="upgrade-owned">Possédé : <span id="kingdomCount">0</span></div>
+              </div>
+              <div class="upgrade-desc">+60 cookies par seconde</div>
+              <button id="buyKingdom">Acheter — <span id="kingdomCost">4200</span></button>
+            </div>
+
+            <div class="upgrade">
+              <div class="upgrade-top">
+                <div class="upgrade-name">🏠 Maison de Alycia (italienne)</div>
+                <div class="upgrade-owned">Possédé : <span id="alyciaHouseCount">0</span></div>
+              </div>
+              <div class="upgrade-desc">+150 cookies par seconde</div>
+              <button id="buyAlyciaHouse">Acheter — <span id="alyciaHouseCost">9000</span></button>
+            </div>
+
+            <div class="upgrade">
+              <div class="upgrade-top">
+                <div class="upgrade-name">💩 Le caca à Éloik</div>
+                <div class="upgrade-owned">Possédé : <span id="eloikPoopCount">0</span></div>
+              </div>
+              <div class="upgrade-desc">+350 cookies par seconde • déverrouille la Dark Forest</div>
+              <button id="buyEloikPoop">Acheter — <span id="eloikPoopCost">28000</span></button>
+            </div>
+
+            <div class="upgrade">
+              <div class="upgrade-top">
+                <div class="upgrade-name">🌟 Sarah Pepin</div>
+                <div class="upgrade-owned">Possédé : <span id="sarahPepinCount">0</span></div>
+              </div>
+              <div class="upgrade-desc">+900 cookies par seconde</div>
+              <button id="buySarahPepin">Acheter — <span id="sarahPepinCost">95000</span></button>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="footer-tip" id="footerTip">
+        Sauvegarde auto chaque seconde. Les golden cookies sont rares. Le prestige rend tes runs futures plus fortes.
+      </div>
     </div>
 
-    <div class="footer-tip">
-      Sauvegarde auto chaque seconde. Le golden cookie donne un gros bonus quand tu le touches.
+    <div class="panel rpg-panel" id="darkForestPanel">
+      <h2 class="section-title">🌲 Dark Forest RPG</h2>
+
+      <div class="rpg-grid">
+        <div class="stat-box">
+          <div class="stat-label">Niveau</div>
+          <div class="stat-value" id="rpgLevel">1</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">XP</div>
+          <div class="stat-value" id="rpgXp">0 / 100</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">PV</div>
+          <div class="stat-value" id="rpgHp">100 / 100</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Cookies gagnés</div>
+          <div class="stat-value" id="rpgCookiesEarned">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Attaque</div>
+          <div class="stat-value" id="rpgAttack">10</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Défense</div>
+          <div class="stat-value" id="rpgDefense">5</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Épée</div>
+          <div class="stat-value" id="rpgSword">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Armure</div>
+          <div class="stat-value" id="rpgArmor">0</div>
+        </div>
+      </div>
+
+      <div class="dark-forest-scene">
+        <div class="forest-fog"></div>
+        <div id="rpgPlayer" class="player-sprite"></div>
+        <div id="rpgEnemy" class="enemy-sprite"></div>
+        <div id="enemyLabel" class="scene-tag">???</div>
+        <div id="enemyHpLabel" class="scene-tag">HP: 0 / 0</div>
+      </div>
+
+      <div class="rpg-actions">
+        <button class="small-btn" id="rpgAttackBtn">⚔️ Attaquer</button>
+        <button class="small-btn" id="rpgHeavyBtn">💥 Heavy Slash</button>
+        <button class="small-btn" id="rpgGuardBtn">🛡️ Guard</button>
+        <button class="small-btn" id="rpgHealBtn">💚 Heal</button>
+      </div>
+
+      <div class="rpg-equip">
+        <button class="small-btn" id="buySwordBtn">Épée — 25 000</button>
+        <button class="small-btn" id="buyArmorBtn">Armure — 25 000</button>
+        <button class="small-btn" id="spawnEnemyBtn">Nouvel ennemi</button>
+      </div>
+
+      <div class="small-actions">
+        <button class="small-btn secondary" id="leaveDarkForestBtn">Retour au clicker</button>
+        <button class="small-btn reset" id="rpgResetFightBtn">Reset combat</button>
+      </div>
+
+      <div class="rpg-log-box" id="rpgLog">La forêt te regarde...</div>
     </div>
   </div>
 
-<script>
-  let cookies = 0;
-  let cookiesPerClick = 1;
-  let cookiesPerSecond = 0;
-  let goldenCaught = 0;
+  <script>
+    let cookies = 0;
+    let cookiesPerClick = 1;
+    let cookiesPerSecond = 0;
+    let goldenCaught = 0;
 
-  let clickUpgradeCount = 0;
-  let grandmaCount = 0;
-  let factoryCount = 0;
-  let farmCount = 0;
-  let bankCount = 0;
-  let kingdomCount = 0;
+    let clickUpgradeCount = 0;
+    let grandmaCount = 0;
+    let factoryCount = 0;
+    let farmCount = 0;
+    let bankCount = 0;
+    let kingdomCount = 0;
+    let alyciaHouseCount = 0;
+    let eloikPoopCount = 0;
+    let sarahPepinCount = 0;
 
-  let clickUpgradeCost = 40;
-  let grandmaCost = 35;
-  let factoryCost = 160;
-  let farmCost = 420;
-  let bankCost = 1200;
-  let kingdomCost = 4200;
+    let clickUpgradeCost = 40;
+    let grandmaCost = 35;
+    let factoryCost = 160;
+    let farmCost = 420;
+    let bankCost = 1200;
+    let kingdomCost = 4200;
+    let alyciaHouseCost = 9000;
+    let eloikPoopCost = 28000;
+    let sarahPepinCost = 95000;
 
-  let totalClicks = 0;
-  let totalCookiesEarned = 0;
-  let comboCount = 0;
-  let lastClickTime = 0;
-  let rainActive = false;
+    let totalClicks = 0;
+    let totalCookiesEarned = 0;
+    let comboCount = 0;
+    let lastClickTime = 0;
+    let rainActive = false;
 
-  let prestigePoints = 0;
-  let prestigeMultiplier = 1;
-  let prestigeThreshold = 100000;
+    let prestigePoints = 0;
+    let prestigeMultiplier = 1;
+    let prestigeThreshold = 100000;
 
-  let achievements = {
-    firstClick: false,
-    hundredClicks: false,
-    firstGolden: false,
-    thousandCookies: false,
-    tenPerSecond: false,
-    hundredPerSecond: false,
-    combo10: false,
-    kingdom: false,
-    firstPrestige: false
-  };
+    let darkForestAccessBought = false;
 
-  const customBuildings = [
-    {
-      key: "alyciaHouse",
-      name: "🏠 Maison de Alycia (italienne)",
-      desc: "+150 cookies/seconde",
-      baseCost: 9000,
-      cps: 150,
-      growth: 1.5,
-      count: 0,
-      cost: 9000
-    },
-    {
-      key: "eloikPoop",
-      name: "💩 Caca à Éloik",
-      desc: "+350 cookies/seconde",
-      baseCost: 28000,
-      cps: 350,
-      growth: 1.55,
-      count: 0,
-      cost: 28000
-    },
-    {
-      key: "sarahPepin",
-      name: "🌟 Sarah Pepin",
-      desc: "+900 cookies/seconde",
-      baseCost: 95000,
-      cps: 900,
-      growth: 1.6,
-      count: 0,
-      cost: 95000
+    let rpgLevel = 1;
+    let rpgXp = 0;
+    let rpgXpToNext = 100;
+    let rpgMaxHp = 100;
+    let rpgHp = 100;
+    let rpgBaseAttack = 10;
+    let rpgBaseDefense = 5;
+    let rpgSword = 0;
+    let rpgArmor = 0;
+    let rpgCookiesEarned = 0;
+    let rpgGuarding = false;
+    let currentEnemy = null;
+
+    let achievements = {
+      firstClick: false,
+      hundredClicks: false,
+      firstGolden: false,
+      thousandCookies: false,
+      tenPerSecond: false,
+      hundredPerSecond: false,
+      combo10: false,
+      kingdom: false,
+      firstPrestige: false
+    };
+
+    const cookiesEl = document.getElementById("cookies");
+    const perClickEl = document.getElementById("perClick");
+    const perSecondEl = document.getElementById("perSecond");
+    const goldenCountEl = document.getElementById("goldenCount");
+
+    const clickUpgradeCountEl = document.getElementById("clickUpgradeCount");
+    const grandmaCountEl = document.getElementById("grandmaCount");
+    const factoryCountEl = document.getElementById("factoryCount");
+    const farmCountEl = document.getElementById("farmCount");
+    const bankCountEl = document.getElementById("bankCount");
+    const kingdomCountEl = document.getElementById("kingdomCount");
+    const alyciaHouseCountEl = document.getElementById("alyciaHouseCount");
+    const eloikPoopCountEl = document.getElementById("eloikPoopCount");
+    const sarahPepinCountEl = document.getElementById("sarahPepinCount");
+
+    const clickUpgradeCostEl = document.getElementById("clickUpgradeCost");
+    const grandmaCostEl = document.getElementById("grandmaCost");
+    const factoryCostEl = document.getElementById("factoryCost");
+    const farmCostEl = document.getElementById("farmCost");
+    const bankCostEl = document.getElementById("bankCost");
+    const kingdomCostEl = document.getElementById("kingdomCost");
+    const alyciaHouseCostEl = document.getElementById("alyciaHouseCost");
+    const eloikPoopCostEl = document.getElementById("eloikPoopCost");
+    const sarahPepinCostEl = document.getElementById("sarahPepinCost");
+
+    const buyClickUpgradeBtn = document.getElementById("buyClickUpgrade");
+    const buyGrandmaBtn = document.getElementById("buyGrandma");
+    const buyFactoryBtn = document.getElementById("buyFactory");
+    const buyFarmBtn = document.getElementById("buyFarm");
+    const buyBankBtn = document.getElementById("buyBank");
+    const buyKingdomBtn = document.getElementById("buyKingdom");
+    const buyAlyciaHouseBtn = document.getElementById("buyAlyciaHouse");
+    const buyEloikPoopBtn = document.getElementById("buyEloikPoop");
+    const buySarahPepinBtn = document.getElementById("buySarahPepin");
+
+    const cookieBtn = document.getElementById("cookieBtn");
+    const cookieArea = document.getElementById("cookieArea");
+    const saveBtn = document.getElementById("saveBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const prestigeBtn = document.getElementById("prestigeBtn");
+    const prestigeInfo = document.getElementById("prestigeInfo");
+
+    const darkForestStatusEl = document.getElementById("darkForestStatus");
+    const buyDarkForestBtn = document.getElementById("buyDarkForestBtn");
+    const enterDarkForestBtn = document.getElementById("enterDarkForestBtn");
+    const leaveDarkForestBtn = document.getElementById("leaveDarkForestBtn");
+    const darkForestPanel = document.getElementById("darkForestPanel");
+    const darkForestUnlockPanel = document.getElementById("darkForestUnlockPanel");
+    const mainGameSection = document.getElementById("mainGameSection");
+
+    const rpgLevelEl = document.getElementById("rpgLevel");
+    const rpgXpEl = document.getElementById("rpgXp");
+    const rpgHpEl = document.getElementById("rpgHp");
+    const rpgCookiesEarnedEl = document.getElementById("rpgCookiesEarned");
+    const rpgAttackEl = document.getElementById("rpgAttack");
+    const rpgDefenseEl = document.getElementById("rpgDefense");
+    const rpgSwordEl = document.getElementById("rpgSword");
+    const rpgArmorEl = document.getElementById("rpgArmor");
+
+    const rpgEnemyEl = document.getElementById("rpgEnemy");
+    const enemyLabelEl = document.getElementById("enemyLabel");
+    const enemyHpLabelEl = document.getElementById("enemyHpLabel");
+    const rpgLogEl = document.getElementById("rpgLog");
+
+    const rpgAttackBtn = document.getElementById("rpgAttackBtn");
+    const rpgHeavyBtn = document.getElementById("rpgHeavyBtn");
+    const rpgGuardBtn = document.getElementById("rpgGuardBtn");
+    const rpgHealBtn = document.getElementById("rpgHealBtn");
+    const buySwordBtn = document.getElementById("buySwordBtn");
+    const buyArmorBtn = document.getElementById("buyArmorBtn");
+    const spawnEnemyBtn = document.getElementById("spawnEnemyBtn");
+    const rpgResetFightBtn = document.getElementById("rpgResetFightBtn");
+
+    const loreBtn = document.getElementById("startLore");
+    const loreBox = document.getElementById("loreBox");
+    const loreText = document.getElementById("loreText");
+    const nextLoreBtn = document.getElementById("nextLoreBtn");
+
+    function formatNumber(num) {
+      return Math.floor(num).toLocaleString("fr-CA");
     }
-  ];
 
-  const cookiesEl = document.getElementById("cookies");
-  const perClickEl = document.getElementById("perClick");
-  const perSecondEl = document.getElementById("perSecond");
-  const goldenCountEl = document.getElementById("goldenCount");
-
-  const clickUpgradeCountEl = document.getElementById("clickUpgradeCount");
-  const grandmaCountEl = document.getElementById("grandmaCount");
-  const factoryCountEl = document.getElementById("factoryCount");
-  const farmCountEl = document.getElementById("farmCount");
-  const bankCountEl = document.getElementById("bankCount");
-  const kingdomCountEl = document.getElementById("kingdomCount");
-
-  const clickUpgradeCostEl = document.getElementById("clickUpgradeCost");
-  const grandmaCostEl = document.getElementById("grandmaCost");
-  const factoryCostEl = document.getElementById("factoryCost");
-  const farmCostEl = document.getElementById("farmCost");
-  const bankCostEl = document.getElementById("bankCost");
-  const kingdomCostEl = document.getElementById("kingdomCost");
-
-  const buyClickUpgradeBtn = document.getElementById("buyClickUpgrade");
-  const buyGrandmaBtn = document.getElementById("buyGrandma");
-  const buyFactoryBtn = document.getElementById("buyFactory");
-  const buyFarmBtn = document.getElementById("buyFarm");
-  const buyBankBtn = document.getElementById("buyBank");
-  const buyKingdomBtn = document.getElementById("buyKingdom");
-
-  const cookieBtn = document.getElementById("cookieBtn");
-  const cookieArea = document.getElementById("cookieArea");
-  const saveBtn = document.getElementById("saveBtn");
-  const resetBtn = document.getElementById("resetBtn");
-  const prestigeBtn = document.getElementById("prestigeBtn");
-  const prestigeInfo = document.getElementById("prestigeInfo");
-
-  const loreBtn = document.getElementById("startLore");
-  const loreBox = document.getElementById("loreBox");
-  const loreText = document.getElementById("loreText");
-  const nextLoreBtn = document.getElementById("nextLoreBtn");
-
-  function formatNumber(num) {
-    return Math.floor(num).toLocaleString("fr-CA");
-  }
-
-  function ensureToastContainer() {
-    let toastContainer = document.getElementById("toastContainer");
-    if (!toastContainer) {
-      toastContainer = document.createElement("div");
-      toastContainer.id = "toastContainer";
-      toastContainer.style.position = "fixed";
-      toastContainer.style.top = "16px";
-      toastContainer.style.left = "50%";
-      toastContainer.style.transform = "translateX(-50%)";
-      toastContainer.style.zIndex = "9999";
-      toastContainer.style.display = "flex";
-      toastContainer.style.flexDirection = "column";
-      toastContainer.style.gap = "8px";
-      toastContainer.style.pointerEvents = "none";
-      document.body.appendChild(toastContainer);
+    function ensureToastContainer() {
+      let toastContainer = document.getElementById("toastContainer");
+      if (!toastContainer) {
+        toastContainer = document.createElement("div");
+        toastContainer.id = "toastContainer";
+        toastContainer.style.position = "fixed";
+        toastContainer.style.top = "16px";
+        toastContainer.style.left = "50%";
+        toastContainer.style.transform = "translateX(-50%)";
+        toastContainer.style.zIndex = "99999";
+        toastContainer.style.display = "flex";
+        toastContainer.style.flexDirection = "column";
+        toastContainer.style.gap = "8px";
+        toastContainer.style.pointerEvents = "none";
+        document.body.appendChild(toastContainer);
+      }
+      return toastContainer;
     }
-    return toastContainer;
-  }
 
-  function showToast(text) {
-    const container = ensureToastContainer();
-    const toast = document.createElement("div");
-    toast.textContent = text;
-    toast.style.background = "rgba(0,0,0,0.82)";
-    toast.style.color = "white";
-    toast.style.padding = "10px 14px";
-    toast.style.borderRadius = "12px";
-    toast.style.fontWeight = "bold";
-    toast.style.boxShadow = "0 8px 24px rgba(0,0,0,0.28)";
-    toast.style.opacity = "0";
-    toast.style.transition = "opacity 0.25s ease, transform 0.25s ease";
-    toast.style.transform = "translateY(-8px)";
-    container.appendChild(toast);
-
-    requestAnimationFrame(() => {
-      toast.style.opacity = "1";
-      toast.style.transform = "translateY(0)";
-    });
-
-    setTimeout(() => {
+    function showToast(text) {
+      const container = ensureToastContainer();
+      const toast = document.createElement("div");
+      toast.textContent = text;
+      toast.style.background = "rgba(0,0,0,0.84)";
+      toast.style.color = "white";
+      toast.style.padding = "10px 14px";
+      toast.style.borderRadius = "12px";
+      toast.style.fontWeight = "bold";
+      toast.style.boxShadow = "0 8px 24px rgba(0,0,0,0.28)";
       toast.style.opacity = "0";
+      toast.style.transition = "opacity 0.25s ease, transform 0.25s ease";
       toast.style.transform = "translateY(-8px)";
-      setTimeout(() => toast.remove(), 250);
-    }, 2200);
-  }
+      container.appendChild(toast);
 
-  function showFloatingText(text, x, y, isGold = false) {
-    const el = document.createElement("div");
-    el.className = `floating-text ${isGold ? "floating-gold" : "floating-normal"}`;
-    el.textContent = text;
-    el.style.left = x + "px";
-    el.style.top = y + "px";
-    document.body.appendChild(el);
+      requestAnimationFrame(() => {
+        toast.style.opacity = "1";
+        toast.style.transform = "translateY(0)";
+      });
 
-    setTimeout(() => {
-      el.remove();
-    }, 1000);
-  }
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(-8px)";
+        setTimeout(() => toast.remove(), 250);
+      }, 2200);
+    }
 
-  function getPrestigeGain() {
-    return Math.floor(Math.sqrt(totalCookiesEarned / 50000));
-  }
+    function showFloatingText(text, x, y, isGold = false) {
+      const el = document.createElement("div");
+      el.className = `floating-text ${isGold ? "floating-gold" : "floating-normal"}`;
+      el.textContent = text;
+      el.style.left = x + "px";
+      el.style.top = y + "px";
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1000);
+    }
 
-  function updatePrestigeUI() {
-    if (!prestigeInfo || !prestigeBtn) return;
+    function effectiveClickPower() {
+      return Math.max(1, Math.floor(cookiesPerClick * prestigeMultiplier));
+    }
 
-    const gain = getPrestigeGain();
-    const ready = totalCookiesEarned >= prestigeThreshold && gain > 0;
+    function effectiveSecondPower() {
+      return Math.max(0, Math.floor(cookiesPerSecond * prestigeMultiplier));
+    }
 
-    prestigeInfo.innerHTML = `
-      Points: <b>${prestigePoints}</b><br>
-      Bonus total: <b>x${prestigeMultiplier.toFixed(2)}</b><br>
-      Prochain prestige possible à: <b>${formatNumber(prestigeThreshold)}</b> cookies gagnés<br>
-      Gain actuel si tu reset: <b>+${gain}</b>
-    `;
+    function getPrestigeGain() {
+      return Math.floor(Math.sqrt(totalCookiesEarned / 50000));
+    }
 
-    prestigeBtn.disabled = !ready;
-    prestigeBtn.textContent = ready ? `Prestige maintenant (+${gain})` : "Prestige verrouillé";
-  }
+    function updatePrestigeUI() {
+      const gain = getPrestigeGain();
+      const ready = totalCookiesEarned >= prestigeThreshold && gain > 0;
 
-  function effectiveClickPower() {
-    return Math.max(1, Math.floor(cookiesPerClick * prestigeMultiplier));
-  }
-
-  function effectiveSecondPower() {
-    return Math.max(0, Math.floor(cookiesPerSecond * prestigeMultiplier));
-  }
-
-  function createCustomBuildings() {
-    const shopList = document.querySelector(".shop-list");
-    if (!shopList) return;
-
-    customBuildings.forEach((building) => {
-      if (document.getElementById(`buy-${building.key}`)) return;
-
-      const wrapper = document.createElement("div");
-      wrapper.className = "upgrade";
-      wrapper.innerHTML = `
-        <div class="upgrade-top">
-          <div class="upgrade-name">${building.name}</div>
-          <div class="upgrade-owned">Possédé : <span id="count-${building.key}">0</span></div>
-        </div>
-        <div class="upgrade-desc">${building.desc}</div>
-        <button id="buy-${building.key}">Acheter — <span id="cost-${building.key}">${formatNumber(building.cost)}</span></button>
+      prestigeInfo.innerHTML = `
+        Points: <b>${prestigePoints}</b><br>
+        Bonus total: <b>x${prestigeMultiplier.toFixed(2)}</b><br>
+        Prochain prestige à: <b>${formatNumber(prestigeThreshold)}</b> cookies gagnés<br>
+        Gain actuel si tu reset: <b>+${gain}</b>
       `;
 
-      shopList.appendChild(wrapper);
-
-      const btn = wrapper.querySelector(`#buy-${building.key}`);
-      btn.addEventListener("click", () => {
-        if (cookies >= building.cost) {
-          cookies -= building.cost;
-          building.count++;
-          cookiesPerSecond += building.cps;
-          building.cost = Math.floor(building.cost * building.growth);
-          updateUI();
-          checkAchievements();
-        }
-      });
-    });
-  }
-
-  function updateCustomBuildingsUI() {
-    customBuildings.forEach((building) => {
-      const countEl = document.getElementById(`count-${building.key}`);
-      const costEl = document.getElementById(`cost-${building.key}`);
-      const btn = document.getElementById(`buy-${building.key}`);
-
-      if (countEl) countEl.textContent = building.count;
-      if (costEl) costEl.textContent = formatNumber(building.cost);
-      if (btn) btn.disabled = cookies < building.cost;
-    });
-  }
-
-  function updateUI() {
-    cookiesEl.textContent = formatNumber(cookies);
-    perClickEl.textContent = formatNumber(effectiveClickPower());
-    perSecondEl.textContent = formatNumber(effectiveSecondPower());
-    goldenCountEl.textContent = formatNumber(goldenCaught);
-
-    clickUpgradeCountEl.textContent = clickUpgradeCount;
-    grandmaCountEl.textContent = grandmaCount;
-    factoryCountEl.textContent = factoryCount;
-    farmCountEl.textContent = farmCount;
-    bankCountEl.textContent = bankCount;
-    kingdomCountEl.textContent = kingdomCount;
-
-    clickUpgradeCostEl.textContent = formatNumber(clickUpgradeCost);
-    grandmaCostEl.textContent = formatNumber(grandmaCost);
-    factoryCostEl.textContent = formatNumber(factoryCost);
-    farmCostEl.textContent = formatNumber(farmCost);
-    bankCostEl.textContent = formatNumber(bankCost);
-    kingdomCostEl.textContent = formatNumber(kingdomCost);
-
-    buyClickUpgradeBtn.disabled = cookies < clickUpgradeCost;
-    buyGrandmaBtn.disabled = cookies < grandmaCost;
-    buyFactoryBtn.disabled = cookies < factoryCost;
-    buyFarmBtn.disabled = cookies < farmCost;
-    buyBankBtn.disabled = cookies < bankCost;
-    buyKingdomBtn.disabled = cookies < kingdomCost;
-
-    updateCustomBuildingsUI();
-    updatePrestigeUI();
-  }
-
-  function grantCookies(amount) {
-    cookies += amount;
-    totalCookiesEarned += amount;
-    updateUI();
-    checkAchievements();
-  }
-
-  function checkAchievements() {
-    if (!achievements.firstClick && totalClicks >= 1) {
-      achievements.firstClick = true;
-      showToast("🏆 Achievement: Premier clic");
+      prestigeBtn.disabled = !ready;
+      prestigeBtn.textContent = ready ? `Prestige maintenant (+${gain})` : "Prestige verrouillé";
     }
 
-    if (!achievements.hundredClicks && totalClicks >= 100) {
-      achievements.hundredClicks = true;
-      showToast("🏆 Achievement: 100 clics");
-    }
+    function updateDarkForestUI() {
+      const eloikUnlocked = eloikPoopCount >= 1;
 
-    if (!achievements.firstGolden && goldenCaught >= 1) {
-      achievements.firstGolden = true;
-      showToast("🏆 Achievement: Premier golden cookie");
-    }
-
-    if (!achievements.thousandCookies && totalCookiesEarned >= 1000) {
-      achievements.thousandCookies = true;
-      showToast("🏆 Achievement: 1000 cookies gagnés");
-    }
-
-    if (!achievements.tenPerSecond && effectiveSecondPower() >= 10) {
-      achievements.tenPerSecond = true;
-      showToast("🏆 Achievement: 10 cookies/seconde");
-    }
-
-    if (!achievements.hundredPerSecond && effectiveSecondPower() >= 100) {
-      achievements.hundredPerSecond = true;
-      showToast("🏆 Achievement: 100 cookies/seconde");
-    }
-
-    if (!achievements.combo10 && comboCount >= 10) {
-      achievements.combo10 = true;
-      showToast("🏆 Achievement: Combo x10");
-    }
-
-    if (!achievements.kingdom && kingdomCount >= 1) {
-      achievements.kingdom = true;
-      showToast("🏆 Achievement: Royaume débloqué");
-    }
-
-    if (!achievements.firstPrestige && prestigePoints >= 1) {
-      achievements.firstPrestige = true;
-      showToast("🏆 Achievement: Premier prestige");
-    }
-  }
-
-  cookieBtn.addEventListener("click", (e) => {
-    const now = Date.now();
-    totalClicks++;
-
-    if (now - lastClickTime <= 500) {
-      comboCount++;
-    } else {
-      comboCount = 1;
-    }
-    lastClickTime = now;
-
-    let gain = effectiveClickPower();
-
-    if (comboCount >= 8) {
-      gain += Math.max(1, Math.floor(effectiveClickPower() * 0.35));
-    }
-
-    const crit = Math.random() < 0.04;
-    if (crit) {
-      gain *= 2;
-      showToast("💥 Critical click x2");
-    }
-
-    grantCookies(gain);
-
-    cookieBtn.classList.add("clicked");
-    setTimeout(() => cookieBtn.classList.remove("clicked"), 90);
-
-    showFloatingText(`+${formatNumber(gain)}`, e.clientX - 10, e.clientY - 10, crit);
-  });
-
-  function buyUpgrade(cost, onBuy) {
-    if (cookies >= cost) {
-      cookies -= cost;
-      onBuy();
-      updateUI();
-      checkAchievements();
-    }
-  }
-
-  buyClickUpgradeBtn.addEventListener("click", () => {
-    buyUpgrade(clickUpgradeCost, () => {
-      clickUpgradeCount++;
-      cookiesPerClick += 1;
-      clickUpgradeCost = Math.floor(clickUpgradeCost * 1.48);
-    });
-  });
-
-  buyGrandmaBtn.addEventListener("click", () => {
-    buyUpgrade(grandmaCost, () => {
-      grandmaCount++;
-      cookiesPerSecond += 1;
-      grandmaCost = Math.floor(grandmaCost * 1.30);
-    });
-  });
-
-  buyFactoryBtn.addEventListener("click", () => {
-    buyUpgrade(factoryCost, () => {
-      factoryCount++;
-      cookiesPerSecond += 4;
-      factoryCost = Math.floor(factoryCost * 1.34);
-    });
-  });
-
-  buyFarmBtn.addEventListener("click", () => {
-    buyUpgrade(farmCost, () => {
-      farmCount++;
-      cookiesPerSecond += 10;
-      farmCost = Math.floor(farmCost * 1.37);
-    });
-  });
-
-  buyBankBtn.addEventListener("click", () => {
-    buyUpgrade(bankCost, () => {
-      bankCount++;
-      cookiesPerSecond += 24;
-      bankCost = Math.floor(bankCost * 1.41);
-    });
-  });
-
-  buyKingdomBtn.addEventListener("click", () => {
-    buyUpgrade(kingdomCost, () => {
-      kingdomCount++;
-      cookiesPerSecond += 60;
-      kingdomCost = Math.floor(kingdomCost * 1.46);
-    });
-  });
-
-  setInterval(() => {
-    grantCookies(effectiveSecondPower());
-    saveGame();
-  }, 1000);
-
-  function tryPrestige() {
-    const gain = getPrestigeGain();
-
-    if (totalCookiesEarned < prestigeThreshold || gain <= 0) {
-      showToast("Prestige pas encore prêt");
-      return;
-    }
-
-    const ok = confirm(`Prestige va reset tes cookies et tes achats.\nTu gagnes +${gain} points de prestige.\nContinuer ?`);
-    if (!ok) return;
-
-    prestigePoints += gain;
-    prestigeMultiplier = 1 + prestigePoints * 0.12;
-
-    cookies = 0;
-    cookiesPerClick = 1;
-    cookiesPerSecond = 0;
-    goldenCaught = 0;
-
-    clickUpgradeCount = 0;
-    grandmaCount = 0;
-    factoryCount = 0;
-    farmCount = 0;
-    bankCount = 0;
-    kingdomCount = 0;
-
-    clickUpgradeCost = 40;
-    grandmaCost = 35;
-    factoryCost = 160;
-    farmCost = 420;
-    bankCost = 1200;
-    kingdomCost = 4200;
-
-    customBuildings.forEach((building) => {
-      building.count = 0;
-      building.cost = building.baseCost;
-    });
-
-    totalClicks = 0;
-    comboCount = 0;
-    prestigeThreshold = Math.floor(prestigeThreshold * 2.35);
-
-    updateUI();
-    saveGame();
-    checkAchievements();
-    showToast(`🌌 Prestige +${gain} | Bonus x${prestigeMultiplier.toFixed(2)}`);
-  }
-
-  function saveGame() {
-    const customBuildingsSave = {};
-    customBuildings.forEach((building) => {
-      customBuildingsSave[building.key] = {
-        count: building.count,
-        cost: building.cost
-      };
-    });
-
-    const data = {
-      cookies,
-      cookiesPerClick,
-      cookiesPerSecond,
-      goldenCaught,
-      clickUpgradeCount,
-      grandmaCount,
-      factoryCount,
-      farmCount,
-      bankCount,
-      kingdomCount,
-      clickUpgradeCost,
-      grandmaCost,
-      factoryCost,
-      farmCost,
-      bankCost,
-      kingdomCost,
-      totalClicks,
-      totalCookiesEarned,
-      comboCount,
-      achievements,
-      prestigePoints,
-      prestigeMultiplier,
-      prestigeThreshold,
-      customBuildingsSave,
-      lastSavedAt: Date.now()
-    };
-    localStorage.setItem("colkieClickerSave", JSON.stringify(data));
-  }
-
-  function loadGame() {
-    const raw = localStorage.getItem("colkieClickerSave");
-    if (!raw) return;
-
-    const data = JSON.parse(raw);
-
-    cookies = data.cookies ?? 0;
-    cookiesPerClick = data.cookiesPerClick ?? 1;
-    cookiesPerSecond = data.cookiesPerSecond ?? 0;
-    goldenCaught = data.goldenCaught ?? 0;
-
-    clickUpgradeCount = data.clickUpgradeCount ?? 0;
-    grandmaCount = data.grandmaCount ?? 0;
-    factoryCount = data.factoryCount ?? 0;
-    farmCount = data.farmCount ?? 0;
-    bankCount = data.bankCount ?? 0;
-    kingdomCount = data.kingdomCount ?? 0;
-
-    clickUpgradeCost = data.clickUpgradeCost ?? 40;
-    grandmaCost = data.grandmaCost ?? 35;
-    factoryCost = data.factoryCost ?? 160;
-    farmCost = data.farmCost ?? 420;
-    bankCost = data.bankCost ?? 1200;
-    kingdomCost = data.kingdomCost ?? 4200;
-
-    totalClicks = data.totalClicks ?? 0;
-    totalCookiesEarned = data.totalCookiesEarned ?? 0;
-    comboCount = data.comboCount ?? 0;
-    achievements = data.achievements ?? achievements;
-
-    prestigePoints = data.prestigePoints ?? 0;
-    prestigeMultiplier = data.prestigeMultiplier ?? (1 + prestigePoints * 0.12);
-    prestigeThreshold = data.prestigeThreshold ?? 100000;
-
-    if (data.customBuildingsSave) {
-      customBuildings.forEach((building) => {
-        const saved = data.customBuildingsSave[building.key];
-        if (saved) {
-          building.count = saved.count ?? 0;
-          building.cost = saved.cost ?? building.baseCost;
-        }
-      });
-    }
-
-    const lastSavedAt = data.lastSavedAt ?? Date.now();
-    const secondsAway = Math.floor((Date.now() - lastSavedAt) / 1000);
-
-    if (secondsAway > 10 && cookiesPerSecond > 0) {
-      const offlineGain = Math.min(secondsAway, 7200) * effectiveSecondPower();
-      cookies += offlineGain;
-      totalCookiesEarned += offlineGain;
-      showToast(`⏰ Hors ligne: +${formatNumber(offlineGain)} cookies`);
-    }
-  }
-
-  saveBtn.addEventListener("click", () => {
-    saveGame();
-    showToast("💾 Sauvegarde faite");
-  });
-
-  resetBtn.addEventListener("click", () => {
-    const ok = confirm("Tu veux vraiment reset le jeu COMPLET ?");
-    if (!ok) return;
-    localStorage.removeItem("colkieClickerSave");
-    location.reload();
-  });
-
-  if (prestigeBtn) {
-    prestigeBtn.addEventListener("click", tryPrestige);
-  }
-
-  let goldenCookieActive = false;
-  let goldenCookieTimeout = null;
-
-  function spawnGoldenCookie() {
-    if (goldenCookieActive) return;
-
-    goldenCookieActive = true;
-
-    const golden = document.createElement("button");
-    golden.className = "golden-cookie";
-    golden.textContent = "✨";
-
-    const areaRect = cookieArea.getBoundingClientRect();
-    const size = 82;
-    const minLeft = 12;
-    const maxLeft = Math.max(12, areaRect.width - size - 12);
-    const minTop = 20;
-    const maxTop = Math.max(20, areaRect.height - size - 20);
-
-    const left = Math.floor(Math.random() * (maxLeft - minLeft + 1)) + minLeft;
-    const top = Math.floor(Math.random() * (maxTop - minTop + 1)) + minTop;
-
-    golden.style.left = left + "px";
-    golden.style.top = top + "px";
-
-    golden.addEventListener("click", () => {
-      const bonus = Math.max(60, Math.floor(effectiveSecondPower() * 18 + effectiveClickPower() * 10));
-      cookies += bonus;
-      totalCookiesEarned += bonus;
-      goldenCaught++;
-      updateUI();
-      checkAchievements();
-
-      const rect = golden.getBoundingClientRect();
-      showFloatingText(`+${formatNumber(bonus)} GOLD`, rect.left, rect.top, true);
-      showToast("✨ Golden cookie!");
-
-      golden.remove();
-      goldenCookieActive = false;
-      if (goldenCookieTimeout) clearTimeout(goldenCookieTimeout);
-
-      if (Math.random() < 0.10) {
-        startCookieRain();
+      if (!eloikUnlocked) {
+        darkForestStatusEl.textContent = "Verrouillée — il faut acheter au moins 1 Caca à Éloik";
+        buyDarkForestBtn.disabled = true;
+        buyDarkForestBtn.textContent = "Acheter l’accès — 2 500 000";
+        enterDarkForestBtn.classList.add("hidden");
+      } else if (!darkForestAccessBought) {
+        darkForestStatusEl.textContent = "Déverrouillage disponible — 2 500 000 cookies";
+        buyDarkForestBtn.disabled = cookies < 2500000;
+        buyDarkForestBtn.textContent = "Acheter l’accès — 2 500 000";
+        enterDarkForestBtn.classList.add("hidden");
+      } else {
+        darkForestStatusEl.textContent = "Débloquée";
+        buyDarkForestBtn.disabled = true;
+        buyDarkForestBtn.textContent = "Accès acheté";
+        enterDarkForestBtn.classList.remove("hidden");
       }
-    });
 
-    cookieArea.appendChild(golden);
+      rpgLevelEl.textContent = rpgLevel;
+      rpgXpEl.textContent = `${formatNumber(rpgXp)} / ${formatNumber(rpgXpToNext)}`;
+      rpgHpEl.textContent = `${formatNumber(rpgHp)} / ${formatNumber(rpgMaxHp)}`;
+      rpgCookiesEarnedEl.textContent = formatNumber(rpgCookiesEarned);
+      rpgAttackEl.textContent = formatNumber(getRpgAttack());
+      rpgDefenseEl.textContent = formatNumber(getRpgDefense());
+      rpgSwordEl.textContent = rpgSword;
+      rpgArmorEl.textContent = rpgArmor;
 
-    goldenCookieTimeout = setTimeout(() => {
-      if (golden.parentNode) golden.remove();
-      goldenCookieActive = false;
-    }, 5000);
-  }
+      buySwordBtn.disabled = cookies < 25000;
+      buyArmorBtn.disabled = cookies < 25000;
 
-  function scheduleGoldenCookie() {
-    const delay = Math.floor(Math.random() * 35000) + 45000;
-    setTimeout(() => {
-      spawnGoldenCookie();
-      scheduleGoldenCookie();
-    }, delay);
-  }
+      if (currentEnemy) {
+        enemyLabelEl.textContent = currentEnemy.name;
+        enemyHpLabelEl.textContent = `HP: ${formatNumber(currentEnemy.hp)} / ${formatNumber(currentEnemy.maxHp)}`;
+      } else {
+        enemyLabelEl.textContent = "Aucun ennemi";
+        enemyHpLabelEl.textContent = "HP: 0 / 0";
+      }
+    }
 
-  function startCookieRain() {
-    if (rainActive) return;
-    rainActive = true;
-    showToast("🌧️ Pluie de cookies!");
+    function updateUI() {
+      cookiesEl.textContent = formatNumber(cookies);
+      perClickEl.textContent = formatNumber(effectiveClickPower());
+      perSecondEl.textContent = formatNumber(effectiveSecondPower());
+      goldenCountEl.textContent = formatNumber(goldenCaught);
 
-    let drops = 10;
-    let spawned = 0;
+      clickUpgradeCountEl.textContent = clickUpgradeCount;
+      grandmaCountEl.textContent = grandmaCount;
+      factoryCountEl.textContent = factoryCount;
+      farmCountEl.textContent = farmCount;
+      bankCountEl.textContent = bankCount;
+      kingdomCountEl.textContent = kingdomCount;
+      alyciaHouseCountEl.textContent = alyciaHouseCount;
+      eloikPoopCountEl.textContent = eloikPoopCount;
+      sarahPepinCountEl.textContent = sarahPepinCount;
 
-    const interval = setInterval(() => {
-      const bonus = Math.max(8, Math.floor(effectiveClickPower() * 3 + effectiveSecondPower()));
-      const x = Math.floor(Math.random() * (window.innerWidth - 80)) + 20;
-      const y = Math.floor(Math.random() * 180) + 80;
+      clickUpgradeCostEl.textContent = formatNumber(clickUpgradeCost);
+      grandmaCostEl.textContent = formatNumber(grandmaCost);
+      factoryCostEl.textContent = formatNumber(factoryCost);
+      farmCostEl.textContent = formatNumber(farmCost);
+      bankCostEl.textContent = formatNumber(bankCost);
+      kingdomCostEl.textContent = formatNumber(kingdomCost);
+      alyciaHouseCostEl.textContent = formatNumber(alyciaHouseCost);
+      eloikPoopCostEl.textContent = formatNumber(eloikPoopCost);
+      sarahPepinCostEl.textContent = formatNumber(sarahPepinCost);
 
-      cookies += bonus;
-      totalCookiesEarned += bonus;
+      buyClickUpgradeBtn.disabled = cookies < clickUpgradeCost;
+      buyGrandmaBtn.disabled = cookies < grandmaCost;
+      buyFactoryBtn.disabled = cookies < factoryCost;
+      buyFarmBtn.disabled = cookies < farmCost;
+      buyBankBtn.disabled = cookies < bankCost;
+      buyKingdomBtn.disabled = cookies < kingdomCost;
+      buyAlyciaHouseBtn.disabled = cookies < alyciaHouseCost;
+      buyEloikPoopBtn.disabled = cookies < eloikPoopCost;
+      buySarahPepinBtn.disabled = cookies < sarahPepinCost;
+
+      updatePrestigeUI();
+      updateDarkForestUI();
+    }
+
+    function grantCookies(amount) {
+      cookies += amount;
+      totalCookiesEarned += amount;
       updateUI();
+      checkAchievements();
+    }
 
-      showFloatingText(`+${formatNumber(bonus)}`, x, y, true);
+    function checkAchievements() {
+      if (!achievements.firstClick && totalClicks >= 1) {
+        achievements.firstClick = true;
+        showToast("🏆 Achievement: Premier clic");
+      }
 
-      spawned++;
-      if (spawned >= drops) {
-        clearInterval(interval);
-        rainActive = false;
+      if (!achievements.hundredClicks && totalClicks >= 100) {
+        achievements.hundredClicks = true;
+        showToast("🏆 Achievement: 100 clics");
+      }
+
+      if (!achievements.firstGolden && goldenCaught >= 1) {
+        achievements.firstGolden = true;
+        showToast("🏆 Achievement: Premier golden cookie");
+      }
+
+      if (!achievements.thousandCookies && totalCookiesEarned >= 1000) {
+        achievements.thousandCookies = true;
+        showToast("🏆 Achievement: 1000 cookies gagnés");
+      }
+
+      if (!achievements.tenPerSecond && effectiveSecondPower() >= 10) {
+        achievements.tenPerSecond = true;
+        showToast("🏆 Achievement: 10 cookies/seconde");
+      }
+
+      if (!achievements.hundredPerSecond && effectiveSecondPower() >= 100) {
+        achievements.hundredPerSecond = true;
+        showToast("🏆 Achievement: 100 cookies/seconde");
+      }
+
+      if (!achievements.combo10 && comboCount >= 10) {
+        achievements.combo10 = true;
+        showToast("🏆 Achievement: Combo x10");
+      }
+
+      if (!achievements.kingdom && kingdomCount >= 1) {
+        achievements.kingdom = true;
+        showToast("🏆 Achievement: Royaume débloqué");
+      }
+
+      if (!achievements.firstPrestige && prestigePoints >= 1) {
+        achievements.firstPrestige = true;
+        showToast("🏆 Achievement: Premier prestige");
+      }
+    }
+
+    function buyUpgrade(cost, onBuy) {
+      if (cookies >= cost) {
+        cookies -= cost;
+        onBuy();
+        updateUI();
         checkAchievements();
       }
-    }, 320);
-  }
+    }
 
-  let loreStep = 0;
+    cookieBtn.addEventListener("click", (e) => {
+      const now = Date.now();
+      totalClicks++;
 
-  const loreLines = [
-    "Tu trouves un vieux passage caché derrière l’usine...",
-    "L’air devient froid. Trop froid.",
-    "Une silhouette immobile te regarde au loin.",
-    "Ses yeux deviennent rouges pendant une seconde.",
-    "Le royaume semble faux. Comme une scène vide.",
-    "Quelqu’un a menti sur tout depuis le début.",
-    "Tu entends: continue de cliquer.",
-    "Le cookie te regarde aussi.",
-    "GAME OVER."
-  ];
+      if (now - lastClickTime <= 500) comboCount++;
+      else comboCount = 1;
+      lastClickTime = now;
 
-  if (loreBtn && loreBox && loreText && nextLoreBtn) {
+      let gain = effectiveClickPower();
+
+      if (comboCount >= 8) {
+        gain += Math.max(1, Math.floor(effectiveClickPower() * 0.35));
+      }
+
+      const crit = Math.random() < 0.04;
+      if (crit) {
+        gain *= 2;
+        showToast("💥 Critical click x2");
+      }
+
+      grantCookies(gain);
+
+      cookieBtn.classList.add("clicked");
+      setTimeout(() => cookieBtn.classList.remove("clicked"), 90);
+
+      showFloatingText(`+${formatNumber(gain)}`, e.clientX - 10, e.clientY - 10, crit);
+    });
+
+    buyClickUpgradeBtn.addEventListener("click", () => {
+      buyUpgrade(clickUpgradeCost, () => {
+        clickUpgradeCount++;
+        cookiesPerClick += 1;
+        clickUpgradeCost = Math.floor(clickUpgradeCost * 1.48);
+      });
+    });
+
+    buyGrandmaBtn.addEventListener("click", () => {
+      buyUpgrade(grandmaCost, () => {
+        grandmaCount++;
+        cookiesPerSecond += 1;
+        grandmaCost = Math.floor(grandmaCost * 1.30);
+      });
+    });
+
+    buyFactoryBtn.addEventListener("click", () => {
+      buyUpgrade(factoryCost, () => {
+        factoryCount++;
+        cookiesPerSecond += 4;
+        factoryCost = Math.floor(factoryCost * 1.34);
+      });
+    });
+
+    buyFarmBtn.addEventListener("click", () => {
+      buyUpgrade(farmCost, () => {
+        farmCount++;
+        cookiesPerSecond += 10;
+        farmCost = Math.floor(farmCost * 1.37);
+      });
+    });
+
+    buyBankBtn.addEventListener("click", () => {
+      buyUpgrade(bankCost, () => {
+        bankCount++;
+        cookiesPerSecond += 24;
+        bankCost = Math.floor(bankCost * 1.41);
+      });
+    });
+
+    buyKingdomBtn.addEventListener("click", () => {
+      buyUpgrade(kingdomCost, () => {
+        kingdomCount++;
+        cookiesPerSecond += 60;
+        kingdomCost = Math.floor(kingdomCost * 1.46);
+      });
+    });
+
+    buyAlyciaHouseBtn.addEventListener("click", () => {
+      buyUpgrade(alyciaHouseCost, () => {
+        alyciaHouseCount++;
+        cookiesPerSecond += 150;
+        alyciaHouseCost = Math.floor(alyciaHouseCost * 1.52);
+      });
+    });
+
+    buyEloikPoopBtn.addEventListener("click", () => {
+      buyUpgrade(eloikPoopCost, () => {
+        eloikPoopCount++;
+        cookiesPerSecond += 350;
+        eloikPoopCost = Math.floor(eloikPoopCost * 1.56);
+      });
+    });
+
+    buySarahPepinBtn.addEventListener("click", () => {
+      buyUpgrade(sarahPepinCost, () => {
+        sarahPepinCount++;
+        cookiesPerSecond += 900;
+        sarahPepinCost = Math.floor(sarahPepinCost * 1.60);
+      });
+    });
+
+    function tryPrestige() {
+      const gain = getPrestigeGain();
+
+      if (totalCookiesEarned < prestigeThreshold || gain <= 0) {
+        showToast("Prestige pas encore prêt");
+        return;
+      }
+
+      const ok = confirm(`Prestige va reset tes cookies et tes achats.\nTu gagnes +${gain} points de prestige.\nContinuer ?`);
+      if (!ok) return;
+
+      prestigePoints += gain;
+      prestigeMultiplier = 1 + prestigePoints * 0.12;
+
+      cookies = 0;
+      cookiesPerClick = 1;
+      cookiesPerSecond = 0;
+      goldenCaught = 0;
+
+      clickUpgradeCount = 0;
+      grandmaCount = 0;
+      factoryCount = 0;
+      farmCount = 0;
+      bankCount = 0;
+      kingdomCount = 0;
+      alyciaHouseCount = 0;
+      eloikPoopCount = 0;
+      sarahPepinCount = 0;
+
+      clickUpgradeCost = 40;
+      grandmaCost = 35;
+      factoryCost = 160;
+      farmCost = 420;
+      bankCost = 1200;
+      kingdomCost = 4200;
+      alyciaHouseCost = 9000;
+      eloikPoopCost = 28000;
+      sarahPepinCost = 95000;
+
+      totalClicks = 0;
+      comboCount = 0;
+      prestigeThreshold = Math.floor(prestigeThreshold * 2.35);
+
+      updateUI();
+      saveGame();
+      checkAchievements();
+      showToast(`🌌 Prestige +${gain} | Bonus x${prestigeMultiplier.toFixed(2)}`);
+    }
+
+    prestigeBtn.addEventListener("click", tryPrestige);
+
+    saveBtn.addEventListener("click", () => {
+      saveGame();
+      showToast("💾 Sauvegarde faite");
+    });
+
+    resetBtn.addEventListener("click", () => {
+      const ok = confirm("Tu veux vraiment reset le jeu COMPLET ?");
+      if (!ok) return;
+      localStorage.removeItem("colkieClickerUltimateSave");
+      location.reload();
+    });
+
+    setInterval(() => {
+      grantCookies(effectiveSecondPower());
+      saveGame();
+    }, 1000);
+
+    let goldenCookieActive = false;
+    let goldenCookieTimeout = null;
+
+    function spawnGoldenCookie() {
+      if (goldenCookieActive) return;
+      goldenCookieActive = true;
+
+      const golden = document.createElement("button");
+      golden.className = "golden-cookie";
+      golden.textContent = "✨";
+
+      const areaRect = cookieArea.getBoundingClientRect();
+      const size = 82;
+      const minLeft = 12;
+      const maxLeft = Math.max(12, areaRect.width - size - 12);
+      const minTop = 20;
+      const maxTop = Math.max(20, areaRect.height - size - 20);
+
+      const left = Math.floor(Math.random() * (maxLeft - minLeft + 1)) + minLeft;
+      const top = Math.floor(Math.random() * (maxTop - minTop + 1)) + minTop;
+
+      golden.style.left = left + "px";
+      golden.style.top = top + "px";
+
+      golden.addEventListener("click", () => {
+        const bonus = Math.max(60, Math.floor(effectiveSecondPower() * 18 + effectiveClickPower() * 10));
+        cookies += bonus;
+        totalCookiesEarned += bonus;
+        goldenCaught++;
+        updateUI();
+        checkAchievements();
+
+        const rect = golden.getBoundingClientRect();
+        showFloatingText(`+${formatNumber(bonus)} GOLD`, rect.left, rect.top, true);
+        showToast("✨ Golden cookie!");
+
+        golden.remove();
+        goldenCookieActive = false;
+        if (goldenCookieTimeout) clearTimeout(goldenCookieTimeout);
+
+        if (Math.random() < 0.10) {
+          startCookieRain();
+        }
+      });
+
+      cookieArea.appendChild(golden);
+
+      goldenCookieTimeout = setTimeout(() => {
+        if (golden.parentNode) golden.remove();
+        goldenCookieActive = false;
+      }, 5000);
+    }
+
+    function scheduleGoldenCookie() {
+      const delay = Math.floor(Math.random() * 35000) + 45000;
+      setTimeout(() => {
+        spawnGoldenCookie();
+        scheduleGoldenCookie();
+      }, delay);
+    }
+
+    function startCookieRain() {
+      if (rainActive) return;
+      rainActive = true;
+      showToast("🌧️ Pluie de cookies!");
+
+      let drops = 10;
+      let spawned = 0;
+
+      const interval = setInterval(() => {
+        const bonus = Math.max(8, Math.floor(effectiveClickPower() * 3 + effectiveSecondPower()));
+        const x = Math.floor(Math.random() * (window.innerWidth - 80)) + 20;
+        const y = Math.floor(Math.random() * 180) + 80;
+
+        cookies += bonus;
+        totalCookiesEarned += bonus;
+        updateUI();
+
+        showFloatingText(`+${formatNumber(bonus)}`, x, y, true);
+
+        spawned++;
+        if (spawned >= drops) {
+          clearInterval(interval);
+          rainActive = false;
+          checkAchievements();
+        }
+      }, 320);
+    }
+
+    let loreStep = 0;
+    const loreLines = [
+      "Tu trouves un vieux passage caché derrière l’usine...",
+      "L’air devient froid. Trop froid.",
+      "Une silhouette immobile te regarde au loin.",
+      "Ses yeux deviennent rouges pendant une seconde.",
+      "Le royaume semble faux. Comme une scène vide.",
+      "Quelqu’un a menti sur tout depuis le début.",
+      "Tu entends: continue de cliquer.",
+      "Le cookie te regarde aussi.",
+      "GAME OVER."
+    ];
+
     loreBtn.addEventListener("click", () => {
       loreBox.style.display = "block";
       loreStep = 0;
@@ -1120,13 +1298,336 @@
         showToast("👁️ Le secret est terminé");
       }
     });
-  }
 
-  createCustomBuildings();
-  loadGame();
-  updateUI();
-  checkAchievements();
-  scheduleGoldenCookie();
-</script>
+    function getRpgAttack() {
+      return rpgBaseAttack + (rpgSword * 6) + Math.floor(rpgLevel * 2);
+    }
+
+    function getRpgDefense() {
+      return rpgBaseDefense + (rpgArmor * 4) + Math.floor(rpgLevel);
+    }
+
+    function logRpg(text) {
+      rpgLogEl.textContent = text;
+    }
+
+    function spawnRpgEnemy() {
+      const enemyPool = [
+        { name: "Loup Rouge", hp: 70, attack: 10, defense: 2, reward: 3500, xp: 30, color: "#7a1212" },
+        { name: "Cerf Maudit", hp: 110, attack: 14, defense: 4, reward: 6500, xp: 50, color: "#5a3b20" },
+        { name: "Ombre Rampante", hp: 170, attack: 18, defense: 6, reward: 12000, xp: 75, color: "#2f2f44" },
+        { name: "Entité de la Brume", hp: 260, attack: 24, defense: 8, reward: 25000, xp: 120, color: "#1d4c4c" },
+        { name: "Gardien Noir", hp: 420, attack: 32, defense: 12, reward: 50000, xp: 200, color: "#4d1414" }
+      ];
+
+      const tierBase = Math.min(enemyPool.length - 1, Math.floor((rpgLevel - 1) / 2));
+      const tier = Math.min(enemyPool.length - 1, tierBase + (Math.random() < 0.25 ? 1 : 0));
+      const base = enemyPool[tier];
+      const scale = 1 + (rpgLevel - 1) * 0.18;
+
+      currentEnemy = {
+        name: base.name,
+        hp: Math.floor(base.hp * scale),
+        maxHp: Math.floor(base.hp * scale),
+        attack: Math.floor(base.attack * scale),
+        defense: Math.floor(base.defense * scale),
+        reward: Math.floor(base.reward * scale),
+        xp: Math.floor(base.xp * scale),
+        color: base.color
+      };
+
+      rpgEnemyEl.style.background = currentEnemy.color;
+      logRpg(`Un ${currentEnemy.name} sort de la brume...`);
+      updateDarkForestUI();
+    }
+
+    function gainRpgXp(amount) {
+      rpgXp += amount;
+
+      while (rpgXp >= rpgXpToNext) {
+        rpgXp -= rpgXpToNext;
+        rpgLevel++;
+        rpgXpToNext = Math.floor(rpgXpToNext * 1.35);
+        rpgMaxHp += 20;
+        rpgHp = rpgMaxHp;
+        rpgBaseAttack += 2;
+        rpgBaseDefense += 1;
+        showToast(`⬆️ Niveau ${rpgLevel}!`);
+      }
+    }
+
+    function rpgEnemyTurn() {
+      if (!currentEnemy) return;
+
+      let damage = Math.max(1, currentEnemy.attack - getRpgDefense());
+      if (rpgGuarding) {
+        damage = Math.max(1, Math.floor(damage * 0.45));
+        rpgGuarding = false;
+      }
+
+      rpgHp -= damage;
+      rpgEnemyEl.classList.add("rpg-hit");
+      setTimeout(() => rpgEnemyEl.classList.remove("rpg-hit"), 250);
+
+      if (rpgHp <= 0) {
+        rpgHp = rpgMaxHp;
+        const lost = Math.max(5000, Math.floor(currentEnemy.reward * 0.25));
+        cookies = Math.max(0, cookies - lost);
+        logRpg(`Tu es tombé. Tu perds ${formatNumber(lost)} cookies, puis tu te relèves...`);
+        showToast(`☠️ -${formatNumber(lost)} cookies`);
+        spawnRpgEnemy();
+      } else {
+        logRpg(`${currentEnemy.name} te frappe pour ${formatNumber(damage)} dégâts.`);
+      }
+
+      updateUI();
+      updateDarkForestUI();
+    }
+
+    function rpgPlayerAttack(multiplier = 1, heavy = false) {
+      if (!currentEnemy) {
+        spawnRpgEnemy();
+        return;
+      }
+
+      let damage = Math.max(1, Math.floor(getRpgAttack() * multiplier) - currentEnemy.defense);
+
+      if (Math.random() < 0.12) {
+        damage *= 2;
+        showToast("⚔️ Critique RPG!");
+      }
+
+      currentEnemy.hp -= damage;
+      rpgEnemyEl.classList.add("rpg-hit");
+      setTimeout(() => rpgEnemyEl.classList.remove("rpg-hit"), 250);
+
+      if (currentEnemy.hp <= 0) {
+        currentEnemy.hp = 0;
+        const reward = currentEnemy.reward;
+        const xp = currentEnemy.xp;
+
+        cookies += reward;
+        totalCookiesEarned += reward;
+        rpgCookiesEarned += reward;
+        gainRpgXp(xp);
+
+        logRpg(`Tu tues ${currentEnemy.name} et gagnes ${formatNumber(reward)} cookies + ${formatNumber(xp)} XP.`);
+        showToast(`🍪 +${formatNumber(reward)}`);
+        spawnRpgEnemy();
+      } else {
+        logRpg(`${heavy ? "Heavy Slash" : "Attaque"}: ${formatNumber(damage)} dégâts à ${currentEnemy.name}.`);
+        setTimeout(rpgEnemyTurn, 250);
+      }
+
+      updateUI();
+      updateDarkForestUI();
+    }
+
+    function enterDarkForest() {
+      mainGameSection.classList.add("hidden");
+      darkForestPanel.style.display = "block";
+      if (!currentEnemy) spawnRpgEnemy();
+      updateDarkForestUI();
+    }
+
+    function leaveDarkForest() {
+      darkForestPanel.style.display = "none";
+      mainGameSection.classList.remove("hidden");
+      updateDarkForestUI();
+    }
+
+    buyDarkForestBtn.addEventListener("click", () => {
+      if (eloikPoopCount < 1) {
+        showToast("Il faut d’abord acheter Le caca à Éloik.");
+        return;
+      }
+
+      if (darkForestAccessBought) return;
+
+      if (cookies >= 2500000) {
+        cookies -= 2500000;
+        darkForestAccessBought = true;
+        showToast("🌲 Dark Forest débloquée");
+        updateUI();
+      } else {
+        showToast("Pas assez de cookies.");
+      }
+    });
+
+    enterDarkForestBtn.addEventListener("click", enterDarkForest);
+    leaveDarkForestBtn.addEventListener("click", leaveDarkForest);
+
+    rpgAttackBtn.addEventListener("click", () => rpgPlayerAttack(1, false));
+    rpgHeavyBtn.addEventListener("click", () => rpgPlayerAttack(1.7, true));
+
+    rpgGuardBtn.addEventListener("click", () => {
+      rpgGuarding = true;
+      logRpg("Tu te mets en garde. Les dégâts du prochain coup seront réduits.");
+      setTimeout(rpgEnemyTurn, 250);
+    });
+
+    rpgHealBtn.addEventListener("click", () => {
+      const healAmount = Math.min(rpgMaxHp - rpgHp, Math.floor(rpgMaxHp * 0.3));
+      if (healAmount <= 0) {
+        logRpg("Tes PV sont déjà pleins.");
+        return;
+      }
+
+      rpgHp += healAmount;
+      logRpg(`Tu récupères ${formatNumber(healAmount)} PV.`);
+      updateDarkForestUI();
+      setTimeout(rpgEnemyTurn, 250);
+    });
+
+    buySwordBtn.addEventListener("click", () => {
+      if (cookies >= 25000) {
+        cookies -= 25000;
+        rpgSword++;
+        showToast("⚔️ Épée améliorée");
+        updateUI();
+      }
+    });
+
+    buyArmorBtn.addEventListener("click", () => {
+      if (cookies >= 25000) {
+        cookies -= 25000;
+        rpgArmor++;
+        showToast("🛡️ Armure améliorée");
+        updateUI();
+      }
+    });
+
+    spawnEnemyBtn.addEventListener("click", spawnRpgEnemy);
+
+    rpgResetFightBtn.addEventListener("click", () => {
+      rpgHp = rpgMaxHp;
+      spawnRpgEnemy();
+      updateDarkForestUI();
+      logRpg("Le combat a été réinitialisé.");
+    });
+
+    function saveGame() {
+      const data = {
+        cookies,
+        cookiesPerClick,
+        cookiesPerSecond,
+        goldenCaught,
+
+        clickUpgradeCount,
+        grandmaCount,
+        factoryCount,
+        farmCount,
+        bankCount,
+        kingdomCount,
+        alyciaHouseCount,
+        eloikPoopCount,
+        sarahPepinCount,
+
+        clickUpgradeCost,
+        grandmaCost,
+        factoryCost,
+        farmCost,
+        bankCost,
+        kingdomCost,
+        alyciaHouseCost,
+        eloikPoopCost,
+        sarahPepinCost,
+
+        totalClicks,
+        totalCookiesEarned,
+        comboCount,
+        achievements,
+        prestigePoints,
+        prestigeMultiplier,
+        prestigeThreshold,
+
+        darkForestAccessBought,
+
+        rpgLevel,
+        rpgXp,
+        rpgXpToNext,
+        rpgMaxHp,
+        rpgHp,
+        rpgBaseAttack,
+        rpgBaseDefense,
+        rpgSword,
+        rpgArmor,
+        rpgCookiesEarned,
+
+        lastSavedAt: Date.now()
+      };
+
+      localStorage.setItem("colkieClickerUltimateSave", JSON.stringify(data));
+    }
+
+    function loadGame() {
+      const raw = localStorage.getItem("colkieClickerUltimateSave");
+      if (!raw) return;
+
+      const data = JSON.parse(raw);
+
+      cookies = data.cookies ?? 0;
+      cookiesPerClick = data.cookiesPerClick ?? 1;
+      cookiesPerSecond = data.cookiesPerSecond ?? 0;
+      goldenCaught = data.goldenCaught ?? 0;
+
+      clickUpgradeCount = data.clickUpgradeCount ?? 0;
+      grandmaCount = data.grandmaCount ?? 0;
+      factoryCount = data.factoryCount ?? 0;
+      farmCount = data.farmCount ?? 0;
+      bankCount = data.bankCount ?? 0;
+      kingdomCount = data.kingdomCount ?? 0;
+      alyciaHouseCount = data.alyciaHouseCount ?? 0;
+      eloikPoopCount = data.eloikPoopCount ?? 0;
+      sarahPepinCount = data.sarahPepinCount ?? 0;
+
+      clickUpgradeCost = data.clickUpgradeCost ?? 40;
+      grandmaCost = data.grandmaCost ?? 35;
+      factoryCost = data.factoryCost ?? 160;
+      farmCost = data.farmCost ?? 420;
+      bankCost = data.bankCost ?? 1200;
+      kingdomCost = data.kingdomCost ?? 4200;
+      alyciaHouseCost = data.alyciaHouseCost ?? 9000;
+      eloikPoopCost = data.eloikPoopCost ?? 28000;
+      sarahPepinCost = data.sarahPepinCost ?? 95000;
+
+      totalClicks = data.totalClicks ?? 0;
+      totalCookiesEarned = data.totalCookiesEarned ?? 0;
+      comboCount = data.comboCount ?? 0;
+      achievements = data.achievements ?? achievements;
+
+      prestigePoints = data.prestigePoints ?? 0;
+      prestigeMultiplier = data.prestigeMultiplier ?? (1 + prestigePoints * 0.12);
+      prestigeThreshold = data.prestigeThreshold ?? 100000;
+
+      darkForestAccessBought = data.darkForestAccessBought ?? false;
+
+      rpgLevel = data.rpgLevel ?? 1;
+      rpgXp = data.rpgXp ?? 0;
+      rpgXpToNext = data.rpgXpToNext ?? 100;
+      rpgMaxHp = data.rpgMaxHp ?? 100;
+      rpgHp = data.rpgHp ?? 100;
+      rpgBaseAttack = data.rpgBaseAttack ?? 10;
+      rpgBaseDefense = data.rpgBaseDefense ?? 5;
+      rpgSword = data.rpgSword ?? 0;
+      rpgArmor = data.rpgArmor ?? 0;
+      rpgCookiesEarned = data.rpgCookiesEarned ?? 0;
+
+      const lastSavedAt = data.lastSavedAt ?? Date.now();
+      const secondsAway = Math.floor((Date.now() - lastSavedAt) / 1000);
+
+      if (secondsAway > 10 && cookiesPerSecond > 0) {
+        const offlineGain = Math.min(secondsAway, 7200) * effectiveSecondPower();
+        cookies += offlineGain;
+        totalCookiesEarned += offlineGain;
+        showToast(`⏰ Hors ligne: +${formatNumber(offlineGain)} cookies`);
+      }
+    }
+
+    loadGame();
+    updateUI();
+    checkAchievements();
+    scheduleGoldenCookie();
+  </script>
 </body>
 </html>
