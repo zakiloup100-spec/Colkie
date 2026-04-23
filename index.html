@@ -1,3245 +1,441 @@
-<!DOCTYPE html>
+from pathlib import Path
+
+html = r"""<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Colkie Clicker Ultimate</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    :root{
-      --bg1:#4f3118;
-      --bg2:#24160d;
-      --panel:rgba(255,255,255,0.08);
-      --panel-strong:rgba(0,0,0,0.2);
-      --border:rgba(255,255,255,0.08);
-      --text:#ffffff;
-      --soft:#e9d9c5;
-      --accent:#ffbf66;
-      --accent-dark:#1f150b;
-      --danger:#ff8b8b;
-      --danger-dark:#2d0b0b;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top, #6c421f 0%, var(--bg1) 18%, var(--bg2) 60%, #130d08 100%);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    .wrapper {
-      width: 100%;
-      max-width: 1250px;
-      margin: 0 auto;
-      padding: 18px 14px 42px;
-    }
-
-    .title {
-      text-align: center;
-      font-size: 2.15rem;
-      margin: 8px 0 4px;
-      letter-spacing: 0.3px;
-    }
-
-    .subtitle {
-      text-align: center;
-      opacity: 0.85;
-      margin-bottom: 18px;
-    }
-
-    .game-layout {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 16px;
-      backdrop-filter: blur(5px);
-      box-shadow: 0 10px 28px rgba(0,0,0,0.22);
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .stat-box {
-      background: rgba(0,0,0,0.18);
-      border-radius: 14px;
-      padding: 12px;
-      text-align: center;
-    }
-
-    .stat-label {
-      font-size: 0.9rem;
-      opacity: 0.8;
-      margin-bottom: 6px;
-    }
-
-    .stat-value {
-      font-size: 1.12rem;
-      font-weight: bold;
-    }
-
-    .cookie-area {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 425px;
-      overflow: hidden;
-      border-radius: 16px;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.03), rgba(0,0,0,0.07));
-    }
-
-    .cookie-btn {
-      width: 230px;
-      height: 230px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      font-size: 5.35rem;
-      background: radial-gradient(circle at 35% 30%, #ebb06a 0%, #cc7a2e 45%, #7d4317 100%);
-      box-shadow:
-        inset -8px -10px 16px rgba(0,0,0,0.18),
-        0 16px 35px rgba(0,0,0,0.35);
-      transition: transform 0.08s ease, filter 0.15s ease;
-      position: relative;
-      z-index: 2;
-    }
-
-    .cookie-btn:hover { filter: brightness(1.04); }
-    .cookie-btn:active,
-    .cookie-btn.clicked { transform: scale(0.94); }
-
-    .cookie-note {
-      margin-top: 14px;
-      opacity: 0.88;
-      text-align: center;
-      line-height: 1.35;
-    }
-
-    .shop-title, .section-title {
-      margin: 0 0 12px;
-      font-size: 1.25rem;
-    }
-
-    .shop-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .upgrade {
-      background: rgba(0,0,0,0.18);
-      border-radius: 14px;
-      padding: 12px;
-    }
-
-    .upgrade-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 6px;
-    }
-
-    .upgrade-name {
-      font-weight: bold;
-      font-size: 1rem;
-    }
-
-    .upgrade-owned {
-      font-size: 0.92rem;
-      opacity: 0.8;
-    }
-
-    .upgrade-desc {
-      font-size: 0.92rem;
-      opacity: 0.9;
-      margin-bottom: 8px;
-      line-height: 1.35;
-    }
-
-    .upgrade button,
-    .small-btn,
-    .lore-btn {
-      width: 100%;
-      border: none;
-      border-radius: 12px;
-      padding: 11px 12px;
-      font-weight: bold;
-      cursor: pointer;
-      background: var(--accent);
-      color: var(--accent-dark);
-      transition: transform 0.08s ease, filter 0.15s ease;
-    }
-
-    .upgrade button:hover,
-    .small-btn:hover,
-    .lore-btn:hover { filter: brightness(1.05); }
-
-    .upgrade button:active,
-    .small-btn:active,
-    .lore-btn:active { transform: scale(0.98); }
-
-    .upgrade button:disabled,
-    .small-btn:disabled,
-    .lore-btn:disabled {
-      background: #7a726b;
-      color: #ddd;
-      cursor: not-allowed;
-      filter: none;
-    }
-
-    .small-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .small-btn.reset {
-      background: var(--danger);
-      color: var(--danger-dark);
-    }
-
-    .small-btn.secondary {
-      background: #c9dbff;
-      color: #16233f;
-    }
-
-    .golden-cookie {
-      position: absolute;
-      width: 82px;
-      height: 82px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      font-size: 2rem;
-      background:
-        radial-gradient(circle at 35% 30%, #fff4a8 0%, #ffd84e 50%, #d69d00 100%);
-      box-shadow:
-        0 0 14px rgba(255, 214, 68, 0.85),
-        0 0 35px rgba(255, 214, 68, 0.35);
-      animation: pulseGolden 1s infinite alternate;
-      z-index: 4;
-    }
-
-    @keyframes pulseGolden {
-      from { transform: scale(1); }
-      to { transform: scale(1.08); }
-    }
-
-    .floating-text {
-      position: fixed;
-      font-weight: bold;
-      pointer-events: none;
-      animation: floatUp 1s forwards;
-      z-index: 9999;
-      text-shadow: 0 2px 5px rgba(0,0,0,0.45);
-      white-space: nowrap;
-    }
-
-    .floating-normal {
-      color: #ffe08f;
-      font-size: 1.05rem;
-    }
-
-    .floating-gold {
-      color: #fff16f;
-      font-size: 1.15rem;
-    }
-
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-70px); }
-    }
-
-    .prestige-box,
-    .unlock-box,
-    .lore-box,
-    .rpg-log-box {
-      margin-top: 14px;
-      background: rgba(0,0,0,0.22);
-      border-radius: 14px;
-      padding: 12px;
-      text-align: center;
-    }
-
-    .lore-box { display:none; }
-    .lore-text {
-      min-height: 52px;
-      margin-bottom: 10px;
-      line-height: 1.4;
-    }
-
-
-    .skill-owned {
-      display:block;
-      opacity:0.78;
-      font-size:0.84rem;
-      margin-top:4px;
-      font-weight:normal;
-    }
-
-    .footer-tip {
-      text-align: center;
-      margin-top: 18px;
-      opacity: 0.72;
-      font-size: 0.92rem;
-    }
-
-    .hidden { display:none !important; }
-
-    .rpg-panel {
-      display: none;
-      margin-top: 16px;
-    }
-
-    .rpg-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .dark-forest-scene {
-      position: relative;
-      height: 330px;
-      border-radius: 16px;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 8%, rgba(115,145,115,0.16), rgba(0,0,0,0) 28%),
-        linear-gradient(to bottom, #19271a 0%, #101810 42%, #070b07 100%);
-      border: 1px solid rgba(255,255,255,0.08);
-      margin-bottom: 14px;
-      box-shadow: inset 0 0 60px rgba(0,0,0,0.34);
-    }
-
-    .dark-forest-scene::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(to top, rgba(0,0,0,0.22), rgba(0,0,0,0) 28%),
-        repeating-linear-gradient(
-          90deg,
-          transparent 0 50px,
-          rgba(18,26,18,0.78) 50px 63px,
-          transparent 63px 115px,
-          rgba(14,22,14,0.72) 115px 128px
-        );
-      opacity: 0.9;
-      pointer-events: none;
-    }
-
-    .dark-forest-scene::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 90px;
-      background:
-        repeating-radial-gradient(circle at 10% 120%, rgba(33,49,33,0.95) 0 18px, transparent 19px 48px),
-        linear-gradient(to top, #0a100a 0%, rgba(10,16,10,0.2) 100%);
-      opacity: 0.95;
-      pointer-events: none;
-    }
-
-    .forest-fog {
-      position: absolute;
-      inset: 0;
-      background:
-        repeating-linear-gradient(
-          90deg,
-          rgba(255,255,255,0.02) 0px,
-          rgba(255,255,255,0.05) 60px,
-          rgba(255,255,255,0.02) 120px
-        );
-      opacity: 0.18;
-      pointer-events: none;
-      mix-blend-mode: screen;
-    }
-
-    .player-sprite {
-      position: absolute;
-      left: 32px;
-      bottom: 16px;
-      width: 86px;
-      height: 108px;
-      z-index: 3;
-      filter: drop-shadow(0 8px 10px rgba(0,0,0,0.35));
-    }
-
-    .player-sprite svg,
-    .enemy-sprite svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .enemy-sprite {
-      position: absolute;
-      right: 28px;
-      bottom: 14px;
-      width: 132px;
-      height: 112px;
-      z-index: 3;
-      filter: drop-shadow(0 10px 12px rgba(0,0,0,0.38));
-    }
-
-    .player-sprite,
-    .enemy-sprite {
-      animation: idleBob 2.2s ease-in-out infinite;
-    }
-
-    @keyframes idleBob {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
-    }
-
-    @keyframes forestShake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-4px); }
-      50% { transform: translateX(4px); }
-      75% { transform: translateX(-3px); }
-      100% { transform: translateX(0); }
-    }
-
-    .rpg-hit {
-      animation: forestShake 0.25s ease;
-    }
-
-
-    .secret-philo-btn {
-      position: fixed;
-      top: 12px;
-      right: 12px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.35);
-      background: radial-gradient(circle at 35% 35%, #ff7d7d 0%, #c51414 70%, #6d0707 100%);
-      box-shadow: 0 0 8px rgba(255,0,0,0.18);
-      cursor: pointer;
-      z-index: 100000;
-      opacity: 0.75;
-      transition: transform 0.12s ease, opacity 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .secret-philo-btn:hover {
-      opacity: 1;
-      transform: scale(1.08);
-      box-shadow: 0 0 12px rgba(255,0,0,0.35);
-    }
-
-    .philo-options {
-      display: grid;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .philo-question-box {
-      background: rgba(0,0,0,0.22);
-      border-radius: 14px;
-      padding: 14px;
-      line-height: 1.45;
-    }
-
-    .philo-progress {
-      text-align: center;
-      opacity: 0.85;
-      margin-bottom: 10px;
-    }
-
-
-    #elonCar {
-      position: fixed;
-      bottom: 10px;
-      left: -220px;
-      padding: 7px 12px;
-      border-radius: 14px;
-      background: linear-gradient(90deg, #1f1f1f, #444);
-      color: white;
-      font-size: 14px;
-      z-index: 99999;
-      pointer-events: none;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      opacity: 0.95;
-      white-space: nowrap;
-      transform: translateX(0);
-    }
-
-    @media (min-width: 950px) {
-
-      .game-layout {
-        grid-template-columns: 1.15fr 0.95fr;
-        align-items: start;
-      }
-
-      .cookie-btn {
-        width: 265px;
-        height: 265px;
-        font-size: 6rem;
-      }
-
-      .stats-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-
-      .rpg-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Cube Plumber Bros v4</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:none}
+  html,body{margin:0;height:100%;overflow:hidden;font-family:Arial,sans-serif;background:#000}
+  #game{
+    position:fixed; inset:0; overflow:hidden;
+    background:linear-gradient(#7db8ea 0%, #d7f0ff 100%);
+  }
+  #world{
+    position:absolute; left:0; top:0; height:100%; width:3800px;
+    transform:translateX(0);
+  }
+  .groundSeg,.platform,.pipe,.coin,.spike,.enemy,.player,.flagpole,.flag,.bush,.cloud,.hill{position:absolute}
+  .groundSeg{
+    height:110px;
+    background:linear-gradient(#43c957 0 18px,#8f5d38 18px 100%);
+  }
+  .platform{
+    background:#c78a46;border:4px solid #834f20;border-radius:4px;
+    box-shadow:inset 0 6px 0 #e0a45c;
+  }
+  .pipe{background:#1f9d45;border:4px solid #176f32}
+  .pipe:before{
+    content:"";position:absolute;left:-8px;right:-8px;top:-18px;height:22px;
+    background:#3ad164;border:4px solid #176f32;border-radius:4px;
+  }
+  .coin{
+    width:24px;height:24px;border-radius:50%;
+    background:#ffd54d;border:3px solid #c99700;
+    box-shadow:inset 0 0 0 3px #fff1a3;
+  }
+  .spike{
+    width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;
+    border-bottom:34px solid #e5e5e5;
+    filter:drop-shadow(0 2px 0 rgba(0,0,0,.18));
+  }
+  .enemy{
+    width:42px;height:38px;background:#8a4f1d;border-radius:8px 8px 7px 7px;border:3px solid #60340f;
+  }
+  .enemy:before,.enemy:after{
+    content:"";position:absolute;top:8px;width:7px;height:7px;background:#fff;border-radius:50%;
+  }
+  .enemy:before{left:8px}.enemy:after{right:8px}
+  .enemy .mouth{position:absolute;left:9px;right:9px;bottom:8px;height:6px;background:#4b2209;border-radius:4px}
+  .player{width:42px;height:58px}
+  .player .hatTop{position:absolute;left:4px;top:0;width:34px;height:10px;background:#cf2419}
+  .player .hatBrim{position:absolute;left:2px;top:8px;width:24px;height:7px;background:#cf2419}
+  .player .head{position:absolute;left:8px;top:8px;width:26px;height:18px;background:#f3c39b}
+  .player .body{position:absolute;left:10px;top:20px;width:22px;height:24px;background:#e53b2c}
+  .player .overalls{position:absolute;left:8px;top:32px;width:28px;height:24px;background:#2370d8}
+  .player .armL,.player .armR{position:absolute;top:25px;width:8px;height:15px;background:#f3c39b}
+  .player .armL{left:3px}.player .armR{right:3px}
+  .player .shoeL,.player .shoeR{position:absolute;bottom:0;width:12px;height:6px;background:#5a2d12}
+  .player .shoeL{left:8px}.player .shoeR{right:6px}
+  .player .eyeL,.player .eyeR{position:absolute;top:12px;width:3px;height:5px;background:#111}
+  .player .eyeL{left:16px}.player .eyeR{left:23px}
+  .player .moust{position:absolute;left:14px;top:18px;width:14px;height:4px;background:#3a2115}
+  .flagpole{width:10px;background:#eee}
+  .flag{width:0;height:0;border-top:16px solid transparent;border-bottom:16px solid transparent;border-left:50px solid #e53935}
+  .cloud{background:#fff;border-radius:999px;opacity:.82}
+  .hill{background:#72c35f;border-radius:999px 999px 0 0}
+  .bush{background:#2fa23f;border-radius:999px}
+  #hud{
+    position:fixed;left:0;right:0;top:0;display:flex;justify-content:space-between;
+    padding:max(12px,env(safe-area-inset-top)) 12px 0 12px;z-index:50;pointer-events:none
+  }
+  .pill{
+    background:rgba(47,67,89,.82);color:#fff;font-weight:800;font-size:18px;
+    padding:12px 16px;border-radius:18px
+  }
+  #banner{
+    position:fixed;left:50%;top:14%;transform:translateX(-50%);z-index:45;
+    background:rgba(255,255,255,.88);padding:12px 18px;border-radius:999px;font-weight:800;
+    max-width:78vw;text-align:center;transition:opacity .4s ease
+  }
+  #msg{
+    position:fixed;left:50%;top:28%;transform:translateX(-50%);z-index:60;display:none;
+    background:rgba(27,42,58,.94);color:#fff;padding:14px 18px;border-radius:18px;font-weight:800;text-align:center
+  }
+  #controls{
+    position:fixed;left:0;right:0;bottom:0;padding:0 16px calc(22px + env(safe-area-inset-bottom)) 16px;
+    display:flex;justify-content:space-between;align-items:flex-end;z-index:55
+  }
+  .cluster{display:flex;gap:14px}
+  .btn{
+    width:78px;height:78px;border-radius:24px;background:rgba(184,201,216,.55);
+    border:5px solid rgba(220,231,239,.9);color:#fff;font-size:34px;font-weight:900;
+    display:flex;align-items:center;justify-content:center;user-select:none;
+    backdrop-filter:blur(1px)
+  }
+  @media (max-width:700px){
+    #banner{top:16%;font-size:15px}
+    .pill{font-size:16px;padding:10px 14px}
+    .btn{width:72px;height:72px}
+  }
+</style>
 </head>
 <body>
-  <div class="wrapper">
-    <h1 class="title">🍪 Colkie Clicker Ultimate</h1>
-    <div class="subtitle">Version finale combinée • prestige arbre de skills • nouveaux bâtiments late game</div>
+<div id="game">
+  <div id="world"></div>
 
-    <div id="mainGameSection">
-      <div class="game-layout">
-        <section class="panel">
-          <div class="stats-grid">
-            <div class="stat-box">
-              <div class="stat-label">Cookies</div>
-              <div class="stat-value" id="cookies">0</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-label">Par clic</div>
-              <div class="stat-value" id="perClick">1</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-label">Par seconde</div>
-              <div class="stat-value" id="perSecond">0</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-label">Golden bonus</div>
-              <div class="stat-value" id="goldenCount">0</div>
-            </div>
-          </div>
-
-          <div class="cookie-area" id="cookieArea">
-            <button class="cookie-btn" id="cookieBtn">🍪</button>
-          </div>
-
-          <div class="cookie-note">
-            Clique le cookie. Des golden cookies rares peuvent apparaître.
-          </div>
-
-          <div class="small-actions">
-            <button class="small-btn" id="saveBtn">Sauvegarder</button>
-            <button class="small-btn reset" id="resetBtn">Reset</button>
-          </div>
-
-          <div class="prestige-box" id="prestigeWrap">
-            <div style="font-weight:bold; margin-bottom:6px;">🌌 Prestige & Arbre de skills</div>
-            <div id="prestigeInfo" style="opacity:0.88; font-size:0.95rem; line-height:1.45; margin-bottom:10px;"></div>
-            <button id="prestigeBtn" class="small-btn">Prestige</button>
-
-            <div style="margin-top:12px; text-align:left;">
-              <div style="font-weight:bold; margin-bottom:8px;">Tableau de skills</div>
-              <div id="skillTree" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <button class="small-btn" id="skillClickPowerBtn" style="text-align:left;">
-                  🖱️ Clic puissant
-                </button>
-                <button class="small-btn" id="skillAutoPowerBtn" style="text-align:left;">
-                  ⚙️ Production auto
-                </button>
-                <button class="small-btn" id="skillGoldenBtn" style="text-align:left;">
-                  ✨ Golden chance
-                </button>
-                <button class="small-btn" id="skillRpgBtn" style="text-align:left;">
-                  ⚔️ Force RPG
-                </button>
-                <button class="small-btn" id="skillCasinoBtn" style="text-align:left;">
-                  🎰 Main chanceuse
-                </button>
-                <button class="small-btn" id="skillSpaghettiBtn" style="text-align:left;">
-                  🍝 Paddle expert
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="unlock-box" id="darkForestUnlockPanel">
-            <div style="font-weight:bold; margin-bottom:6px;">🌲 Dimension Dark Forest</div>
-            <p id="darkForestStatus" style="margin:6px 0 10px;">Verrouillée</p>
-            <button class="small-btn" id="buyDarkForestBtn">Acheter l’accès — 2 500 000</button>
-            <button class="small-btn secondary hidden" id="enterDarkForestBtn" style="margin-top:10px;">
-              Entrer dans la forêt dark horror
-            </button>
-          </div>
-
-          <div class="unlock-box" id="spaghettiUnlockPanel">
-            <div style="font-weight:bold; margin-bottom:6px;">🍝 Dimension Spaghettis</div>
-            <p id="spaghettiStatus" style="margin:6px 0 10px;">Achetable pour 20 000 cookies</p>
-            <button class="small-btn" id="buySpaghettiBtn">Acheter l’accès — 20 000</button>
-            <button class="small-btn secondary hidden" id="enterSpaghettiBtn" style="margin-top:10px;">
-              Entrer dans la dimension spaghettis
-            </button>
-          </div>
-
-          <div class="unlock-box" id="casinoUnlockPanel">
-            <div style="font-weight:bold; margin-bottom:6px;">🎰 Casino</div>
-            <p id="casinoStatus" style="margin:6px 0 10px;">Verrouillé — il faut acheter Sarah Pepin puis payer 200 000 cookies</p>
-            <button class="small-btn" id="buyCasinoBtn">Acheter l’accès — 200 000</button>
-            <button class="small-btn secondary hidden" id="enterCasinoBtn" style="margin-top:10px;">
-              Entrer dans le casino
-            </button>
-          </div>
-
-          <div style="margin-top: 14px;">
-            <button class="lore-btn" id="startLore">Mode Secret 👁️</button>
-            <div class="lore-box" id="loreBox">
-              <div class="lore-text" id="loreText">...</div>
-              <button class="small-btn" id="nextLoreBtn">Continuer</button>
-            </div>
-          </div>
-        </section>
-
-        <aside class="panel">
-          <h2 class="shop-title">Boutique</h2>
-          <div class="shop-list">
-            <div class="upgrade">
-              <div class="upgrade-top">
-                <div class="upgrade-name">🖱️ Doigt rapide</div>
-                <div class="upgrade-owned">Possédé : <span id="clickUpgradeCount">0</span></div>
-              </div>
-              <div class="upgrade-desc">+1 cookie par clic</div>
-              <button id="buyClickUpgrade">Acheter — <span id="clickUpgradeCost">40</span></button>
-            </div>
-
-            <div class="upgrade">
-              <div class="upgrade-top">
-                <div class="upgrade-name">👵 Grandma</div>
-                <div class="upgrade-owned">Possédé : <span id="grandmaCount">0</span></div>
-              </div>
-              <div class="upgrade-desc">+1 cookie par seconde</div>
-              <button id="buyGrandma">Acheter — <span id="grandmaCost">35</span></button>
-            </div>
-
-            <div class="upgrade">
-              <div class="upgrade-top">
-                <div class="upgrade-name">🏭 Factory</div>
-                <div class="upgrade-owned">Possédé : <span id="factoryCount">0</span></div>
-              </div>
-              <div class="upgrade-desc">+4 cookies par seconde</div>
-              <button id="buyFactory">Acheter — <span id="factoryCost">160</span></button>
-            </div>
-
-            <div class="upgrade">
-              <div class="upgrade-top">
-                <div class="upgrade-name">🚜 Ferme à biscuits</div>
-                <div class="upgrade-owned">Possédé : <span id="farmCount">0</span></div>
-              </div>
-              <div class="upgrade-desc">+10 cookies par seconde</div>
-              <button id="buyFarm">Acheter — <span id="farmCost">420</span></button>
-            </div>
-
-            <div class="upgrade">
-              <div class="upgrade-top">
-                <div class="upgrade-name">🏦 Banque sucrée</div>
-                <div class="upgrade-owned">Possédé : <span id="bankCount">0</span></div>
-              </div>
-              <div class="upgrade-desc">+24 cookies par seconde</div>
-              <button id="buyBank">Acheter — <span id="bankCost">1200</span></button>
-            </div>
-
-            <div class="upgrade">
-              <div class="upgrade-top">
-                <div class="upgrade-name">👑 Royaume du cookie</div>
-                <div class="upgrade-owned">Possédé : <span id="kingdomCount">0</span></div>
-              </div>
-              <div class="upgrade-desc">+60 cookies par seconde</div>
-              <button id="buyKingdom">Acheter — <span id="kingdomCost">4200</span></button>
-            </div>
-
-            <div class="upgrade">
-              <div class="upgrade-top">
-                <div class="upgrade-name">🏠 Maison de Alycia (italienne)</div>
-                <div class="upgrade-owned">Possédé : <span id="alyciaHouseCount">0</span></div>
-              </div>
-              <div class="upgrade-desc">+150 cookies par seconde</div>
-              <button id="buyAlyciaHouse">Acheter — <span id="alyciaHouseCost">9000</span></button>
-            </div>
-
-            <div class="upgrade">
-              <div class="upgrade-top">
-                <div class="upgrade-name">💩 Le caca à Éloik</div>
-                <div class="upgrade-owned">Possédé : <span id="eloikPoopCount">0</span></div>
-              </div>
-              <div class="upgrade-desc">+350 cookies par seconde • déverrouille la Dark Forest</div>
-              <button id="buyEloikPoop">Acheter — <span id="eloikPoopCost">28000</span></button>
-            </div>
-
-            <div class="upgrade">
-              <div class="upgrade-top">
-                <div class="upgrade-name">🌟 Sarah Pepin</div>
-                <div class="upgrade-owned">Possédé : <span id="sarahPepinCount">0</span></div>
-              </div>
-              <div class="upgrade-desc">+900 cookies par seconde</div>
-              <button id="buySarahPepin">Acheter — <span id="sarahPepinCost">95000</span></button>
-            </div>
-
-            <div class="upgrade">
-              <div class="upgrade-top">
-                <div class="upgrade-name">🏭 Snacky industrie</div>
-                <div class="upgrade-owned">Possédé : <span id="snackyIndustryCount">0</span></div>
-              </div>
-              <div class="upgrade-desc">+1400 cookies par seconde</div>
-              <button id="buySnackyIndustry">Acheter — <span id="snackyIndustryCost">180000</span></button>
-            </div>
-
-            <div class="upgrade">
-              <div class="upgrade-top">
-                <div class="upgrade-name">🐶 Le chien Bobine</div>
-                <div class="upgrade-owned">Possédé : <span id="bobineDogCount">0</span></div>
-              </div>
-              <div class="upgrade-desc">+2400 cookies par seconde</div>
-              <button id="buyBobineDog">Acheter — <span id="bobineDogCost">420000</span></button>
-            </div>
-
-            <div class="upgrade">
-              <div class="upgrade-top">
-                <div class="upgrade-name">🧀 L'usine à Cheese Whiz de Antoine Leroux</div>
-                <div class="upgrade-owned">Possédé : <span id="cheeseWhizFactoryCount">0</span></div>
-              </div>
-              <div class="upgrade-desc">+4200 cookies par seconde</div>
-              <button id="buyCheeseWhizFactory">Acheter — <span id="cheeseWhizFactoryCost">980000</span></button>
-            </div>
-
-            <div class="upgrade">
-              <div class="upgrade-top">
-                <div class="upgrade-name">🙃 Miko le pas beau</div>
-                <div class="upgrade-owned">Possédé : <span id="mikoCount">0</span></div>
-              </div>
-              <div class="upgrade-desc">+7800 cookies par seconde</div>
-              <button id="buyMiko">Acheter — <span id="mikoCost">2400000</span></button>
-            </div>
-
-            <div class="upgrade">
-              <div class="upgrade-top">
-                <div class="upgrade-name">🪦 Le cercueil de Technoblade</div>
-                <div class="upgrade-owned">Possédé : <span id="technobladeCount">0</span></div>
-              </div>
-              <div class="upgrade-desc">+20000 cookies par seconde</div>
-              <button id="buyTechnoblade">Acheter — <span id="technobladeCost">9000000</span></button>
-            </div>
-          </div>
-        </aside>
-      </div>
-
-      <div class="footer-tip" id="footerTip">
-        Sauvegarde auto chaque seconde. Les golden cookies sont rares. Le prestige rend tes runs futures plus fortes.
-      </div>
-    </div>
-
-    <div class="panel rpg-panel" id="darkForestPanel">
-      <h2 class="section-title">🌲 Dark Forest RPG</h2>
-
-      <div class="rpg-grid">
-        <div class="stat-box">
-          <div class="stat-label">Niveau</div>
-          <div class="stat-value" id="rpgLevel">1</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">XP</div>
-          <div class="stat-value" id="rpgXp">0 / 100</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">PV</div>
-          <div class="stat-value" id="rpgHp">100 / 100</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Cookies gagnés</div>
-          <div class="stat-value" id="rpgCookiesEarned">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Boss tués</div>
-          <div class="stat-value" id="bossesKilled">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Attaque</div>
-          <div class="stat-value" id="rpgAttack">10</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Défense</div>
-          <div class="stat-value" id="rpgDefense">5</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Épée</div>
-          <div class="stat-value" id="rpgSword">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Armure</div>
-          <div class="stat-value" id="rpgArmor">0</div>
-        </div>
-      </div>
-
-      <div class="dark-forest-scene">
-        <div style="position:absolute; left:22px; top:18px; width:42px; height:42px; border-radius:50%; background:radial-gradient(circle at 35% 35%, rgba(230,240,255,0.9), rgba(175,195,220,0.45) 55%, rgba(255,255,255,0.04) 70%); box-shadow:0 0 30px rgba(180,210,255,0.18);"></div>
-        <div class="forest-fog"></div>
-        <div id="rpgPlayer" class="player-sprite">
-          <svg viewBox="0 0 80 100" aria-hidden="true">
-            <ellipse cx="40" cy="92" rx="24" ry="6" fill="rgba(0,0,0,0.25)"/>
-            <circle cx="40" cy="18" r="12" fill="#f2c7a5"/>
-            <path d="M28 14 q12 -16 24 0" fill="#2c2c2c"/>
-            <rect x="33" y="28" width="14" height="10" rx="4" fill="#f2c7a5"/>
-            <path d="M22 38 Q40 28 58 38 L54 72 L26 72 Z" fill="#3d3d42"/>
-            <path d="M28 40 H52 V52 H28 Z" fill="#d8d8df"/>
-            <path d="M30 52 H50 V72 H30 Z" fill="#7f6033"/>
-            <rect x="20" y="40" width="10" height="28" rx="4" fill="#d8d8df"/>
-            <rect x="50" y="40" width="10" height="28" rx="4" fill="#d8d8df"/>
-            <rect x="32" y="72" width="8" height="18" rx="4" fill="#4d2f1b"/>
-            <rect x="40" y="72" width="8" height="18" rx="4" fill="#4d2f1b"/>
-            <rect x="54" y="48" width="14" height="5" rx="2" fill="#a7a7af"/>
-            <rect x="65" y="46" width="6" height="9" rx="2" fill="#d7c18a"/>
-            <circle cx="36" cy="18" r="1.5" fill="#232323"/>
-            <circle cx="44" cy="18" r="1.5" fill="#232323"/>
-          </svg>
-        </div>
-        <div id="rpgEnemy" class="enemy-sprite" data-enemy="default">
-          <svg id="enemySvg" viewBox="0 0 120 100" aria-hidden="true"></svg>
-        </div>
-        <div id="enemyLabel" class="scene-tag">???</div>
-        <div id="enemyHpLabel" class="scene-tag">HP: 0 / 0</div>
-      </div>
-
-      <div class="rpg-actions">
-        <button class="small-btn" id="rpgAttackBtn">⚔️ Attaquer</button>
-        <button class="small-btn" id="rpgHeavyBtn">💥 Heavy Slash</button>
-        <button class="small-btn" id="rpgGuardBtn">🛡️ Guard</button>
-        <button class="small-btn" id="rpgHealBtn">💚 Heal</button>
-      </div>
-
-      <div class="rpg-equip">
-        <button class="small-btn" id="buySwordBtn">Épée — 25 000</button>
-        <button class="small-btn" id="buyArmorBtn">Armure — 25 000</button>
-        <button class="small-btn" id="spawnEnemyBtn">Nouvel ennemi</button>
-      </div>
-
-      <div class="small-actions">
-        <button class="small-btn secondary" id="toggleMusicBtn">🎵 Musique: OFF</button>
-        <button class="small-btn" id="spawnBossBtn">👹 Boss spécial</button>
-      </div>
-
-      <div class="small-actions">
-        <button class="small-btn secondary" id="leaveDarkForestBtn">Retour au clicker</button>
-        <button class="small-btn reset" id="rpgResetFightBtn">Reset combat</button>
-      </div>
-
-      <div class="rpg-log-box" id="rpgLog">La forêt te regarde...</div>
-    </div>
-    <div class="panel rpg-panel" id="spaghettiPanel">
-      <h2 class="section-title">🍝 Dimension Spaghettis</h2>
-
-      <div class="rpg-grid">
-        <div class="stat-box">
-          <div class="stat-label">Score</div>
-          <div class="stat-value" id="spaghettiScore">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Pizza sauvées</div>
-          <div class="stat-value" id="spaghettiHits">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Cookies gagnés</div>
-          <div class="stat-value" id="spaghettiCookiesEarned">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Vitesse</div>
-          <div class="stat-value" id="spaghettiSpeed">1</div>
-        </div>
-      </div>
-
-      <div id="spaghettiGameArea" style="
-        position:relative;
-        height:340px;
-        border-radius:16px;
-        overflow:hidden;
-        background:
-          radial-gradient(circle at top, rgba(255,220,180,0.35), rgba(120,40,10,0.95)),
-          linear-gradient(to bottom, #8d3e1d 0%, #5c220d 55%, #2e1007 100%);
-        border:1px solid rgba(255,255,255,0.08);
-        margin-bottom:14px;
-        box-shadow: inset 0 0 40px rgba(0,0,0,0.18);
-      ">
-        <div style="position:absolute; inset:0; opacity:0.08; pointer-events:none; background:
-          repeating-radial-gradient(circle at 20% 20%, #fff 0 2px, transparent 2px 26px),
-          repeating-radial-gradient(circle at 80% 70%, #ffd28f 0 3px, transparent 3px 34px);"></div>
-
-        <div id="spaghettiBall" style="
-          position:absolute;
-          left:155px;
-          top:140px;
-          width:38px;
-          height:38px;
-          border-radius:50%;
-          background: radial-gradient(circle at 35% 30%, #ffda6e 0%, #d67c28 65%, #a24310 100%);
-          box-shadow:0 0 10px rgba(255,180,60,0.4);
-        ">🍕</div>
-
-        <div id="spaghettiPaddle" style="
-          position:absolute;
-          left:120px;
-          bottom:18px;
-          width:105px;
-          height:18px;
-          border-radius:999px;
-          background: linear-gradient(90deg, #f5e2b8, #ffcf7a, #f5e2b8);
-          box-shadow:0 0 10px rgba(255,220,150,0.2);
-        "></div>
-      </div>
-
-      <div class="small-actions">
-        <button class="small-btn" id="startSpaghettiBtn">▶️ Jouer</button>
-        <button class="small-btn" id="spaghettiUpgradeBtn">⬆️ Booster la raquette — 7 500</button>
-      </div>
-
-      <div class="small-actions">
-        <button class="small-btn secondary" id="leaveSpaghettiBtn">Retour au clicker</button>
-        <button class="small-btn reset" id="resetSpaghettiBtn">Reset mini-jeu</button>
-      </div>
-
-      <div class="rpg-log-box" id="spaghettiLog">Des pizzas tombent du ciel. Fais-les rebondir pour gagner des cookies.</div>
-    </div>
-
-    <div class="panel rpg-panel" id="casinoPanel">
-      <h2 class="section-title">🎰 Casino Royal Biscuit</h2>
-
-      <div class="rpg-grid">
-        <div class="stat-box">
-          <div class="stat-label">Jetons misés</div>
-          <div class="stat-value" id="casinoBetStat">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Gains casino</div>
-          <div class="stat-value" id="casinoWonStat">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Victoires</div>
-          <div class="stat-value" id="casinoWinsStat">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Défaites</div>
-          <div class="stat-value" id="casinoLossesStat">0</div>
-        </div>
-      </div>
-
-      <div class="panel" style="background:rgba(0,0,0,0.22); margin-bottom:14px;">
-        <div style="font-weight:bold; margin-bottom:8px;">🎲 Jeu 1 — Pari 49%</div>
-        <div style="opacity:0.86; margin-bottom:10px;">Tu mises des cookies. 49% de chances de gagner 2x ta mise.</div>
-        <div class="small-actions">
-          <button class="small-btn" id="bet1kBtn">Miser 1 000</button>
-          <button class="small-btn" id="bet10kBtn">Miser 10 000</button>
-        </div>
-        <div class="small-actions">
-          <button class="small-btn" id="bet50kBtn">Miser 50 000</button>
-          <button class="small-btn" id="bet100kBtn">Miser 100 000</button>
-        </div>
-      </div>
-
-      <div class="panel" style="background:rgba(0,0,0,0.22); margin-bottom:14px;">
-        <div style="font-weight:bold; margin-bottom:8px;">🥃 Jeu 2 — Les 3 verres</div>
-        <div style="opacity:0.86; margin-bottom:10px;">Choisis un verre. Le bon est caché après mélange. Tu dois miser avant.</div>
-        <div class="small-actions">
-          <button class="small-btn" id="cupBet5kBtn">Mise 5 000</button>
-          <button class="small-btn" id="cupBet20kBtn">Mise 20 000</button>
-        </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:12px;">
-          <button class="small-btn" id="cup1Btn">🥃 Verre 1</button>
-          <button class="small-btn" id="cup2Btn">🥃 Verre 2</button>
-          <button class="small-btn" id="cup3Btn">🥃 Verre 3</button>
-        </div>
-      </div>
-
-      <div class="small-actions">
-        <button class="small-btn secondary" id="leaveCasinoBtn">Retour au clicker</button>
-        <button class="small-btn reset" id="resetCasinoBtn">Reset casino</button>
-      </div>
-
-      <div class="rpg-log-box" id="casinoLog">Bienvenue au casino. Les lumières brillent, les biscuits tombent, les regrets aussi.</div>
-      <div style="text-align:center; opacity:0.45; margin-top:10px; font-size:0.88rem;" id="casinoEasterEgg">Easter egg: Snacky et Trudeau, même énergie de casino douteux 👀</div>
-    </div>
-
+  <div id="hud">
+    <div class="pill" id="coinsTxt">Pièces: 0</div>
+    <div class="pill" id="livesTxt">Vies: 3</div>
   </div>
+  <div id="banner">Version 4 • plus haut, plus dur, moins vide 👀</div>
+  <div id="msg"></div>
 
-
-  <button id="secretPhiloBtn" class="secret-philo-btn" title="..."></button>
-
-    <div class="panel rpg-panel" id="philoPanel">
-      <h2 class="section-title">🔴 Dimension Philosophique</h2>
-
-      <div class="rpg-grid">
-        <div class="stat-box">
-          <div class="stat-label">Question</div>
-          <div class="stat-value" id="philoQuestionIndex">1 / 15</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Score</div>
-          <div class="stat-value" id="philoScore">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Réponses</div>
-          <div class="stat-value" id="philoAnswered">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Cookies gagnés</div>
-          <div class="stat-value" id="philoCookiesEarned">0</div>
-        </div>
-      </div>
-
-      <div class="philo-progress" id="philoProgressText">Question 1 sur 15</div>
-
-      <div class="philo-question-box">
-        <div id="philoQuestionText" style="font-weight:bold; font-size:1.06rem;">...</div>
-        <div class="philo-options">
-          <button class="small-btn" id="philoOptionA">A</button>
-          <button class="small-btn" id="philoOptionB">B</button>
-          <button class="small-btn" id="philoOptionC">C</button>
-          <button class="small-btn" id="philoOptionD">D</button>
-        </div>
-      </div>
-
-      <div class="small-actions">
-        <button class="small-btn" id="philoNextBtn">Question suivante</button>
-        <button class="small-btn reset" id="philoResetBtn">Reset quiz</button>
-      </div>
-
-      <div class="small-actions">
-        <button class="small-btn secondary" id="leavePhiloBtn">Retour au clicker</button>
-        <button class="small-btn secondary" id="philoRevealBtn">Révéler la réponse</button>
-      </div>
-
-      <div class="rpg-log-box" id="philoLog">Tu entres dans un endroit où chaque réponse dit quelque chose sur toi.</div>
+  <div id="controls">
+    <div class="cluster">
+      <div class="btn" id="leftBtn">◀</div>
+      <div class="btn" id="rightBtn">▶</div>
     </div>
+    <div class="cluster">
+      <div class="btn" id="jumpBtn">▲</div>
+    </div>
+  </div>
+</div>
 
+<script>
+(function(){
+  const world = document.getElementById('world');
+  const msg = document.getElementById('msg');
+  const coinsTxt = document.getElementById('coinsTxt');
+  const livesTxt = document.getElementById('livesTxt');
+  const banner = document.getElementById('banner');
 
-  <div id="elonCar">🚗 Elon</div>
+  let groundY = Math.min(window.innerHeight - 90, 660);
+  let worldW = 3800;
 
-  <script>
-    let cookies = 0;
-    let cookiesPerClick = 1;
-    let cookiesPerSecond = 0;
-    let goldenCaught = 0;
+  const solids = [];
+  const spikes = [];
+  const coins = [];
+  const enemies = [];
+  let playerEl;
 
-    let clickUpgradeCount = 0;
-    let grandmaCount = 0;
-    let factoryCount = 0;
-    let farmCount = 0;
-    let bankCount = 0;
-    let kingdomCount = 0;
-    let alyciaHouseCount = 0;
-    let eloikPoopCount = 0;
-    let sarahPepinCount = 0;
-    let snackyIndustryCount = 0;
-    let bobineDogCount = 0;
-    let cheeseWhizFactoryCount = 0;
-    let mikoCount = 0;
-    let technobladeCount = 0;
+  function make(tag, cls, style, html=''){
+    const el = document.createElement(tag);
+    if(cls) el.className = cls;
+    if(style) Object.assign(el.style, style);
+    if(html) el.innerHTML = html;
+    world.appendChild(el);
+    return el;
+  }
 
-    let clickUpgradeCost = 40;
-    let grandmaCost = 35;
-    let factoryCost = 160;
-    let farmCost = 420;
-    let bankCost = 1200;
-    let kingdomCost = 4200;
-    let alyciaHouseCost = 9000;
-    let eloikPoopCost = 28000;
-    let sarahPepinCost = 95000;
-    let snackyIndustryCost = 180000;
-    let bobineDogCost = 420000;
-    let cheeseWhizFactoryCost = 980000;
-    let mikoCost = 2400000;
-    let technobladeCost = 9000000;
+  function rectObj(el, x, y, w, h, type='solid'){
+    return {el, x, y, w, h, type, active:true};
+  }
 
-    let totalClicks = 0;
-    let totalCookiesEarned = 0;
-    let comboCount = 0;
-    let lastClickTime = 0;
-    let rainActive = false;
+  function buildLevel(){
+    world.innerHTML = '';
+    solids.length = 0; spikes.length = 0; coins.length = 0; enemies.length = 0;
 
-    let prestigePoints = 0;
-    let prestigePointsSpent = 0;
-    let prestigeThreshold = 250000;
-    let runCookiesEarned = 0;
-
-    let prestigeSkills = {
-      clickPower: 0,
-      autoPower: 0,
-      goldenLuck: 0,
-      rpgForce: 0,
-      casinoLuck: 0,
-      spaghettiMastery: 0
-    };
-
-    let darkForestAccessBought = false;
-    let spaghettiAccessBought = false;
-    let spaghettiScore = 0;
-    let spaghettiHits = 0;
-    let spaghettiCookiesEarned = 0;
-    let spaghettiPaddleLevel = 1;
-    let spaghettiRunning = false;
-    let spaghettiAnimId = null;
-    let spaghettiBallX = 155;
-    let spaghettiBallY = 140;
-    let spaghettiBallDX = 3.2;
-    let spaghettiBallDY = -3.0;
-    let spaghettiPaddleX = 120;
-
-    let casinoAccessBought = false;
-    let casinoBetTotal = 0;
-    let casinoWonTotal = 0;
-    let casinoWins = 0;
-    let casinoLosses = 0;
-    let currentCupBet = 0;
-    let winningCup = 0;
-
-    let philoQuestionCursor = 0;
-    let philoScore = 0;
-    let philoAnswered = 0;
-    let philoCookiesEarned = 0;
-    let philoAnsweredCurrent = false;
-
-    let rpgLevel = 1;
-    let rpgXp = 0;
-    let rpgXpToNext = 100;
-    let rpgMaxHp = 100;
-    let rpgHp = 100;
-    let rpgBaseAttack = 10;
-    let rpgBaseDefense = 5;
-    let rpgSword = 0;
-    let rpgArmor = 0;
-    let rpgCookiesEarned = 0;
-    let rpgGuarding = false;
-    let currentEnemy = null;
-    let bossesKilled = 0;
-    let musicEnabled = false;
-    let audioCtx = null;
-    let musicInterval = null;
-    let activeMusicNodes = [];
-
-    let achievements = {
-      firstClick: false,
-      hundredClicks: false,
-      firstGolden: false,
-      thousandCookies: false,
-      tenPerSecond: false,
-      hundredPerSecond: false,
-      combo10: false,
-      kingdom: false,
-      firstPrestige: false
-    };
-
-    const cookiesEl = document.getElementById("cookies");
-    const perClickEl = document.getElementById("perClick");
-    const perSecondEl = document.getElementById("perSecond");
-    const goldenCountEl = document.getElementById("goldenCount");
-
-    const clickUpgradeCountEl = document.getElementById("clickUpgradeCount");
-    const grandmaCountEl = document.getElementById("grandmaCount");
-    const factoryCountEl = document.getElementById("factoryCount");
-    const farmCountEl = document.getElementById("farmCount");
-    const bankCountEl = document.getElementById("bankCount");
-    const kingdomCountEl = document.getElementById("kingdomCount");
-    const alyciaHouseCountEl = document.getElementById("alyciaHouseCount");
-    const eloikPoopCountEl = document.getElementById("eloikPoopCount");
-    const sarahPepinCountEl = document.getElementById("sarahPepinCount");
-    const snackyIndustryCountEl = document.getElementById("snackyIndustryCount");
-    const bobineDogCountEl = document.getElementById("bobineDogCount");
-    const cheeseWhizFactoryCountEl = document.getElementById("cheeseWhizFactoryCount");
-    const mikoCountEl = document.getElementById("mikoCount");
-    const technobladeCountEl = document.getElementById("technobladeCount");
-
-    const clickUpgradeCostEl = document.getElementById("clickUpgradeCost");
-    const grandmaCostEl = document.getElementById("grandmaCost");
-    const factoryCostEl = document.getElementById("factoryCost");
-    const farmCostEl = document.getElementById("farmCost");
-    const bankCostEl = document.getElementById("bankCost");
-    const kingdomCostEl = document.getElementById("kingdomCost");
-    const alyciaHouseCostEl = document.getElementById("alyciaHouseCost");
-    const eloikPoopCostEl = document.getElementById("eloikPoopCost");
-    const sarahPepinCostEl = document.getElementById("sarahPepinCost");
-    const snackyIndustryCostEl = document.getElementById("snackyIndustryCost");
-    const bobineDogCostEl = document.getElementById("bobineDogCost");
-    const cheeseWhizFactoryCostEl = document.getElementById("cheeseWhizFactoryCost");
-    const mikoCostEl = document.getElementById("mikoCost");
-    const technobladeCostEl = document.getElementById("technobladeCost");
-
-    const buyClickUpgradeBtn = document.getElementById("buyClickUpgrade");
-    const buyGrandmaBtn = document.getElementById("buyGrandma");
-    const buyFactoryBtn = document.getElementById("buyFactory");
-    const buyFarmBtn = document.getElementById("buyFarm");
-    const buyBankBtn = document.getElementById("buyBank");
-    const buyKingdomBtn = document.getElementById("buyKingdom");
-    const buyAlyciaHouseBtn = document.getElementById("buyAlyciaHouse");
-    const buyEloikPoopBtn = document.getElementById("buyEloikPoop");
-    const buySarahPepinBtn = document.getElementById("buySarahPepin");
-    const buySnackyIndustryBtn = document.getElementById("buySnackyIndustry");
-    const buyBobineDogBtn = document.getElementById("buyBobineDog");
-    const buyCheeseWhizFactoryBtn = document.getElementById("buyCheeseWhizFactory");
-    const buyMikoBtn = document.getElementById("buyMiko");
-    const buyTechnobladeBtn = document.getElementById("buyTechnoblade");
-
-    const cookieBtn = document.getElementById("cookieBtn");
-    const cookieArea = document.getElementById("cookieArea");
-    const saveBtn = document.getElementById("saveBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const prestigeBtn = document.getElementById("prestigeBtn");
-    const prestigeInfo = document.getElementById("prestigeInfo");
-    const skillClickPowerBtn = document.getElementById("skillClickPowerBtn");
-    const skillAutoPowerBtn = document.getElementById("skillAutoPowerBtn");
-    const skillGoldenBtn = document.getElementById("skillGoldenBtn");
-    const skillRpgBtn = document.getElementById("skillRpgBtn");
-    const skillCasinoBtn = document.getElementById("skillCasinoBtn");
-    const skillSpaghettiBtn = document.getElementById("skillSpaghettiBtn");
-
-    const darkForestStatusEl = document.getElementById("darkForestStatus");
-    const buyDarkForestBtn = document.getElementById("buyDarkForestBtn");
-    const enterDarkForestBtn = document.getElementById("enterDarkForestBtn");
-    const leaveDarkForestBtn = document.getElementById("leaveDarkForestBtn");
-    const darkForestPanel = document.getElementById("darkForestPanel");
-    const darkForestUnlockPanel = document.getElementById("darkForestUnlockPanel");
-    const spaghettiUnlockPanel = document.getElementById("spaghettiUnlockPanel");
-    const spaghettiStatusEl = document.getElementById("spaghettiStatus");
-    const buySpaghettiBtn = document.getElementById("buySpaghettiBtn");
-    const enterSpaghettiBtn = document.getElementById("enterSpaghettiBtn");
-    const leaveSpaghettiBtn = document.getElementById("leaveSpaghettiBtn");
-    const spaghettiPanel = document.getElementById("spaghettiPanel");
-
-    const casinoUnlockPanel = document.getElementById("casinoUnlockPanel");
-    const casinoStatusEl = document.getElementById("casinoStatus");
-    const buyCasinoBtn = document.getElementById("buyCasinoBtn");
-    const enterCasinoBtn = document.getElementById("enterCasinoBtn");
-    const leaveCasinoBtn = document.getElementById("leaveCasinoBtn");
-    const casinoPanel = document.getElementById("casinoPanel");
-
-    const mainGameSection = document.getElementById("mainGameSection");
-
-    const rpgLevelEl = document.getElementById("rpgLevel");
-    const rpgXpEl = document.getElementById("rpgXp");
-    const rpgHpEl = document.getElementById("rpgHp");
-    const rpgCookiesEarnedEl = document.getElementById("rpgCookiesEarned");
-    const bossesKilledEl = document.getElementById("bossesKilled");
-    const rpgAttackEl = document.getElementById("rpgAttack");
-    const rpgDefenseEl = document.getElementById("rpgDefense");
-    const rpgSwordEl = document.getElementById("rpgSword");
-    const rpgArmorEl = document.getElementById("rpgArmor");
-
-    const rpgEnemyEl = document.getElementById("rpgEnemy");
-    const enemyLabelEl = document.getElementById("enemyLabel");
-    const enemyHpLabelEl = document.getElementById("enemyHpLabel");
-    const rpgLogEl = document.getElementById("rpgLog");
-
-    const rpgAttackBtn = document.getElementById("rpgAttackBtn");
-    const rpgHeavyBtn = document.getElementById("rpgHeavyBtn");
-    const rpgGuardBtn = document.getElementById("rpgGuardBtn");
-    const rpgHealBtn = document.getElementById("rpgHealBtn");
-    const buySwordBtn = document.getElementById("buySwordBtn");
-    const buyArmorBtn = document.getElementById("buyArmorBtn");
-    const spawnEnemyBtn = document.getElementById("spawnEnemyBtn");
-    const spawnBossBtn = document.getElementById("spawnBossBtn");
-    const toggleMusicBtn = document.getElementById("toggleMusicBtn");
-    const rpgResetFightBtn = document.getElementById("rpgResetFightBtn");
-
-    const spaghettiScoreEl = document.getElementById("spaghettiScore");
-    const spaghettiHitsEl = document.getElementById("spaghettiHits");
-    const spaghettiCookiesEarnedEl = document.getElementById("spaghettiCookiesEarned");
-    const spaghettiSpeedEl = document.getElementById("spaghettiSpeed");
-    const spaghettiGameArea = document.getElementById("spaghettiGameArea");
-    const spaghettiBallEl = document.getElementById("spaghettiBall");
-    const spaghettiPaddleEl = document.getElementById("spaghettiPaddle");
-    const startSpaghettiBtn = document.getElementById("startSpaghettiBtn");
-    const spaghettiUpgradeBtn = document.getElementById("spaghettiUpgradeBtn");
-    const resetSpaghettiBtn = document.getElementById("resetSpaghettiBtn");
-    const spaghettiLogEl = document.getElementById("spaghettiLog");
-
-    const casinoBetStatEl = document.getElementById("casinoBetStat");
-    const casinoWonStatEl = document.getElementById("casinoWonStat");
-    const casinoWinsStatEl = document.getElementById("casinoWinsStat");
-    const casinoLossesStatEl = document.getElementById("casinoLossesStat");
-    const bet1kBtn = document.getElementById("bet1kBtn");
-    const bet10kBtn = document.getElementById("bet10kBtn");
-    const bet50kBtn = document.getElementById("bet50kBtn");
-    const bet100kBtn = document.getElementById("bet100kBtn");
-    const cupBet5kBtn = document.getElementById("cupBet5kBtn");
-    const cupBet20kBtn = document.getElementById("cupBet20kBtn");
-    const cup1Btn = document.getElementById("cup1Btn");
-    const cup2Btn = document.getElementById("cup2Btn");
-    const cup3Btn = document.getElementById("cup3Btn");
-    const resetCasinoBtn = document.getElementById("resetCasinoBtn");
-    const casinoLogEl = document.getElementById("casinoLog");
-
-    const secretPhiloBtn = document.getElementById("secretPhiloBtn");
-    const philoPanel = document.getElementById("philoPanel");
-    const philoQuestionIndexEl = document.getElementById("philoQuestionIndex");
-    const philoScoreEl = document.getElementById("philoScore");
-    const philoAnsweredEl = document.getElementById("philoAnswered");
-    const philoCookiesEarnedEl = document.getElementById("philoCookiesEarned");
-    const philoProgressTextEl = document.getElementById("philoProgressText");
-    const philoQuestionTextEl = document.getElementById("philoQuestionText");
-    const philoOptionA = document.getElementById("philoOptionA");
-    const philoOptionB = document.getElementById("philoOptionB");
-    const philoOptionC = document.getElementById("philoOptionC");
-    const philoOptionD = document.getElementById("philoOptionD");
-    const philoNextBtn = document.getElementById("philoNextBtn");
-    const philoResetBtn = document.getElementById("philoResetBtn");
-    const leavePhiloBtn = document.getElementById("leavePhiloBtn");
-    const philoRevealBtn = document.getElementById("philoRevealBtn");
-    const philoLogEl = document.getElementById("philoLog");
-    const elonCar = document.getElementById("elonCar");
-
-    const loreBtn = document.getElementById("startLore");
-    const loreBox = document.getElementById("loreBox");
-    const loreText = document.getElementById("loreText");
-    const nextLoreBtn = document.getElementById("nextLoreBtn");
-
-    function formatNumber(num) {
-      return Math.floor(num).toLocaleString("fr-CA");
-    }
-
-    function ensureToastContainer() {
-      let toastContainer = document.getElementById("toastContainer");
-      if (!toastContainer) {
-        toastContainer = document.createElement("div");
-        toastContainer.id = "toastContainer";
-        toastContainer.style.position = "fixed";
-        toastContainer.style.top = "16px";
-        toastContainer.style.left = "50%";
-        toastContainer.style.transform = "translateX(-50%)";
-        toastContainer.style.zIndex = "99999";
-        toastContainer.style.display = "flex";
-        toastContainer.style.flexDirection = "column";
-        toastContainer.style.gap = "8px";
-        toastContainer.style.pointerEvents = "none";
-        document.body.appendChild(toastContainer);
-      }
-      return toastContainer;
-    }
-
-    function showToast(text) {
-      const container = ensureToastContainer();
-      const toast = document.createElement("div");
-      toast.textContent = text;
-      toast.style.background = "rgba(0,0,0,0.84)";
-      toast.style.color = "white";
-      toast.style.padding = "10px 14px";
-      toast.style.borderRadius = "12px";
-      toast.style.fontWeight = "bold";
-      toast.style.boxShadow = "0 8px 24px rgba(0,0,0,0.28)";
-      toast.style.opacity = "0";
-      toast.style.transition = "opacity 0.25s ease, transform 0.25s ease";
-      toast.style.transform = "translateY(-8px)";
-      container.appendChild(toast);
-
-      requestAnimationFrame(() => {
-        toast.style.opacity = "1";
-        toast.style.transform = "translateY(0)";
+    // background
+    for(let i=0;i<7;i++){
+      make('div','cloud',{
+        left:(120 + i*520)+'px', top:(70 + (i%3)*42)+'px',
+        width:(100 + (i%2)*30)+'px', height:(44 + (i%2)*10)+'px'
       });
-
-      setTimeout(() => {
-        toast.style.opacity = "0";
-        toast.style.transform = "translateY(-8px)";
-        setTimeout(() => toast.remove(), 250);
-      }, 2200);
     }
-
-    function showFloatingText(text, x, y, isGold = false) {
-      const el = document.createElement("div");
-      el.className = `floating-text ${isGold ? "floating-gold" : "floating-normal"}`;
-      el.textContent = text;
-      el.style.left = x + "px";
-      el.style.top = y + "px";
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 1000);
+    for(let i=0;i<6;i++){
+      make('div','hill',{
+        left:(i*650 + 40)+'px', bottom:'110px',
+        width:(180 + (i%2)*40)+'px', height:(95 + (i%2)*20)+'px'
+      });
     }
-
-
-    function getAvailablePrestigePoints() {
-      return Math.max(0, prestigePoints - prestigePointsSpent);
-    }
-
-    function getSkillCost(level) {
-      return level + 1;
-    }
-
-    function getPrestigeGain() {
-      return Math.floor(Math.sqrt(runCookiesEarned / 125000));
-    }
-
-    function getClickSkillMultiplier() {
-      return 1 + prestigeSkills.clickPower * 0.12;
-    }
-
-    function getAutoSkillMultiplier() {
-      return 1 + prestigeSkills.autoPower * 0.12;
-    }
-
-    function getGoldenSkillMultiplier() {
-      return 1 + prestigeSkills.goldenLuck * 0.15;
-    }
-
-    function getRpgSkillMultiplier() {
-      return 1 + prestigeSkills.rpgForce * 0.12;
-    }
-
-    function getCasinoSkillMultiplier() {
-      return 1 + prestigeSkills.casinoLuck * 0.08;
-    }
-
-    function getSpaghettiSkillMultiplier() {
-      return 1 + prestigeSkills.spaghettiMastery * 0.12;
-    }
-
-    function effectiveClickPower() {
-      return Math.max(1, Math.floor(cookiesPerClick * getClickSkillMultiplier()));
-    }
-
-    function effectiveSecondPower() {
-      return Math.max(0, Math.floor(cookiesPerSecond * getAutoSkillMultiplier()));
-    }
-
-    function updatePrestigeUI() {
-      const gain = getPrestigeGain();
-      const ready = runCookiesEarned >= prestigeThreshold && gain > 0;
-      const available = getAvailablePrestigePoints();
-
-      prestigeInfo.innerHTML = `
-        Points totaux: <b>${prestigePoints}</b><br>
-        Points dispo: <b>${available}</b><br>
-        Cookies de cette run: <b>${formatNumber(runCookiesEarned)}</b><br>
-        Prochain prestige à: <b>${formatNumber(prestigeThreshold)}</b><br>
-        Gain actuel si tu reset: <b>+${gain}</b>
-      `;
-
-      prestigeBtn.disabled = !ready;
-      prestigeBtn.textContent = ready ? `Prestige maintenant (+${gain})` : "Prestige verrouillé";
-
-      const skillButtons = [
-        [skillClickPowerBtn, "clickPower", "🖱️ Clic puissant", "+12% clic"],
-        [skillAutoPowerBtn, "autoPower", "⚙️ Production auto", "+12% auto"],
-        [skillGoldenBtn, "goldenLuck", "✨ Golden chance", "+15% golden"],
-        [skillRpgBtn, "rpgForce", "⚔️ Force RPG", "+12% RPG"],
-        [skillCasinoBtn, "casinoLuck", "🎰 Main chanceuse", "+8% gains casino"],
-        [skillSpaghettiBtn, "spaghettiMastery", "🍝 Paddle expert", "+12% mini-jeu"]
-      ];
-
-      skillButtons.forEach(([btn, key, title, desc]) => {
-        const lvl = prestigeSkills[key];
-        const cost = getSkillCost(lvl);
-        btn.disabled = available < cost;
-        btn.innerHTML = `${title}<span class="skill-owned">Niveau ${lvl} • Coût ${cost} • ${desc}</span>`;
+    for(let i=0;i<18;i++){
+      make('div','bush',{
+        left:(i*210 + 40)+'px', bottom:'70px',
+        width:(70 + (i%3)*18)+'px', height:(30 + (i%2)*8)+'px'
       });
     }
 
-    function updateDarkForestUI() {
-      const eloikUnlocked = eloikPoopCount >= 1;
-
-      if (!eloikUnlocked) {
-        darkForestStatusEl.textContent = "Verrouillée — il faut acheter au moins 1 Caca à Éloik";
-        buyDarkForestBtn.disabled = true;
-        buyDarkForestBtn.textContent = "Acheter l’accès — 2 500 000";
-        enterDarkForestBtn.classList.add("hidden");
-      } else if (!darkForestAccessBought) {
-        darkForestStatusEl.textContent = "Déverrouillage disponible — 2 500 000 cookies";
-        buyDarkForestBtn.disabled = cookies < 2500000;
-        buyDarkForestBtn.textContent = "Acheter l’accès — 2 500 000";
-        enterDarkForestBtn.classList.add("hidden");
-      } else {
-        darkForestStatusEl.textContent = "Débloquée";
-        buyDarkForestBtn.disabled = true;
-        buyDarkForestBtn.textContent = "Accès acheté";
-        enterDarkForestBtn.classList.remove("hidden");
-      }
-
-      rpgLevelEl.textContent = rpgLevel;
-      rpgXpEl.textContent = `${formatNumber(rpgXp)} / ${formatNumber(rpgXpToNext)}`;
-      rpgHpEl.textContent = `${formatNumber(rpgHp)} / ${formatNumber(rpgMaxHp)}`;
-      rpgCookiesEarnedEl.textContent = formatNumber(rpgCookiesEarned);
-      bossesKilledEl.textContent = formatNumber(bossesKilled);
-      rpgAttackEl.textContent = formatNumber(getRpgAttack());
-      rpgDefenseEl.textContent = formatNumber(getRpgDefense());
-      rpgSwordEl.textContent = rpgSword;
-      rpgArmorEl.textContent = rpgArmor;
-
-      buySwordBtn.disabled = cookies < 25000;
-      buyArmorBtn.disabled = cookies < 25000;
-      toggleMusicBtn.textContent = musicEnabled ? "🎵 Musique: ON" : "🎵 Musique: OFF";
-
-      if (currentEnemy) {
-        enemyLabelEl.textContent = currentEnemy.name;
-        enemyHpLabelEl.textContent = `HP: ${formatNumber(currentEnemy.hp)} / ${formatNumber(currentEnemy.maxHp)}`;
-      } else {
-        enemyLabelEl.textContent = "Aucun ennemi";
-        enemyHpLabelEl.textContent = "HP: 0 / 0";
-      }
-    }
-
-
-    const philoQuestions = [
-      {
-        q: "Vaut-il mieux une vérité qui blesse ou une illusion qui apaise?",
-        options: [
-          "Toujours la vérité, même si elle détruit quelqu’un.",
-          "Toujours l’illusion, si elle rend la vie plus douce.",
-          "La vérité, sauf quand le coût moral dépasse le bien qu’elle apporte.",
-          "Aucune des deux n’a de valeur réelle."
-        ],
-        answer: 2,
-        reward: 3200,
-        explain: "Souvent, le point le plus défendable moralement est de peser le bien, le tort et le contexte."
-      },
-      {
-        q: "Si ton identité change complètement avec le temps, en quel sens restes-tu la même personne?",
-        options: [
-          "Parce que le corps reste à peu près le même.",
-          "Parce que les souvenirs suffisent toujours.",
-          "Parce qu’il existe une continuité psychologique, même imparfaite.",
-          "On ne reste jamais la même personne."
-        ],
-        answer: 2,
-        reward: 3400,
-        explain: "La continuité psychologique est souvent l’idée la plus solide dans ce type de problème."
-      },
-      {
-        q: "Une action bonne est-elle bonne à cause de ses conséquences ou de son intention?",
-        options: [
-          "Seulement l’intention compte.",
-          "Seulement les conséquences comptent.",
-          "Les deux comptent, mais dans des proportions qui dépendent du contexte.",
-          "Ni l’un ni l’autre: seule la loi compte."
-        ],
-        answer: 2,
-        reward: 3600,
-        explain: "Les théories morales s’opposent ici, mais une réponse nuancée évite les extrêmes."
-      },
-      {
-        q: "Si une machine pouvait te rendre heureux en permanence dans une simulation, devrais-tu l’accepter?",
-        options: [
-          "Oui, le bonheur suffit.",
-          "Non, parce que l’authenticité a une valeur propre.",
-          "Oui, si personne ne peut savoir la différence.",
-          "Non, mais seulement par orgueil."
-        ],
-        answer: 1,
-        reward: 3800,
-        explain: "L’objection classique est que l’authenticité, l’action réelle et le rapport au monde comptent."
-      },
-      {
-        q: "Peut-on être moralement responsable d’un acte si notre caractère a été entièrement façonné par des causes extérieures?",
-        options: [
-          "Oui, totalement quand même.",
-          "Non, jamais.",
-          "Responsabilité partielle: la causalité n’élimine pas toute imputabilité.",
-          "Seulement si on regrette après."
-        ],
-        answer: 2,
-        reward: 4000,
-        explain: "Le compatibilisme soutient souvent qu’une certaine responsabilité demeure malgré le déterminisme."
-      },
-      {
-        q: "Est-ce que l’égalité juste veut dire traiter tout le monde pareil?",
-        options: [
-          "Oui, toujours pareil.",
-          "Non, la justice peut exiger un traitement différent selon la situation.",
-          "Oui, sauf pour les riches.",
-          "La justice n’a rien à voir avec l’égalité."
-        ],
-        answer: 1,
-        reward: 4200,
-        explain: "L’équité et l’égalité stricte ne sont pas toujours la même chose."
-      },
-      {
-        q: "Mentir pour protéger une personne vulnérable est-il forcément immoral?",
-        options: [
-          "Oui, mentir est toujours immoral.",
-          "Non, le devoir de protection peut l’emporter.",
-          "Oui, sauf si personne ne le découvre.",
-          "Non, parce que la morale n’existe pas."
-        ],
-        answer: 1,
-        reward: 4400,
-        explain: "Ici encore, une position moins absolue tient mieux face aux cas difficiles."
-      },
-      {
-        q: "Le libre arbitre exige-t-il la possibilité réelle d’avoir pu agir autrement?",
-        options: [
-          "Oui, sans ça il n’y a aucune liberté.",
-          "Non, agir selon ses raisons peut suffire.",
-          "Oui, mais seulement pour les crimes.",
-          "Non, parce que tout est hasard."
-        ],
-        answer: 1,
-        reward: 4600,
-        explain: "Beaucoup de philosophes défendent une liberté liée aux raisons plutôt qu’à l’indétermination pure."
-      },
-      {
-        q: "Est-ce qu’une vie courte mais intense vaut plus qu’une vie longue mais vide?",
-        options: [
-          "Oui, toujours.",
-          "Non, toujours.",
-          "Cela dépend de ce qu’on entend par intensité et par vide.",
-          "La durée seule décide."
-        ],
-        answer: 2,
-        reward: 4800,
-        explain: "La question force à clarifier les critères de valeur d’une vie."
-      },
-      {
-        q: "Peut-on être une bonne personne sans jamais remettre en question ses propres croyances?",
-        options: [
-          "Oui, si les intentions sont bonnes.",
-          "Non, l’examen critique de soi fait partie de la vertu.",
-          "Oui, si la tradition est ancienne.",
-          "Non, sauf pour les génies."
-        ],
-        answer: 1,
-        reward: 5000,
-        explain: "L’humilité intellectuelle et l’examen de soi sont souvent vus comme essentiels."
-      },
-      {
-        q: "La souffrance donne-t-elle automatiquement du sens à une existence?",
-        options: [
-          "Oui, toujours.",
-          "Non, elle peut parfois approfondir une vie sans lui donner automatiquement du sens.",
-          "Oui, si elle est grande.",
-          "Non, parce que le sens n’existe pas."
-        ],
-        answer: 1,
-        reward: 5200,
-        explain: "La souffrance n’est pas en elle-même une garantie de sens."
-      },
-      {
-        q: "Si personne ne te voit faire le bien, ce bien a-t-il moins de valeur?",
-        options: [
-          "Oui, parce qu’il n’influence pas l’exemple public.",
-          "Non, sa valeur morale peut rester entière.",
-          "Oui, sauf si c’est très héroïque.",
-          "La valeur dépend seulement de la réputation."
-        ],
-        answer: 1,
-        reward: 5400,
-        explain: "La valeur morale ne dépend pas forcément de la visibilité sociale."
-      },
-      {
-        q: "Un monde parfaitement ordonné mais sans liberté serait-il préférable à un monde libre mais imparfait?",
-        options: [
-          "Oui, l’ordre vaut plus que la liberté.",
-          "Non, une liberté imparfaite vaut souvent mieux qu’un ordre total sans autonomie.",
-          "Oui, si les gens ont du confort.",
-          "Impossible à comparer."
-        ],
-        answer: 1,
-        reward: 5600,
-        explain: "La liberté a généralement une valeur fondamentale, même au prix du désordre."
-      },
-      {
-        q: "L’amour est-il plus vrai lorsqu’il est choisi librement que lorsqu’il est inévitable?",
-        options: [
-          "Oui, le choix libre lui donne une profondeur particulière.",
-          "Non, l’inévitable est plus pur.",
-          "Oui, mais seulement au début.",
-          "L’amour n’est jamais libre."
-        ],
-        answer: 0,
-        reward: 5800,
-        explain: "Le lien entre amour et liberté de se donner est souvent central."
-      },
-      {
-        q: "Si une règle morale produit constamment des résultats inhumains, faut-il l’abandonner?",
-        options: [
-          "Jamais: une règle est une règle.",
-          "Oui: une morale qui détruit l’humain rate sa propre fin.",
-          "Non, sauf si tout le monde est d’accord.",
-          "On doit seulement l’ignorer en secret."
-        ],
-        answer: 1,
-        reward: 6000,
-        explain: "Une règle morale doit rester justifiable humainement."
-      }
+    // ground segments with gaps
+    const gSegs = [
+      [0, 420],[500, 420],[1020, 360],[1470, 420],[1980, 380],[2470, 320],[2870, 500]
     ];
-
-    function logPhilo(text) {
-      philoLogEl.textContent = text;
-    }
-
-    function updatePhiloUI() {
-      const q = philoQuestions[philoQuestionCursor];
-      philoQuestionIndexEl.textContent = `${philoQuestionCursor + 1} / ${philoQuestions.length}`;
-      philoScoreEl.textContent = formatNumber(philoScore);
-      philoAnsweredEl.textContent = formatNumber(philoAnswered);
-      philoCookiesEarnedEl.textContent = formatNumber(philoCookiesEarned);
-      philoProgressTextEl.textContent = `Question ${philoQuestionCursor + 1} sur ${philoQuestions.length}`;
-      philoQuestionTextEl.textContent = q.q;
-      philoOptionA.textContent = "A. " + q.options[0];
-      philoOptionB.textContent = "B. " + q.options[1];
-      philoOptionC.textContent = "C. " + q.options[2];
-      philoOptionD.textContent = "D. " + q.options[3];
-
-      [philoOptionA, philoOptionB, philoOptionC, philoOptionD].forEach(btn => {
-        btn.disabled = philoAnsweredCurrent;
-      });
-    }
-
-    function answerPhilo(choice) {
-      if (philoAnsweredCurrent) return;
-      philoAnsweredCurrent = true;
-      philoAnswered++;
-
-      const q = philoQuestions[philoQuestionCursor];
-      if (choice === q.answer) {
-        philoScore++;
-        cookies += q.reward;
-        totalCookiesEarned += q.reward;
-        runCookiesEarned += q.reward;
-        philoCookiesEarned += q.reward;
-        showToast(`🧠 +${formatNumber(q.reward)} cookies`);
-        logPhilo("Bonne réponse. " + q.explain);
-      } else {
-        logPhilo("Réponse discutable... " + q.explain);
-      }
-
-      updateUI();
-      updatePhiloUI();
-    }
-
-    function nextPhiloQuestion() {
-      philoQuestionCursor++;
-      if (philoQuestionCursor >= philoQuestions.length) {
-        philoQuestionCursor = 0;
-        logPhilo("Tu as fini le cycle philosophique. On repart au début.");
-      }
-      philoAnsweredCurrent = false;
-      updatePhiloUI();
-    }
-
-    function revealPhiloAnswer() {
-      const q = philoQuestions[philoQuestionCursor];
-      const letters = ["A", "B", "C", "D"];
-      logPhilo(`Réponse suggérée: ${letters[q.answer]}. ${q.explain}`);
-    }
-
-    function resetPhiloQuiz() {
-      philoQuestionCursor = 0;
-      philoScore = 0;
-      philoAnswered = 0;
-      philoCookiesEarned = 0;
-      philoAnsweredCurrent = false;
-      logPhilo("Le silence recommence. Les questions reviennent.");
-      updatePhiloUI();
-    }
-
-    function enterPhilo() {
-      mainGameSection.classList.add("hidden");
-      darkForestPanel.style.display = "none";
-      spaghettiPanel.style.display = "none";
-      casinoPanel.style.display = "none";
-      philoPanel.style.display = "block";
-      updatePhiloUI();
-    }
-
-    function leavePhilo() {
-      philoPanel.style.display = "none";
-      mainGameSection.classList.remove("hidden");
-      updatePhiloUI();
-    }
-
-
-
-    const enemySvgTemplates = {
-      wolf: `
-        <ellipse cx="56" cy="92" rx="30" ry="6" fill="rgba(0,0,0,0.22)"/>
-        <path d="M14 62 Q18 38 42 30 L76 30 Q100 34 108 54 Q104 70 84 74 L56 78 L30 76 Q18 72 14 62 Z" fill="var(--enemy-main,#6b7078)"/>
-        <path d="M70 28 L82 10 L88 28 Z" fill="var(--enemy-main,#6b7078)"/>
-        <path d="M52 28 L62 10 L68 28 Z" fill="var(--enemy-main,#6b7078)"/>
-        <path d="M90 46 Q112 42 114 56 Q106 70 86 66 Z" fill="var(--enemy-main,#6b7078)"/>
-        <circle cx="88" cy="46" r="3" fill="#ff6c6c"/>
-        <circle cx="92" cy="46" r="1.2" fill="#1a0b0b"/>
-        <path d="M106 56 L114 58 L106 62 Z" fill="#e7d8c8"/>
-        <rect x="30" y="72" width="8" height="18" rx="3" fill="#4b4f56"/>
-        <rect x="50" y="74" width="8" height="16" rx="3" fill="#4b4f56"/>
-        <rect x="68" y="74" width="8" height="16" rx="3" fill="#4b4f56"/>
-        <path d="M16 56 Q4 48 10 38 Q24 42 26 56 Z" fill="#50545b"/>
-      `,
-      deer: `
-        <ellipse cx="58" cy="92" rx="30" ry="6" fill="rgba(0,0,0,0.22)"/>
-        <path d="M18 62 Q22 42 42 36 L78 34 Q98 36 108 52 Q102 70 82 74 L54 76 L28 74 Q18 70 18 62 Z" fill="var(--enemy-main,#7b5632)"/>
-        <path d="M82 36 Q102 24 110 42 Q106 58 86 56 Z" fill="var(--enemy-main,#7b5632)"/>
-        <path d="M88 24 Q92 4 98 18 M92 20 Q104 0 108 18" stroke="#c8b07a" stroke-width="4" fill="none" stroke-linecap="round"/>
-        <path d="M76 24 Q72 4 66 18 M72 20 Q60 0 56 18" stroke="#c8b07a" stroke-width="4" fill="none" stroke-linecap="round"/>
-        <circle cx="92" cy="42" r="2.5" fill="#111"/>
-        <rect x="32" y="74" width="6" height="16" rx="3" fill="#5d4128"/>
-        <rect x="48" y="74" width="6" height="16" rx="3" fill="#5d4128"/>
-        <rect x="66" y="74" width="6" height="16" rx="3" fill="#5d4128"/>
-        <rect x="78" y="74" width="6" height="16" rx="3" fill="#5d4128"/>
-      `,
-      shadow: `
-        <ellipse cx="60" cy="92" rx="28" ry="6" fill="rgba(0,0,0,0.22)"/>
-        <path d="M34 82 Q20 60 28 38 Q42 16 60 18 Q82 14 94 36 Q104 56 88 82 Z" fill="var(--enemy-main,#35324f)"/>
-        <path d="M42 26 L50 8 L58 26 M62 26 L70 8 L78 26" fill="var(--enemy-main,#35324f)"/>
-        <circle cx="50" cy="48" r="4" fill="#ff5d85"/>
-        <circle cx="70" cy="48" r="4" fill="#ff5d85"/>
-        <path d="M46 64 Q60 74 74 64" stroke="#cfd4ff" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <path d="M36 80 Q24 96 30 70 M84 80 Q96 96 90 70" stroke="var(--enemy-main,#35324f)" stroke-width="8" fill="none" stroke-linecap="round"/>
-      `,
-      mist: `
-        <ellipse cx="60" cy="92" rx="30" ry="6" fill="rgba(0,0,0,0.18)"/>
-        <path d="M22 76 Q18 42 42 26 Q62 16 80 28 Q104 40 98 76 Q84 88 60 86 Q34 90 22 76 Z" fill="var(--enemy-main,#245858)"/>
-        <circle cx="48" cy="42" r="7" fill="#dffbff" opacity="0.85"/>
-        <circle cx="74" cy="44" r="6" fill="#dffbff" opacity="0.85"/>
-        <path d="M42 64 Q58 72 80 62" stroke="#dffbff" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <path d="M16 74 Q4 62 18 50 M102 74 Q116 60 100 50" stroke="var(--enemy-main,#245858)" stroke-width="10" fill="none" stroke-linecap="round"/>
-        <path d="M34 84 Q52 96 70 84 Q88 96 102 82" stroke="rgba(210,255,255,0.55)" stroke-width="6" fill="none" stroke-linecap="round"/>
-      `,
-      guardian: `
-        <ellipse cx="60" cy="94" rx="34" ry="6" fill="rgba(0,0,0,0.25)"/>
-        <path d="M28 82 L24 46 Q32 22 60 18 Q86 22 96 46 L92 82 Q80 92 60 92 Q38 92 28 82 Z" fill="var(--enemy-main,#5f1717)"/>
-        <path d="M44 24 L52 8 L60 24 M60 24 L68 8 L76 24" fill="var(--enemy-main,#5f1717)"/>
-        <circle cx="48" cy="46" r="5" fill="#ffcc66"/>
-        <circle cx="72" cy="46" r="5" fill="#ffcc66"/>
-        <rect x="44" y="62" width="32" height="10" rx="4" fill="#1e0909"/>
-        <rect x="16" y="40" width="12" height="36" rx="6" fill="#3a0e0e"/>
-        <rect x="92" y="40" width="12" height="36" rx="6" fill="#3a0e0e"/>
-      `,
-      boss_wolf: `
-        <ellipse cx="58" cy="94" rx="36" ry="6" fill="rgba(0,0,0,0.26)"/>
-        <path d="M12 66 Q16 34 40 24 L80 24 Q108 28 116 54 Q108 74 84 80 L52 82 L24 78 Q14 74 12 66 Z" fill="var(--enemy-main,#8b1717)"/>
-        <path d="M74 24 L88 2 L98 24 Z" fill="var(--enemy-main,#8b1717)"/>
-        <path d="M48 24 L60 2 L70 24 Z" fill="var(--enemy-main,#8b1717)"/>
-        <path d="M94 42 Q114 38 118 56 Q110 72 88 68 Z" fill="var(--enemy-main,#8b1717)"/>
-        <circle cx="92" cy="44" r="5" fill="#ffd46d"/>
-        <path d="M104 56 L116 60 L104 64 Z" fill="#f3e4d0"/>
-        <rect x="28" y="78" width="10" height="16" rx="4" fill="#561010"/>
-        <rect x="50" y="78" width="10" height="16" rx="4" fill="#561010"/>
-        <rect x="72" y="78" width="10" height="16" rx="4" fill="#561010"/>
-        <path d="M14 54 Q0 40 8 26 Q24 34 26 56 Z" fill="#641212"/>
-      `,
-      boss_tree: `
-        <ellipse cx="60" cy="94" rx="36" ry="6" fill="rgba(0,0,0,0.26)"/>
-        <path d="M60 14 Q86 16 98 36 Q112 58 96 74 Q82 88 60 88 Q36 88 20 72 Q6 58 20 36 Q34 14 60 14 Z" fill="var(--enemy-main,#355f2a)"/>
-        <rect x="50" y="70" width="20" height="20" rx="5" fill="#5b3922"/>
-        <circle cx="42" cy="46" r="6" fill="#ffea7a"/>
-        <circle cx="78" cy="46" r="6" fill="#ffea7a"/>
-        <path d="M42 64 Q60 74 78 64" stroke="#e8f3d2" stroke-width="4" fill="none" stroke-linecap="round"/>
-        <path d="M26 32 Q10 12 28 8 M96 32 Q112 12 94 8" stroke="#8ab56f" stroke-width="6" fill="none" stroke-linecap="round"/>
-      `,
-      boss_void: `
-        <ellipse cx="60" cy="94" rx="36" ry="6" fill="rgba(0,0,0,0.26)"/>
-        <path d="M34 88 Q10 62 22 30 Q36 4 60 8 Q88 2 102 30 Q116 62 86 88 Z" fill="var(--enemy-main,#3b315f)"/>
-        <path d="M34 24 L44 6 L54 24 M66 24 L76 6 L86 24" fill="var(--enemy-main,#3b315f)"/>
-        <circle cx="46" cy="42" r="7" fill="#89f7ff"/>
-        <circle cx="74" cy="42" r="7" fill="#89f7ff"/>
-        <path d="M42 66 Q60 84 78 66" stroke="#f5d3ff" stroke-width="4" fill="none" stroke-linecap="round"/>
-        <path d="M18 72 Q4 96 30 78 M102 72 Q116 96 90 78" stroke="#65559f" stroke-width="8" fill="none" stroke-linecap="round"/>
-      `,
-      default: `
-        <ellipse cx="60" cy="92" rx="28" ry="6" fill="rgba(0,0,0,0.22)"/>
-        <circle cx="60" cy="50" r="28" fill="var(--enemy-main,#7b1414)"/>
-        <circle cx="50" cy="46" r="4" fill="#fff"/>
-        <circle cx="70" cy="46" r="4" fill="#fff"/>
-      `
-    };
-
-    function getEnemySpriteKey(name) {
-      if (!name) return "default";
-      const lower = name.toLowerCase();
-      if (lower.includes("boss • roi des loups")) return "boss_wolf";
-      if (lower.includes("boss • abomination")) return "boss_tree";
-      if (lower.includes("boss • veilleur")) return "boss_void";
-      if (lower.includes("loup")) return "wolf";
-      if (lower.includes("cerf")) return "deer";
-      if (lower.includes("ombre")) return "shadow";
-      if (lower.includes("brume")) return "mist";
-      if (lower.includes("gardien")) return "guardian";
-      return "default";
-    }
-
-    function renderEnemySprite(name, color) {
-      const svg = document.getElementById("enemySvg");
-      const enemy = document.getElementById("rpgEnemy");
-      if (!svg || !enemy) return;
-      const key = getEnemySpriteKey(name);
-      enemy.setAttribute("data-enemy", key);
-      enemy.style.setProperty("--enemy-main", color || "#7b1414");
-      svg.innerHTML = enemySvgTemplates[key] || enemySvgTemplates.default;
-    }
-
-    function spawnElonCar() {
-      if (!elonCar) return;
-
-      elonCar.style.transition = "none";
-      elonCar.style.transform = "translateX(0)";
-      elonCar.style.left = "-220px";
-      elonCar.offsetHeight;
-      elonCar.style.transition = "transform 7s linear";
-      elonCar.style.transform = "translateX(calc(100vw + 320px))";
-    }
-
-    function updateCasinoUI() {
-      const sarahUnlocked = sarahPepinCount >= 1;
-
-      if (!sarahUnlocked) {
-        casinoStatusEl.textContent = "Verrouillé — il faut acheter Sarah Pepin";
-        buyCasinoBtn.disabled = true;
-        buyCasinoBtn.textContent = "Acheter l’accès — 200 000";
-        enterCasinoBtn.classList.add("hidden");
-      } else if (!casinoAccessBought) {
-        casinoStatusEl.textContent = "Achetable pour 200 000 cookies";
-        buyCasinoBtn.disabled = cookies < 200000;
-        buyCasinoBtn.textContent = "Acheter l’accès — 200 000";
-        enterCasinoBtn.classList.add("hidden");
-      } else {
-        casinoStatusEl.textContent = "Débloqué";
-        buyCasinoBtn.disabled = true;
-        buyCasinoBtn.textContent = "Accès acheté";
-        enterCasinoBtn.classList.remove("hidden");
-      }
-
-      casinoBetStatEl.textContent = formatNumber(casinoBetTotal);
-      casinoWonStatEl.textContent = formatNumber(casinoWonTotal);
-      casinoWinsStatEl.textContent = formatNumber(casinoWins);
-      casinoLossesStatEl.textContent = formatNumber(casinoLosses);
-
-      [bet1kBtn, bet10kBtn, bet50kBtn, bet100kBtn].forEach((btn, i) => {
-        const amount = [1000,10000,50000,100000][i];
-        btn.disabled = cookies < amount;
-      });
-      cupBet5kBtn.disabled = cookies < 5000;
-      cupBet20kBtn.disabled = cookies < 20000;
-      cup1Btn.disabled = currentCupBet <= 0;
-      cup2Btn.disabled = currentCupBet <= 0;
-      cup3Btn.disabled = currentCupBet <= 0;
-    }
-
-    function updateUI() {
-      cookiesEl.textContent = formatNumber(cookies);
-      perClickEl.textContent = formatNumber(effectiveClickPower());
-      perSecondEl.textContent = formatNumber(effectiveSecondPower());
-      goldenCountEl.textContent = formatNumber(goldenCaught);
-
-      clickUpgradeCountEl.textContent = clickUpgradeCount;
-      grandmaCountEl.textContent = grandmaCount;
-      factoryCountEl.textContent = factoryCount;
-      farmCountEl.textContent = farmCount;
-      bankCountEl.textContent = bankCount;
-      kingdomCountEl.textContent = kingdomCount;
-      alyciaHouseCountEl.textContent = alyciaHouseCount;
-      eloikPoopCountEl.textContent = eloikPoopCount;
-      sarahPepinCountEl.textContent = sarahPepinCount;
-      snackyIndustryCountEl.textContent = snackyIndustryCount;
-      bobineDogCountEl.textContent = bobineDogCount;
-      cheeseWhizFactoryCountEl.textContent = cheeseWhizFactoryCount;
-      mikoCountEl.textContent = mikoCount;
-      technobladeCountEl.textContent = technobladeCount;
-
-      clickUpgradeCostEl.textContent = formatNumber(clickUpgradeCost);
-      grandmaCostEl.textContent = formatNumber(grandmaCost);
-      factoryCostEl.textContent = formatNumber(factoryCost);
-      farmCostEl.textContent = formatNumber(farmCost);
-      bankCostEl.textContent = formatNumber(bankCost);
-      kingdomCostEl.textContent = formatNumber(kingdomCost);
-      alyciaHouseCostEl.textContent = formatNumber(alyciaHouseCost);
-      eloikPoopCostEl.textContent = formatNumber(eloikPoopCost);
-      sarahPepinCostEl.textContent = formatNumber(sarahPepinCost);
-      snackyIndustryCostEl.textContent = formatNumber(snackyIndustryCost);
-      bobineDogCostEl.textContent = formatNumber(bobineDogCost);
-      cheeseWhizFactoryCostEl.textContent = formatNumber(cheeseWhizFactoryCost);
-      mikoCostEl.textContent = formatNumber(mikoCost);
-      technobladeCostEl.textContent = formatNumber(technobladeCost);
-
-      buyClickUpgradeBtn.disabled = cookies < clickUpgradeCost;
-      buyGrandmaBtn.disabled = cookies < grandmaCost;
-      buyFactoryBtn.disabled = cookies < factoryCost;
-      buyFarmBtn.disabled = cookies < farmCost;
-      buyBankBtn.disabled = cookies < bankCost;
-      buyKingdomBtn.disabled = cookies < kingdomCost;
-      buyAlyciaHouseBtn.disabled = cookies < alyciaHouseCost;
-      buyEloikPoopBtn.disabled = cookies < eloikPoopCost;
-      buySarahPepinBtn.disabled = cookies < sarahPepinCost;
-      buySnackyIndustryBtn.disabled = cookies < snackyIndustryCost;
-      buyBobineDogBtn.disabled = cookies < bobineDogCost;
-      buyCheeseWhizFactoryBtn.disabled = cookies < cheeseWhizFactoryCost;
-      buyMikoBtn.disabled = cookies < mikoCost;
-      buyTechnobladeBtn.disabled = cookies < technobladeCost;
-
-      updatePrestigeUI();
-      updateDarkForestUI();
-      updateSpaghettiUI();
-      updateCasinoUI();
-    }
-
-    function grantCookies(amount) {
-      cookies += amount;
-      totalCookiesEarned += amount;
-      runCookiesEarned += amount;
-      updateUI();
-      checkAchievements();
-    }
-
-    function checkAchievements() {
-      if (!achievements.firstClick && totalClicks >= 1) {
-        achievements.firstClick = true;
-        showToast("🏆 Achievement: Premier clic");
-      }
-
-      if (!achievements.hundredClicks && totalClicks >= 100) {
-        achievements.hundredClicks = true;
-        showToast("🏆 Achievement: 100 clics");
-      }
-
-      if (!achievements.firstGolden && goldenCaught >= 1) {
-        achievements.firstGolden = true;
-        showToast("🏆 Achievement: Premier golden cookie");
-      }
-
-      if (!achievements.thousandCookies && totalCookiesEarned >= 1000) {
-        achievements.thousandCookies = true;
-        showToast("🏆 Achievement: 1000 cookies gagnés");
-      }
-
-      if (!achievements.tenPerSecond && effectiveSecondPower() >= 10) {
-        achievements.tenPerSecond = true;
-        showToast("🏆 Achievement: 10 cookies/seconde");
-      }
-
-      if (!achievements.hundredPerSecond && effectiveSecondPower() >= 100) {
-        achievements.hundredPerSecond = true;
-        showToast("🏆 Achievement: 100 cookies/seconde");
-      }
-
-      if (!achievements.combo10 && comboCount >= 10) {
-        achievements.combo10 = true;
-        showToast("🏆 Achievement: Combo x10");
-      }
-
-      if (!achievements.kingdom && kingdomCount >= 1) {
-        achievements.kingdom = true;
-        showToast("🏆 Achievement: Royaume débloqué");
-      }
-
-      if (!achievements.firstPrestige && prestigePoints >= 1) {
-        achievements.firstPrestige = true;
-        showToast("🏆 Achievement: Premier prestige");
-      }
-    }
-
-    function buyUpgrade(cost, onBuy) {
-      if (cookies >= cost) {
-        cookies -= cost;
-        onBuy();
-        updateUI();
-        checkAchievements();
-      }
-    }
-
-    cookieBtn.addEventListener("click", (e) => {
-      const now = Date.now();
-      totalClicks++;
-
-      if (now - lastClickTime <= 500) comboCount++;
-      else comboCount = 1;
-      lastClickTime = now;
-
-      let gain = effectiveClickPower();
-
-      if (comboCount >= 8) {
-        gain += Math.max(1, Math.floor(effectiveClickPower() * 0.35));
-      }
-
-      const crit = Math.random() < 0.04;
-      if (crit) {
-        gain *= 2;
-        showToast("💥 Critical click x2");
-      }
-
-      grantCookies(gain);
-
-      cookieBtn.classList.add("clicked");
-      setTimeout(() => cookieBtn.classList.remove("clicked"), 90);
-
-      showFloatingText(`+${formatNumber(gain)}`, e.clientX - 10, e.clientY - 10, crit);
+    gSegs.forEach(([x,w])=>{
+      const el = make('div','groundSeg',{left:x+'px', top:groundY+'px', width:w+'px'});
+      solids.push(rectObj(el,x,groundY,w,110,'ground'));
     });
 
-    buyClickUpgradeBtn.addEventListener("click", () => {
-      buyUpgrade(clickUpgradeCost, () => {
-        clickUpgradeCount++;
-        cookiesPerClick += 1;
-        clickUpgradeCost = Math.floor(clickUpgradeCost * 1.48);
-      });
-    });
+    // platforms higher and more vertical
+    const plats = [
+      [210, groundY-140, 110, 24],
+      [390, groundY-240, 110, 24],
+      [620, groundY-340, 120, 24],
+      [820, groundY-250, 110, 24],
 
-    buyGrandmaBtn.addEventListener("click", () => {
-      buyUpgrade(grandmaCost, () => {
-        grandmaCount++;
-        cookiesPerSecond += 1;
-        grandmaCost = Math.floor(grandmaCost * 1.30);
-      });
-    });
+      [1110, groundY-150, 120, 24],
+      [1290, groundY-250, 120, 24],
 
-    buyFactoryBtn.addEventListener("click", () => {
-      buyUpgrade(factoryCost, () => {
-        factoryCount++;
-        cookiesPerSecond += 4;
-        factoryCost = Math.floor(factoryCost * 1.34);
-      });
-    });
+      [1540, groundY-190, 120, 24],
+      [1720, groundY-300, 120, 24],
+      [1890, groundY-410, 120, 24],
 
-    buyFarmBtn.addEventListener("click", () => {
-      buyUpgrade(farmCost, () => {
-        farmCount++;
-        cookiesPerSecond += 10;
-        farmCost = Math.floor(farmCost * 1.37);
-      });
-    });
+      [2080, groundY-170, 120, 24],
+      [2280, groundY-270, 120, 24],
 
-    buyBankBtn.addEventListener("click", () => {
-      buyUpgrade(bankCost, () => {
-        bankCount++;
-        cookiesPerSecond += 24;
-        bankCost = Math.floor(bankCost * 1.41);
-      });
-    });
-
-    buyKingdomBtn.addEventListener("click", () => {
-      buyUpgrade(kingdomCost, () => {
-        kingdomCount++;
-        cookiesPerSecond += 60;
-        kingdomCost = Math.floor(kingdomCost * 1.46);
-      });
-    });
-
-    buyAlyciaHouseBtn.addEventListener("click", () => {
-      buyUpgrade(alyciaHouseCost, () => {
-        alyciaHouseCount++;
-        cookiesPerSecond += 150;
-        alyciaHouseCost = Math.floor(alyciaHouseCost * 1.68);
-      });
-    });
-
-    buyEloikPoopBtn.addEventListener("click", () => {
-      buyUpgrade(eloikPoopCost, () => {
-        eloikPoopCount++;
-        cookiesPerSecond += 350;
-        eloikPoopCost = Math.floor(eloikPoopCost * 1.74);
-      });
-    });
-
-    buySarahPepinBtn.addEventListener("click", () => {
-      buyUpgrade(sarahPepinCost, () => {
-        sarahPepinCount++;
-        cookiesPerSecond += 900;
-        sarahPepinCost = Math.floor(sarahPepinCost * 1.82);
-      });
-    });
-
-    buySnackyIndustryBtn.addEventListener("click", () => {
-      buyUpgrade(snackyIndustryCost, () => {
-        snackyIndustryCount++;
-        cookiesPerSecond += 1400;
-        snackyIndustryCost = Math.floor(snackyIndustryCost * 1.92);
-      });
-    });
-
-    buyBobineDogBtn.addEventListener("click", () => {
-      buyUpgrade(bobineDogCost, () => {
-        bobineDogCount++;
-        cookiesPerSecond += 2400;
-        bobineDogCost = Math.floor(bobineDogCost * 2.05);
-      });
-    });
-
-    buyCheeseWhizFactoryBtn.addEventListener("click", () => {
-      buyUpgrade(cheeseWhizFactoryCost, () => {
-        cheeseWhizFactoryCount++;
-        cookiesPerSecond += 4200;
-        cheeseWhizFactoryCost = Math.floor(cheeseWhizFactoryCost * 2.18);
-      });
-    });
-
-    buyMikoBtn.addEventListener("click", () => {
-      buyUpgrade(mikoCost, () => {
-        mikoCount++;
-        cookiesPerSecond += 7800;
-        mikoCost = Math.floor(mikoCost * 2.34);
-      });
-    });
-
-    buyTechnobladeBtn.addEventListener("click", () => {
-      buyUpgrade(technobladeCost, () => {
-        technobladeCount++;
-        cookiesPerSecond += 20000;
-        technobladeCost = Math.floor(technobladeCost * 2.55);
-      });
-    });
-
-    function tryPrestige() {
-      const gain = getPrestigeGain();
-
-      if (totalCookiesEarned < prestigeThreshold || gain <= 0) {
-        showToast("Prestige pas encore prêt");
-        return;
-      }
-
-      const ok = confirm(`Prestige va reset tes cookies et tes achats.\nTu gagnes +${gain} points de prestige.\nContinuer ?`);
-      if (!ok) return;
-
-      prestigePoints += gain;
-      prestigeMultiplier = 1 + prestigePoints * 0.12;
-
-      cookies = 0;
-      cookiesPerClick = 1;
-      cookiesPerSecond = 0;
-      goldenCaught = 0;
-
-      clickUpgradeCount = 0;
-      grandmaCount = 0;
-      factoryCount = 0;
-      farmCount = 0;
-      bankCount = 0;
-      kingdomCount = 0;
-      alyciaHouseCount = 0;
-      eloikPoopCount = 0;
-      sarahPepinCount = 0;
-      snackyIndustryCount = 0;
-      bobineDogCount = 0;
-      cheeseWhizFactoryCount = 0;
-      mikoCount = 0;
-      technobladeCount = 0;
-
-      clickUpgradeCost = 40;
-      grandmaCost = 35;
-      factoryCost = 160;
-      farmCost = 420;
-      bankCost = 1200;
-      kingdomCost = 4200;
-      alyciaHouseCost = 9000;
-      eloikPoopCost = 28000;
-      sarahPepinCost = 95000;
-      snackyIndustryCost = 180000;
-      bobineDogCost = 420000;
-      cheeseWhizFactoryCost = 980000;
-      mikoCost = 2400000;
-      technobladeCost = 9000000;
-
-      totalClicks = 0;
-      comboCount = 0;
-      prestigeThreshold = Math.floor(prestigeThreshold * 2.35);
-
-      updateUI();
-      saveGame();
-      checkAchievements();
-      showToast(`🌌 Prestige +${gain} | Bonus x${prestigeMultiplier.toFixed(2)}`);
-    }
-
-    prestigeBtn.addEventListener("click", tryPrestige);
-
-    function buyPrestigeSkill(key) {
-      const cost = getSkillCost(prestigeSkills[key]);
-      if (getAvailablePrestigePoints() < cost) {
-        showToast("Pas assez de points");
-        return;
-      }
-      prestigePointsSpent += cost;
-      prestigeSkills[key]++;
-      showToast("Skill amélioré");
-      updateUI();
-      saveGame();
-    }
-
-    skillClickPowerBtn.addEventListener("click", () => buyPrestigeSkill("clickPower"));
-    skillAutoPowerBtn.addEventListener("click", () => buyPrestigeSkill("autoPower"));
-    skillGoldenBtn.addEventListener("click", () => buyPrestigeSkill("goldenLuck"));
-    skillRpgBtn.addEventListener("click", () => buyPrestigeSkill("rpgForce"));
-    skillCasinoBtn.addEventListener("click", () => buyPrestigeSkill("casinoLuck"));
-    skillSpaghettiBtn.addEventListener("click", () => buyPrestigeSkill("spaghettiMastery"));
-
-    saveBtn.addEventListener("click", () => {
-      saveGame();
-      showToast("💾 Sauvegarde faite");
-    });
-
-    resetBtn.addEventListener("click", () => {
-      const ok = confirm("Tu veux vraiment reset le jeu COMPLET ?");
-      if (!ok) return;
-      localStorage.removeItem("colkieClickerUltimateSave");
-      location.reload();
-    });
-
-    setInterval(() => {
-      grantCookies(effectiveSecondPower());
-      saveGame();
-    }, 1000);
-
-    let goldenCookieActive = false;
-    let goldenCookieTimeout = null;
-
-    function spawnGoldenCookie() {
-      if (goldenCookieActive) return;
-      goldenCookieActive = true;
-
-      const golden = document.createElement("button");
-      golden.className = "golden-cookie";
-      golden.textContent = "✨";
-
-      const areaRect = cookieArea.getBoundingClientRect();
-      const size = 82;
-      const minLeft = 12;
-      const maxLeft = Math.max(12, areaRect.width - size - 12);
-      const minTop = 20;
-      const maxTop = Math.max(20, areaRect.height - size - 20);
-
-      const left = Math.floor(Math.random() * (maxLeft - minLeft + 1)) + minLeft;
-      const top = Math.floor(Math.random() * (maxTop - minTop + 1)) + minTop;
-
-      golden.style.left = left + "px";
-      golden.style.top = top + "px";
-
-      golden.addEventListener("click", () => {
-        const bonus = Math.max(45, Math.floor((effectiveSecondPower() * 10 + effectiveClickPower() * 7) * getGoldenSkillMultiplier()));
-        cookies += bonus;
-        totalCookiesEarned += bonus;
-        goldenCaught++;
-        updateUI();
-        checkAchievements();
-
-        const rect = golden.getBoundingClientRect();
-        showFloatingText(`+${formatNumber(bonus)} GOLD`, rect.left, rect.top, true);
-        showToast("✨ Golden cookie!");
-
-        golden.remove();
-        goldenCookieActive = false;
-        if (goldenCookieTimeout) clearTimeout(goldenCookieTimeout);
-
-        if (Math.random() < 0.10) {
-          startCookieRain();
-        }
-      });
-
-      cookieArea.appendChild(golden);
-
-      goldenCookieTimeout = setTimeout(() => {
-        if (golden.parentNode) golden.remove();
-        goldenCookieActive = false;
-      }, 5000);
-    }
-
-    function scheduleGoldenCookie() {
-      const delay = Math.floor(Math.random() * 35000) + 45000;
-      setTimeout(() => {
-        spawnGoldenCookie();
-        scheduleGoldenCookie();
-      }, delay);
-    }
-
-    function startCookieRain() {
-      if (rainActive) return;
-      rainActive = true;
-      showToast("🌧️ Pluie de cookies!");
-
-      let drops = 10;
-      let spawned = 0;
-
-      const interval = setInterval(() => {
-        const bonus = Math.max(5, Math.floor((effectiveClickPower() * 2 + effectiveSecondPower() * 0.45) * getGoldenSkillMultiplier()));
-        const x = Math.floor(Math.random() * (window.innerWidth - 80)) + 20;
-        const y = Math.floor(Math.random() * 180) + 80;
-
-        cookies += bonus;
-        totalCookiesEarned += bonus;
-        updateUI();
-
-        showFloatingText(`+${formatNumber(bonus)}`, x, y, true);
-
-        spawned++;
-        if (spawned >= drops) {
-          clearInterval(interval);
-          rainActive = false;
-          checkAchievements();
-        }
-      }, 320);
-    }
-
-    let loreStep = 0;
-    const loreLines = [
-      "Tu trouves un vieux passage caché derrière l’usine...",
-      "L’air devient froid. Trop froid.",
-      "Une silhouette immobile te regarde au loin.",
-      "Ses yeux deviennent rouges pendant une seconde.",
-      "Le royaume semble faux. Comme une scène vide.",
-      "Quelqu’un a menti sur tout depuis le début.",
-      "Tu entends: continue de cliquer.",
-      "Le cookie te regarde aussi.",
-      "GAME OVER."
+      [2520, groundY-150, 120, 24],
+      [2700, groundY-260, 120, 24],
+      [2900, groundY-360, 120, 24],
+      [3110, groundY-260, 120, 24]
     ];
-
-    loreBtn.addEventListener("click", () => {
-      loreBox.style.display = "block";
-      loreStep = 0;
-      loreText.textContent = loreLines[loreStep];
+    plats.forEach(([x,y,w,h])=>{
+      const el = make('div','platform',{left:x+'px', top:y+'px', width:w+'px', height:h+'px'});
+      solids.push(rectObj(el,x,y,w,h,'platform'));
     });
 
-    nextLoreBtn.addEventListener("click", () => {
-      loreStep++;
-      if (loreStep < loreLines.length) {
-        loreText.textContent = loreLines[loreStep];
+    // pipes
+    const pipes = [
+      [900, groundY-120, 90, 120],
+      [2370, groundY-160, 100, 160]
+    ];
+    pipes.forEach(([x,y,w,h])=>{
+      const el = make('div','pipe',{left:x+'px', top:y+'px', width:w+'px', height:h+'px'});
+      solids.push(rectObj(el,x,y,w,h,'pipe'));
+    });
+
+    // spikes - ground and platform spikes
+    const spikeList = [
+      [440, groundY-34],[472, groundY-34],
+      [740, groundY-34],[772, groundY-34],[804, groundY-34],
+      [1360, groundY-34],[1392, groundY-34],
+      [1648, groundY-224],[1680, groundY-224], // on elevated platform
+      [2440, groundY-34],[2472, groundY-34],
+      [2950, groundY-394],[2982, groundY-394]  // on final high platform
+    ];
+    spikeList.forEach(([x,y])=>{
+      const el = make('div','spike',{left:x+'px', top:y+'px'});
+      spikes.push(rectObj(el,x,y,32,34,'spike'));
+    });
+
+    // coins in jump arcs
+    const coinList = [
+      [242, groundY-190],[430, groundY-290],[660, groundY-390],[850, groundY-300],
+      [1140, groundY-200],[1320, groundY-300],
+      [1570, groundY-240],[1750, groundY-350],[1920, groundY-460],
+      [2110, groundY-220],[2310, groundY-320],
+      [2550, groundY-200],[2730, groundY-310],[2930, groundY-410],[3140, groundY-310]
+    ];
+    coinList.forEach(([x,y])=>{
+      const el = make('div','coin',{left:x+'px', top:y+'px'});
+      coins.push(rectObj(el,x,y,24,24,'coin'));
+    });
+
+    // enemies on useful heights
+    const enemyList = [
+      [560, groundY-38, 520, 860],
+      [1125, groundY-188, 1110, 1225],
+      [2088, groundY-208, 2080, 2188],
+      [3120, groundY-298, 3110, 3220]
+    ];
+    enemyList.forEach(([x,y,minX,maxX])=>{
+      const el = make('div','enemy',{left:x+'px', top:y+'px'}, '<div class="mouth"></div>');
+      enemies.push({el,x,y,w:42,h:38,minX,maxX,vx:1.25,active:true});
+    });
+
+    // flag
+    make('div','flagpole',{left:'3600px', top:(groundY-220)+'px', height:'220px'});
+    make('div','flag',{left:'3610px', top:(groundY-208)+'px'});
+
+    // player
+    playerEl = make('div','player',{left:'80px', top:(groundY-58)+'px'},
+      '<div class="hatTop"></div><div class="hatBrim"></div><div class="head"></div><div class="body"></div><div class="overalls"></div><div class="armL"></div><div class="armR"></div><div class="shoeL"></div><div class="shoeR"></div><div class="eyeL"></div><div class="eyeR"></div><div class="moust"></div>');
+  }
+
+  buildLevel();
+  setTimeout(()=>banner.style.opacity='0', 2200);
+  setTimeout(()=>banner.style.display='none', 2800);
+
+  const state = {
+    x:80, y:groundY-58, w:42, h:58, vx:0, vy:0,
+    left:false, right:false, up:false, onGround:false,
+    coins:0, lives:3, inv:0, won:false
+  };
+
+  function bind(code,val){
+    if(code==='ArrowLeft'||code==='KeyA') state.left=val;
+    if(code==='ArrowRight'||code==='KeyD') state.right=val;
+    if(code==='ArrowUp'||code==='KeyW'||code==='Space') state.up=val;
+  }
+  addEventListener('keydown', e=>{ bind(e.code,true); if(['ArrowLeft','ArrowRight','ArrowUp','Space'].includes(e.code)) e.preventDefault(); }, {passive:false});
+  addEventListener('keyup', e=>bind(e.code,false));
+
+  function hold(id,key){
+    const el=document.getElementById(id);
+    const on=e=>{e.preventDefault(); state[key]=true;};
+    const off=e=>{e.preventDefault(); state[key]=false;};
+    el.addEventListener('touchstart',on,{passive:false});
+    el.addEventListener('touchend',off,{passive:false});
+    el.addEventListener('touchcancel',off,{passive:false});
+    el.addEventListener('mousedown',on);
+    addEventListener('mouseup',off);
+    el.addEventListener('mouseleave',off);
+  }
+  hold('leftBtn','left'); hold('rightBtn','right'); hold('jumpBtn','up');
+
+  function hit(a,b){
+    return a.x < b.x+b.w && a.x+a.w > b.x && a.y < b.y+b.h && a.y+a.h > b.y;
+  }
+
+  function respawn(){
+    state.x=80; state.y=groundY-58; state.vx=0; state.vy=0;
+  }
+
+  function damage(){
+    if(state.inv>0 || state.won) return;
+    state.lives--; state.inv=90; livesTxt.textContent='Vies: '+state.lives;
+    if(state.lives<=0){
+      msg.style.display='block';
+      msg.innerHTML='Perdu 😵‍💫<br>Tape l’écran pour recommencer';
+    }
+    respawn();
+  }
+
+  function resetAll(){
+    state.coins=0; state.lives=3; state.inv=0; state.won=false;
+    coinsTxt.textContent='Pièces: 0'; livesTxt.textContent='Vies: 3';
+    msg.style.display='none';
+    buildLevel();
+    respawn();
+  }
+  addEventListener('pointerdown', ()=>{ if(state.lives<=0 || state.won) resetAll(); }, {passive:true});
+
+  function collide(axis){
+    const a = {x:state.x,y:state.y,w:state.w,h:state.h};
+    for(const s of solids){
+      if(!s.active || !hit(a,s)) continue;
+      if(axis==='x'){
+        if(state.vx>0) state.x = s.x - state.w;
+        else if(state.vx<0) state.x = s.x + s.w;
+        state.vx = 0;
       } else {
-        loreText.textContent = "GAME OVER.";
-        document.body.style.background = "black";
-        showToast("👁️ Le secret est terminé");
+        if(state.vy>0){
+          state.y = s.y - state.h;
+          state.vy = 0;
+          state.onGround = true;
+        } else if(state.vy<0){
+          state.y = s.y + s.h;
+          state.vy = 0;
+        }
+      }
+    }
+  }
+
+  function update(){
+    if(state.lives<=0 || state.won) return;
+
+    state.onGround=false;
+    if(state.left) state.vx -= 0.72;
+    if(state.right) state.vx += 0.72;
+    if(!state.left && !state.right) state.vx *= 0.84;
+    if(state.vx>6.2) state.vx=6.2;
+    if(state.vx<-6.2) state.vx=-6.2;
+
+    if(state.up && state.onGround){
+      state.vy = -13.2;
+      state.onGround = false;
+    }
+
+    state.vy += 0.62;
+    if(state.vy>14) state.vy=14;
+
+    state.x += state.vx;
+    collide('x');
+
+    state.y += state.vy;
+    collide('y');
+
+    if(state.y > window.innerHeight + 120) damage();
+
+    const a = {x:state.x,y:state.y,w:state.w,h:state.h};
+
+    coins.forEach(c=>{
+      if(!c.active) return;
+      if(hit(a,c)){
+        c.active=false;
+        c.el.style.display='none';
+        state.coins++;
+        coinsTxt.textContent='Pièces: '+state.coins;
       }
     });
 
+    spikes.forEach(s=>{ if(s.active && hit(a,s)) damage(); });
 
-    function stopForestMusic() {
-      if (musicInterval) {
-        clearInterval(musicInterval);
-        musicInterval = null;
-      }
-      activeMusicNodes.forEach(node => {
-        try { node.stop && node.stop(); } catch (e) {}
-        try { node.disconnect && node.disconnect(); } catch (e) {}
-      });
-      activeMusicNodes = [];
-    }
+    enemies.forEach(e=>{
+      if(!e.active) return;
+      e.x += e.vx;
+      if(e.x < e.minX || e.x > e.maxX) e.vx *= -1;
+      e.el.style.left = e.x+'px';
 
-    function playForestChord() {
-      if (!musicEnabled) return;
-      const Ctx = window.AudioContext || window.webkitAudioContext;
-      if (!Ctx) return;
-
-      if (!audioCtx) audioCtx = new Ctx();
-      if (audioCtx.state === "suspended") audioCtx.resume();
-
-      const now = audioCtx.currentTime;
-      const master = audioCtx.createGain();
-      master.gain.value = 0.035;
-      master.connect(audioCtx.destination);
-      activeMusicNodes.push(master);
-
-      const chordSets = [
-        [110, 146.83, 220],
-        [98, 130.81, 196],
-        [87.31, 130.81, 174.61],
-        [123.47, 164.81, 246.94]
-      ];
-      const chord = chordSets[Math.floor(Math.random() * chordSets.length)];
-
-      chord.forEach((freq, i) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = i === 0 ? "sine" : (i === 1 ? "triangle" : "sawtooth");
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.linearRampToValueAtTime(0.015 - i * 0.003, now + 1.4);
-        gain.gain.linearRampToValueAtTime(0.010 - i * 0.002, now + 4.5);
-        gain.gain.linearRampToValueAtTime(0.0001, now + 7.5);
-        osc.connect(gain);
-        gain.connect(master);
-        osc.start(now);
-        osc.stop(now + 7.6);
-        activeMusicNodes.push(osc, gain);
-      });
-
-      const low = audioCtx.createOscillator();
-      const lowGain = audioCtx.createGain();
-      low.type = "square";
-      low.frequency.value = chord[0] / 2;
-      lowGain.gain.setValueAtTime(0.0001, now);
-      lowGain.gain.linearRampToValueAtTime(0.006, now + 0.8);
-      lowGain.gain.linearRampToValueAtTime(0.0001, now + 3.5);
-      low.connect(lowGain);
-      lowGain.connect(master);
-      low.start(now);
-      low.stop(now + 3.6);
-      activeMusicNodes.push(low, lowGain);
-    }
-
-    function toggleForestMusic() {
-      musicEnabled = !musicEnabled;
-      if (!musicEnabled) {
-        stopForestMusic();
-        updateDarkForestUI();
-        return;
-      }
-      playForestChord();
-      musicInterval = setInterval(() => {
-        if (musicEnabled) playForestChord();
-      }, 6000);
-      updateDarkForestUI();
-    }
-
-    function getRpgAttack() {
-      return Math.floor((rpgBaseAttack + (rpgSword * 6) + Math.floor(rpgLevel * 2)) * getRpgSkillMultiplier());
-    }
-
-    function getRpgDefense() {
-      return Math.floor((rpgBaseDefense + (rpgArmor * 4) + Math.floor(rpgLevel)) * (1 + prestigeSkills.rpgForce * 0.06));
-    }
-
-    function logRpg(text) {
-      rpgLogEl.textContent = text;
-    }
-
-    function spawnRpgEnemy() {
-      const enemyPool = [
-        { name: "Loup Rouge", hp: 90, attack: 12, defense: 3, reward: 900, xp: 24, color: "#7a1212" },
-        { name: "Cerf Maudit", hp: 145, attack: 17, defense: 5, reward: 1800, xp: 38, color: "#5a3b20" },
-        { name: "Ombre Rampante", hp: 220, attack: 22, defense: 8, reward: 3600, xp: 56, color: "#2f2f44" },
-        { name: "Entité de la Brume", hp: 320, attack: 28, defense: 11, reward: 7000, xp: 88, color: "#1d4c4c" },
-        { name: "Gardien Noir", hp: 520, attack: 38, defense: 15, reward: 14000, xp: 135, color: "#4d1414" }
-      ];
-
-      const tierBase = Math.min(enemyPool.length - 1, Math.floor((rpgLevel - 1) / 2));
-      const tier = Math.min(enemyPool.length - 1, tierBase + (Math.random() < 0.25 ? 1 : 0));
-      const base = enemyPool[tier];
-      const scale = 1 + (rpgLevel - 1) * 0.18;
-
-      currentEnemy = {
-        name: base.name,
-        hp: Math.floor(base.hp * scale),
-        maxHp: Math.floor(base.hp * scale),
-        attack: Math.floor(base.attack * scale),
-        defense: Math.floor(base.defense * scale),
-        reward: Math.floor(base.reward * scale),
-        xp: Math.floor(base.xp * scale),
-        color: base.color
-      };
-
-      renderEnemySprite(currentEnemy.name, currentEnemy.color);
-      logRpg(`Un ${currentEnemy.name} sort de la brume...`);
-      updateDarkForestUI();
-    }
-
-
-    function spawnBossEnemy() {
-      const bosses = [
-        { name: "Roi des Loups", hp: 1100, attack: 52, defense: 18, reward: 28000, xp: 220, color: "#8b1717" },
-        { name: "Abomination de Sève", hp: 1650, attack: 60, defense: 24, reward: 48000, xp: 340, color: "#355f2a" },
-        { name: "Veilleur Sans Visage", hp: 2500, attack: 76, defense: 31, reward: 78000, xp: 520, color: "#3b315f" }
-      ];
-      const idx = Math.min(bosses.length - 1, Math.floor((rpgLevel - 1) / 4));
-      const base = bosses[idx];
-      const scale = 1 + (rpgLevel - 1) * 0.22;
-
-      currentEnemy = {
-        name: "BOSS • " + base.name,
-        hp: Math.floor(base.hp * scale),
-        maxHp: Math.floor(base.hp * scale),
-        attack: Math.floor(base.attack * scale),
-        defense: Math.floor(base.defense * scale),
-        reward: Math.floor(base.reward * scale),
-        xp: Math.floor(base.xp * scale),
-        color: base.color,
-        isBoss: true
-      };
-
-      renderEnemySprite(currentEnemy.name, currentEnemy.color);
-      logRpg(`👹 Un boss apparaît: ${currentEnemy.name}`);
-      showToast("👹 Boss spécial!");
-      updateDarkForestUI();
-    }
-
-    function gainRpgXp(amount) {
-      rpgXp += amount;
-
-      while (rpgXp >= rpgXpToNext) {
-        rpgXp -= rpgXpToNext;
-        rpgLevel++;
-        rpgXpToNext = Math.floor(rpgXpToNext * 1.35);
-        rpgMaxHp += 20;
-        rpgHp = rpgMaxHp;
-        rpgBaseAttack += 2;
-        rpgBaseDefense += 1;
-        showToast(`⬆️ Niveau ${rpgLevel}!`);
-      }
-    }
-
-    function rpgEnemyTurn() {
-      if (!currentEnemy) return;
-
-      let damage = Math.max(1, currentEnemy.attack - getRpgDefense());
-      if (rpgGuarding) {
-        damage = Math.max(1, Math.floor(damage * 0.45));
-        rpgGuarding = false;
-      }
-
-      rpgHp -= damage;
-      rpgEnemyEl.classList.add("rpg-hit");
-      setTimeout(() => rpgEnemyEl.classList.remove("rpg-hit"), 250);
-
-      if (rpgHp <= 0) {
-        rpgHp = rpgMaxHp;
-        const lost = Math.max(5000, Math.floor(currentEnemy.reward * 0.25));
-        cookies = Math.max(0, cookies - lost);
-        logRpg(`Tu es tombé. Tu perds ${formatNumber(lost)} cookies, puis tu te relèves...`);
-        showToast(`☠️ -${formatNumber(lost)} cookies`);
-        spawnRpgEnemy();
-      } else {
-        logRpg(`${currentEnemy.name} te frappe pour ${formatNumber(damage)} dégâts.`);
-      }
-
-      updateUI();
-      updateDarkForestUI();
-    }
-
-    function rpgPlayerAttack(multiplier = 1, heavy = false) {
-      if (!currentEnemy) {
-        spawnRpgEnemy();
-        return;
-      }
-
-      let damage = Math.max(1, Math.floor(getRpgAttack() * multiplier) - currentEnemy.defense);
-
-      if (Math.random() < 0.12) {
-        damage *= 2;
-        showToast("⚔️ Critique RPG!");
-      }
-
-      currentEnemy.hp -= damage;
-      rpgEnemyEl.classList.add("rpg-hit");
-      setTimeout(() => rpgEnemyEl.classList.remove("rpg-hit"), 250);
-
-      if (currentEnemy.hp <= 0) {
-        currentEnemy.hp = 0;
-        const reward = currentEnemy.reward;
-        const xp = currentEnemy.xp;
-        const wasBoss = !!currentEnemy.isBoss;
-
-        cookies += reward;
-        totalCookiesEarned += reward;
-        runCookiesEarned += reward;
-        rpgCookiesEarned += reward;
-        gainRpgXp(xp);
-
-        if (wasBoss) {
-          bossesKilled++;
-          cookies += Math.floor(reward * 0.18);
-          totalCookiesEarned += Math.floor(reward * 0.18);
-          runCookiesEarned += Math.floor(reward * 0.18);
-          rpgCookiesEarned += Math.floor(reward * 0.18);
-          logRpg(`Tu détruis ${currentEnemy.name} et gagnes ${formatNumber(reward)} cookies + bonus boss + ${formatNumber(Math.floor(reward * 0.18))} + ${formatNumber(xp)} XP.`);
-          showToast(`👑 Boss vaincu!`);
+      const b = {x:e.x,y:e.y,w:e.w,h:e.h};
+      if(hit(a,b)){
+        if(state.vy > 1 && (state.y + state.h - e.y) < 20){
+          e.active=false;
+          e.el.style.display='none';
+          state.vy = -8.5;
         } else {
-          logRpg(`Tu tues ${currentEnemy.name} et gagnes ${formatNumber(reward)} cookies + ${formatNumber(xp)} XP.`);
-          showToast(`🍪 +${formatNumber(reward)}`);
+          damage();
         }
-
-        spawnRpgEnemy();
-      } else {
-        logRpg(`${heavy ? "Heavy Slash" : "Attaque"}: ${formatNumber(damage)} dégâts à ${currentEnemy.name}.`);
-        setTimeout(rpgEnemyTurn, 250);
-      }
-
-      updateUI();
-      updateDarkForestUI();
-    }
-
-    function enterDarkForest() {
-      mainGameSection.classList.add("hidden");
-      darkForestPanel.style.display = "block";
-      if (!currentEnemy) spawnRpgEnemy();
-      updateDarkForestUI();
-    }
-
-    function leaveDarkForest() {
-      darkForestPanel.style.display = "none";
-      mainGameSection.classList.remove("hidden");
-      stopForestMusic();
-      musicEnabled = false;
-      updateDarkForestUI();
-    }
-
-    secretPhiloBtn.addEventListener("click", enterPhilo);
-    leavePhiloBtn.addEventListener("click", leavePhilo);
-    philoNextBtn.addEventListener("click", nextPhiloQuestion);
-    philoResetBtn.addEventListener("click", resetPhiloQuiz);
-    philoRevealBtn.addEventListener("click", revealPhiloAnswer);
-    philoOptionA.addEventListener("click", () => answerPhilo(0));
-    philoOptionB.addEventListener("click", () => answerPhilo(1));
-    philoOptionC.addEventListener("click", () => answerPhilo(2));
-    philoOptionD.addEventListener("click", () => answerPhilo(3));
-
-    buyCasinoBtn.addEventListener("click", () => {
-      if (sarahPepinCount < 1) {
-        showToast("Il faut d’abord acheter Sarah Pepin.");
-        return;
-      }
-      if (casinoAccessBought) return;
-      if (cookies >= 200000) {
-        cookies -= 200000;
-        casinoAccessBought = true;
-        showToast("🎰 Casino débloqué");
-        updateUI();
-      } else {
-        showToast("Pas assez de cookies.");
       }
     });
 
-    enterCasinoBtn.addEventListener("click", enterCasino);
-    leaveCasinoBtn.addEventListener("click", leaveCasino);
+    if(state.inv>0) state.inv--;
 
-    bet1kBtn.addEventListener("click", () => doCasinoBet(1000));
-    bet10kBtn.addEventListener("click", () => doCasinoBet(10000));
-    bet50kBtn.addEventListener("click", () => doCasinoBet(50000));
-    bet100kBtn.addEventListener("click", () => doCasinoBet(100000));
-
-    cupBet5kBtn.addEventListener("click", () => prepareCupBet(5000));
-    cupBet20kBtn.addEventListener("click", () => prepareCupBet(20000));
-    cup1Btn.addEventListener("click", () => pickCup(1));
-    cup2Btn.addEventListener("click", () => pickCup(2));
-    cup3Btn.addEventListener("click", () => pickCup(3));
-
-    resetCasinoBtn.addEventListener("click", () => {
-      currentCupBet = 0;
-      winningCup = 0;
-      logCasino("Le croupier remet la table à zéro.");
-      updateUI();
-    });
-
-    buySpaghettiBtn.addEventListener("click", () => {
-      if (spaghettiAccessBought) return;
-      if (cookies >= 20000) {
-        cookies -= 20000;
-        spaghettiAccessBought = true;
-        showToast("🍝 Dimension Spaghettis débloquée");
-        updateUI();
-      } else {
-        showToast("Pas assez de cookies.");
-      }
-    });
-
-    enterSpaghettiBtn.addEventListener("click", enterSpaghetti);
-    leaveSpaghettiBtn.addEventListener("click", leaveSpaghetti);
-
-    startSpaghettiBtn.addEventListener("click", startSpaghettiGame);
-
-    spaghettiUpgradeBtn.addEventListener("click", () => {
-      const upgradeCost = 7500 + (spaghettiPaddleLevel - 1) * 4500;
-      if (cookies >= upgradeCost) {
-        cookies -= upgradeCost;
-        spaghettiPaddleLevel++;
-        showToast("🍕 Raquette améliorée");
-        updateUI();
-      }
-    });
-
-    resetSpaghettiBtn.addEventListener("click", () => {
-      stopSpaghettiGame();
-      resetSpaghettiGameState();
-      logSpaghetti("Mini-jeu réinitialisé.");
-    });
-
-    spaghettiGameArea.addEventListener("pointermove", (e) => {
-      const rect = spaghettiGameArea.getBoundingClientRect();
-      const paddleW = 105 + (spaghettiPaddleLevel - 1) * 10;
-      spaghettiPaddleX = Math.max(0, Math.min(e.clientX - rect.left - paddleW / 2, rect.width - paddleW));
-      updateSpaghettiUI();
-    });
-
-    buyDarkForestBtn.addEventListener("click", () => {
-      if (eloikPoopCount < 1) {
-        showToast("Il faut d’abord acheter Le caca à Éloik.");
-        return;
-      }
-
-      if (darkForestAccessBought) return;
-
-      if (cookies >= 2500000) {
-        cookies -= 2500000;
-        darkForestAccessBought = true;
-        showToast("🌲 Dark Forest débloquée");
-        updateUI();
-      } else {
-        showToast("Pas assez de cookies.");
-      }
-    });
-
-    enterDarkForestBtn.addEventListener("click", enterDarkForest);
-    leaveDarkForestBtn.addEventListener("click", leaveDarkForest);
-
-    rpgAttackBtn.addEventListener("click", () => rpgPlayerAttack(1, false));
-    rpgHeavyBtn.addEventListener("click", () => rpgPlayerAttack(1.7, true));
-
-    rpgGuardBtn.addEventListener("click", () => {
-      rpgGuarding = true;
-      logRpg("Tu te mets en garde. Les dégâts du prochain coup seront réduits.");
-      setTimeout(rpgEnemyTurn, 250);
-    });
-
-    rpgHealBtn.addEventListener("click", () => {
-      const healAmount = Math.min(rpgMaxHp - rpgHp, Math.floor(rpgMaxHp * 0.3));
-      if (healAmount <= 0) {
-        logRpg("Tes PV sont déjà pleins.");
-        return;
-      }
-
-      rpgHp += healAmount;
-      logRpg(`Tu récupères ${formatNumber(healAmount)} PV.`);
-      updateDarkForestUI();
-      setTimeout(rpgEnemyTurn, 250);
-    });
-
-    buySwordBtn.addEventListener("click", () => {
-      const swordCost = 25000 + rpgSword * 18000;
-      if (cookies >= swordCost) {
-        cookies -= swordCost;
-        rpgSword++;
-        showToast("⚔️ Épée améliorée");
-        updateUI();
-      }
-    });
-
-    buyArmorBtn.addEventListener("click", () => {
-      const armorCost = 25000 + rpgArmor * 18000;
-      if (cookies >= armorCost) {
-        cookies -= armorCost;
-        rpgArmor++;
-        showToast("🛡️ Armure améliorée");
-        updateUI();
-      }
-    });
-
-    spawnEnemyBtn.addEventListener("click", spawnRpgEnemy);
-    spawnBossBtn.addEventListener("click", spawnBossEnemy);
-    toggleMusicBtn.addEventListener("click", toggleForestMusic);
-
-    rpgResetFightBtn.addEventListener("click", () => {
-      rpgHp = rpgMaxHp;
-      spawnRpgEnemy();
-      updateDarkForestUI();
-      logRpg("Le combat a été réinitialisé.");
-    });
-
-
-    function updateSpaghettiUI() {
-      if (!spaghettiStatusEl) return;
-
-      if (!spaghettiAccessBought) {
-        spaghettiStatusEl.textContent = "Achetable pour 20 000 cookies";
-        buySpaghettiBtn.disabled = cookies < 20000;
-        buySpaghettiBtn.textContent = "Acheter l’accès — 20 000";
-        enterSpaghettiBtn.classList.add("hidden");
-      } else {
-        spaghettiStatusEl.textContent = "Débloquée";
-        buySpaghettiBtn.disabled = true;
-        buySpaghettiBtn.textContent = "Accès acheté";
-        enterSpaghettiBtn.classList.remove("hidden");
-      }
-
-      spaghettiScoreEl.textContent = formatNumber(spaghettiScore);
-      spaghettiHitsEl.textContent = formatNumber(spaghettiHits);
-      spaghettiCookiesEarnedEl.textContent = formatNumber(spaghettiCookiesEarned);
-      spaghettiSpeedEl.textContent = formatNumber(spaghettiPaddleLevel);
-      spaghettiUpgradeBtn.disabled = cookies < (7500 + (spaghettiPaddleLevel - 1) * 4500);
-      spaghettiPaddleEl.style.width = (105 + (spaghettiPaddleLevel - 1) * 10) + "px";
-      spaghettiPaddleEl.style.left = spaghettiPaddleX + "px";
-      spaghettiBallEl.style.left = spaghettiBallX + "px";
-      spaghettiBallEl.style.top = spaghettiBallY + "px";
+    if(state.x > 3560){
+      state.won = true;
+      msg.style.display='block';
+      msg.innerHTML='Bravooo 🎉<br>Cette fois le niveau est vraiment plus legit';
     }
 
-    function logSpaghetti(text) {
-      spaghettiLogEl.textContent = text;
-    }
+    playerEl.style.left = state.x+'px';
+    playerEl.style.top = state.y+'px';
+    playerEl.style.opacity = (state.inv>0 && Math.floor(state.inv/6)%2===0) ? '0.35' : '1';
 
-    function resetSpaghettiGameState() {
-      spaghettiScore = 0;
-      spaghettiHits = 0;
-      spaghettiBallX = 155;
-      spaghettiBallY = 140;
-      spaghettiBallDX = 3.2;
-      spaghettiBallDY = -3.0;
-      spaghettiPaddleX = 120;
-      updateSpaghettiUI();
-    }
+    const cam = Math.max(0, Math.min(worldW - window.innerWidth, state.x - window.innerWidth*0.35));
+    world.style.transform = 'translateX(' + (-cam) + 'px)';
+  }
 
-    function stopSpaghettiGame() {
-      spaghettiRunning = false;
-      if (spaghettiAnimId) cancelAnimationFrame(spaghettiAnimId);
-      spaghettiAnimId = null;
-    }
-
-    function startSpaghettiGame() {
-      if (spaghettiRunning) return;
-      spaghettiRunning = true;
-      logSpaghetti("La pizza part! Fais-la rebondir pour gagner des cookies.");
-      spaghettiLoop();
-    }
-
-    function spaghettiLoop() {
-      if (!spaghettiRunning) return;
-
-      const areaW = spaghettiGameArea.clientWidth;
-      const areaH = spaghettiGameArea.clientHeight;
-      const ballSize = 38;
-      const paddleW = 105 + (spaghettiPaddleLevel - 1) * 10;
-      const paddleY = areaH - 18 - 18;
-
-      spaghettiBallX += spaghettiBallDX;
-      spaghettiBallY += spaghettiBallDY;
-
-      if (spaghettiBallX <= 0 || spaghettiBallX >= areaW - ballSize) {
-        spaghettiBallDX *= -1;
-        spaghettiBallX = Math.max(0, Math.min(spaghettiBallX, areaW - ballSize));
-      }
-
-      if (spaghettiBallY <= 0) {
-        spaghettiBallDY *= -1;
-        spaghettiBallY = 0;
-      }
-
-      const ballBottom = spaghettiBallY + ballSize;
-      const ballCenterX = spaghettiBallX + ballSize / 2;
-
-      if (
-        ballBottom >= paddleY &&
-        ballBottom <= paddleY + 24 &&
-        ballCenterX >= spaghettiPaddleX &&
-        ballCenterX <= spaghettiPaddleX + paddleW &&
-        spaghettiBallDY > 0
-      ) {
-        spaghettiBallDY *= -1;
-        spaghettiHits++;
-        spaghettiScore += 10;
-
-        const reward = Math.floor((55 + (spaghettiHits * 4)) * getSpaghettiSkillMultiplier());
-        cookies += reward;
-        totalCookiesEarned += reward;
-        runCookiesEarned += reward;
-        spaghettiCookiesEarned += reward;
-
-        const hitPos = (ballCenterX - spaghettiPaddleX) / paddleW - 0.5;
-        spaghettiBallDX += hitPos * 1.2;
-        spaghettiBallDX = Math.max(-7, Math.min(7, spaghettiBallDX));
-        showToast(`🍪 +${formatNumber(reward)}`);
-        logSpaghetti(`Ping! Pizza sauvée. +${formatNumber(reward)} cookies.`);
-        updateUI();
-      }
-
-      if (spaghettiBallY > areaH - ballSize) {
-        logSpaghetti("La pizza est tombée 😭 relance la partie.");
-        stopSpaghettiGame();
-      }
-
-      spaghettiBallEl.style.left = spaghettiBallX + "px";
-      spaghettiBallEl.style.top = spaghettiBallY + "px";
-
-      spaghettiAnimId = requestAnimationFrame(spaghettiLoop);
-    }
-
-    function enterSpaghetti() {
-      mainGameSection.classList.add("hidden");
-      darkForestPanel.style.display = "none";
-      spaghettiPanel.style.display = "block";
-      updateSpaghettiUI();
-    }
-
-    function leaveSpaghetti() {
-      spaghettiPanel.style.display = "none";
-      mainGameSection.classList.remove("hidden");
-      stopSpaghettiGame();
-      updateSpaghettiUI();
-    }
-
-
-    function logCasino(text) {
-      casinoLogEl.textContent = text;
-    }
-
-    function doCasinoBet(amount) {
-      if (cookies < amount) {
-        showToast("Pas assez de cookies.");
-        return;
-      }
-
-      cookies -= amount;
-      casinoBetTotal += amount;
-
-      if (Math.random() < 0.49) {
-        const winnings = Math.floor(amount * (1.85 + (prestigeSkills.casinoLuck * 0.05)));
-        cookies += winnings;
-        totalCookiesEarned += winnings;
-        runCookiesEarned += winnings;
-        casinoWonTotal += winnings;
-        casinoWins++;
-        logCasino(`🎰 Jackpot relatif! Tu gagnes ${formatNumber(winnings)} cookies.`);
-        showToast(`🎰 +${formatNumber(winnings)}`);
-      } else {
-        casinoLosses++;
-        logCasino(`💸 Perdu... la maison garde ${formatNumber(amount)} cookies.`);
-        showToast("💸 Perdu");
-      }
-
-      updateUI();
-    }
-
-    function prepareCupBet(amount) {
-      if (cookies < amount) {
-        showToast("Pas assez de cookies.");
-        return;
-      }
-      if (currentCupBet > 0) {
-        logCasino("Tu as déjà une mise active sur les verres.");
-        return;
-      }
-
-      cookies -= amount;
-      casinoBetTotal += amount;
-      currentCupBet = amount;
-      winningCup = Math.floor(Math.random() * 3) + 1;
-
-      logCasino(`🥃 Mise de ${formatNumber(amount)} placée. Les verres sont mélangés... choisis vite.`);
-      updateUI();
-    }
-
-    function pickCup(choice) {
-      if (currentCupBet <= 0) {
-        logCasino("Place une mise avant de choisir un verre.");
-        return;
-      }
-
-      if (choice === winningCup) {
-        const winnings = Math.floor(currentCupBet * (1.9 + prestigeSkills.casinoLuck * 0.04));
-        cookies += winnings;
-        totalCookiesEarned += winnings;
-        runCookiesEarned += winnings;
-        casinoWonTotal += winnings;
-        casinoWins++;
-        logCasino(`🥃 Tu trouves le bon verre! Gain de ${formatNumber(winnings)} cookies.`);
-        showToast(`🥃 +${formatNumber(winnings)}`);
-      } else {
-        casinoLosses++;
-        logCasino(`❌ Mauvais verre... le bon était le verre ${winningCup}.`);
-        showToast("❌ Mauvais verre");
-      }
-
-      currentCupBet = 0;
-      winningCup = 0;
-      updateUI();
-    }
-
-    function enterCasino() {
-      mainGameSection.classList.add("hidden");
-      darkForestPanel.style.display = "none";
-      spaghettiPanel.style.display = "none";
-      casinoPanel.style.display = "block";
-      updateCasinoUI();
-    }
-
-    function leaveCasino() {
-      casinoPanel.style.display = "none";
-      mainGameSection.classList.remove("hidden");
-      updateCasinoUI();
-    }
-
-    function saveGame() {
-      const data = {
-        cookies,
-        cookiesPerClick,
-        cookiesPerSecond,
-        goldenCaught,
-
-        clickUpgradeCount,
-        grandmaCount,
-        factoryCount,
-        farmCount,
-        bankCount,
-        kingdomCount,
-        alyciaHouseCount,
-        eloikPoopCount,
-        sarahPepinCount,
-        snackyIndustryCount,
-        bobineDogCount,
-        cheeseWhizFactoryCount,
-        mikoCount,
-        technobladeCount,
-
-        clickUpgradeCost,
-        grandmaCost,
-        factoryCost,
-        farmCost,
-        bankCost,
-        kingdomCost,
-        alyciaHouseCost,
-        eloikPoopCost,
-        sarahPepinCost,
-        snackyIndustryCost,
-        bobineDogCost,
-        cheeseWhizFactoryCost,
-        mikoCost,
-        technobladeCost,
-
-        totalClicks,
-        totalCookiesEarned,
-        comboCount,
-        achievements,
-        prestigePoints,
-        prestigePointsSpent,
-        prestigeThreshold,
-        runCookiesEarned,
-        prestigeSkills,
-
-        darkForestAccessBought,
-        spaghettiAccessBought,
-        casinoAccessBought,
-        casinoBetTotal,
-        casinoWonTotal,
-        casinoWins,
-        casinoLosses,
-        currentCupBet,
-        winningCup,
-        philoQuestionCursor,
-        philoScore,
-        philoAnswered,
-        philoCookiesEarned,
-        spaghettiScore,
-        spaghettiHits,
-        spaghettiCookiesEarned,
-        spaghettiPaddleLevel,
-
-        rpgLevel,
-        rpgXp,
-        rpgXpToNext,
-        rpgMaxHp,
-        rpgHp,
-        rpgBaseAttack,
-        rpgBaseDefense,
-        rpgSword,
-        rpgArmor,
-        rpgCookiesEarned,
-        bossesKilled,
-        musicEnabled,
-
-        lastSavedAt: Date.now()
-      };
-
-      localStorage.setItem("colkieClickerUltimateSave", JSON.stringify(data));
-    }
-
-    function loadGame() {
-      const raw = localStorage.getItem("colkieClickerUltimateSave");
-      if (!raw) return;
-
-      const data = JSON.parse(raw);
-
-      cookies = data.cookies ?? 0;
-      cookiesPerClick = data.cookiesPerClick ?? 1;
-      cookiesPerSecond = data.cookiesPerSecond ?? 0;
-      goldenCaught = data.goldenCaught ?? 0;
-
-      clickUpgradeCount = data.clickUpgradeCount ?? 0;
-      grandmaCount = data.grandmaCount ?? 0;
-      factoryCount = data.factoryCount ?? 0;
-      farmCount = data.farmCount ?? 0;
-      bankCount = data.bankCount ?? 0;
-      kingdomCount = data.kingdomCount ?? 0;
-      alyciaHouseCount = data.alyciaHouseCount ?? 0;
-      eloikPoopCount = data.eloikPoopCount ?? 0;
-      sarahPepinCount = data.sarahPepinCount ?? 0;
-      snackyIndustryCount = data.snackyIndustryCount ?? 0;
-      bobineDogCount = data.bobineDogCount ?? 0;
-      cheeseWhizFactoryCount = data.cheeseWhizFactoryCount ?? 0;
-      mikoCount = data.mikoCount ?? 0;
-      technobladeCount = data.technobladeCount ?? 0;
-
-      clickUpgradeCost = data.clickUpgradeCost ?? 40;
-      grandmaCost = data.grandmaCost ?? 35;
-      factoryCost = data.factoryCost ?? 160;
-      farmCost = data.farmCost ?? 420;
-      bankCost = data.bankCost ?? 1200;
-      kingdomCost = data.kingdomCost ?? 4200;
-      alyciaHouseCost = data.alyciaHouseCost ?? 9000;
-      eloikPoopCost = data.eloikPoopCost ?? 28000;
-      sarahPepinCost = data.sarahPepinCost ?? 95000;
-      snackyIndustryCost = data.snackyIndustryCost ?? 180000;
-      bobineDogCost = data.bobineDogCost ?? 420000;
-      cheeseWhizFactoryCost = data.cheeseWhizFactoryCost ?? 980000;
-      mikoCost = data.mikoCost ?? 2400000;
-      technobladeCost = data.technobladeCost ?? 9000000;
-
-      totalClicks = data.totalClicks ?? 0;
-      totalCookiesEarned = data.totalCookiesEarned ?? 0;
-      comboCount = data.comboCount ?? 0;
-      achievements = data.achievements ?? achievements;
-
-      prestigePoints = data.prestigePoints ?? 0;
-      prestigePointsSpent = data.prestigePointsSpent ?? 0;
-      prestigeThreshold = data.prestigeThreshold ?? 250000;
-      runCookiesEarned = data.runCookiesEarned ?? 0;
-      prestigeSkills = data.prestigeSkills ?? prestigeSkills;
-
-      darkForestAccessBought = data.darkForestAccessBought ?? false;
-      spaghettiAccessBought = data.spaghettiAccessBought ?? false;
-      casinoAccessBought = data.casinoAccessBought ?? false;
-      casinoBetTotal = data.casinoBetTotal ?? 0;
-      casinoWonTotal = data.casinoWonTotal ?? 0;
-      casinoWins = data.casinoWins ?? 0;
-      casinoLosses = data.casinoLosses ?? 0;
-      currentCupBet = 0;
-      winningCup = 0;
-      philoQuestionCursor = data.philoQuestionCursor ?? 0;
-      philoScore = data.philoScore ?? 0;
-      philoAnswered = data.philoAnswered ?? 0;
-      philoCookiesEarned = data.philoCookiesEarned ?? 0;
-      philoAnsweredCurrent = false;
-      spaghettiScore = data.spaghettiScore ?? 0;
-      spaghettiHits = data.spaghettiHits ?? 0;
-      spaghettiCookiesEarned = data.spaghettiCookiesEarned ?? 0;
-      spaghettiPaddleLevel = data.spaghettiPaddleLevel ?? 1;
-
-      rpgLevel = data.rpgLevel ?? 1;
-      rpgXp = data.rpgXp ?? 0;
-      rpgXpToNext = data.rpgXpToNext ?? 100;
-      rpgMaxHp = data.rpgMaxHp ?? 100;
-      rpgHp = data.rpgHp ?? 100;
-      rpgBaseAttack = data.rpgBaseAttack ?? 10;
-      rpgBaseDefense = data.rpgBaseDefense ?? 5;
-      rpgSword = data.rpgSword ?? 0;
-      rpgArmor = data.rpgArmor ?? 0;
-      rpgCookiesEarned = data.rpgCookiesEarned ?? 0;
-      bossesKilled = data.bossesKilled ?? 0;
-      musicEnabled = false;
-
-      const lastSavedAt = data.lastSavedAt ?? Date.now();
-      const secondsAway = Math.floor((Date.now() - lastSavedAt) / 1000);
-
-      if (secondsAway > 10 && cookiesPerSecond > 0) {
-        const offlineGain = Math.min(secondsAway, 7200) * effectiveSecondPower();
-        cookies += offlineGain;
-        totalCookiesEarned += offlineGain;
-        showToast(`⏰ Hors ligne: +${formatNumber(offlineGain)} cookies`);
-      }
-    }
-
-    resetSpaghettiGameState();
-    loadGame();
-    renderEnemySprite("Loup Rouge", "#7b1414");
-    updatePhiloUI();
-    updateUI();
-    checkAchievements();
-    scheduleGoldenCookie();
-
-    setInterval(() => {
-      if (Math.random() < 0.35) {
-        spawnElonCar();
-      }
-    }, 12000);
-  </script>
+  function loop(){
+    update();
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+</script>
 </body>
 </html>
+"""
+
+path = Path("/mnt/data/cube_plumber_bros_v4.html")
+path.write_text(html, encoding="utf-8")
+print(path)
