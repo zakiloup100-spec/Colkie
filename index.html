@@ -1,441 +1,1047 @@
 from pathlib import Path
 
 html = r"""<!DOCTYPE html>
+
 <html lang="fr">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Cube Plumber Bros v4</title>
+
+<title>Cube Plumber Bros v5</title>
+
 <style>
+
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:none}
+
   html,body{margin:0;height:100%;overflow:hidden;font-family:Arial,sans-serif;background:#000}
+
   #game{
+
     position:fixed; inset:0; overflow:hidden;
+
     background:linear-gradient(#7db8ea 0%, #d7f0ff 100%);
+
   }
+
   #world{
-    position:absolute; left:0; top:0; height:100%; width:3800px;
+
+    position:absolute; left:0; top:0; height:100%; width:4200px;
+
     transform:translateX(0);
+
   }
-  .groundSeg,.platform,.pipe,.coin,.spike,.enemy,.player,.flagpole,.flag,.bush,.cloud,.hill{position:absolute}
+
+  .groundSeg,.platform,.pipe,.coin,.spike,.enemy,.player,.flagpole,.flag,.bush,.cloud,.hill,.qblock,.brick,.mushroom{position:absolute}
+
   .groundSeg{
+
     height:110px;
+
     background:linear-gradient(#43c957 0 18px,#8f5d38 18px 100%);
+
   }
+
   .platform{
+
     background:#c78a46;border:4px solid #834f20;border-radius:4px;
+
     box-shadow:inset 0 6px 0 #e0a45c;
+
   }
+
+  .brick{
+
+    width:48px;height:48px;
+
+    background:#b66f33;border:4px solid #7a4518;
+
+    box-shadow:inset 0 6px 0 #d89554;
+
+  }
+
+  .brick:before,.brick:after{
+
+    content:"";position:absolute;background:#7a4518;
+
+  }
+
+  .brick:before{left:20px;top:0;width:4px;height:44px}
+
+  .brick:after{left:0;top:20px;width:44px;height:4px}
+
+  .qblock{
+
+    width:48px;height:48px;
+
+    background:#ffd54d;border:4px solid #c99700;border-radius:4px;
+
+    box-shadow:inset 0 6px 0 #fff0a0;
+
+    color:#8a5a00;font-weight:900;font-size:32px;line-height:40px;text-align:center;
+
+  }
+
+  .qblock.used{
+
+    background:#cda966;border-color:#8d713c;color:#7e6638;box-shadow:none;
+
+  }
+
   .pipe{background:#1f9d45;border:4px solid #176f32}
+
   .pipe:before{
+
     content:"";position:absolute;left:-8px;right:-8px;top:-18px;height:22px;
+
     background:#3ad164;border:4px solid #176f32;border-radius:4px;
+
   }
+
   .coin{
+
     width:24px;height:24px;border-radius:50%;
+
     background:#ffd54d;border:3px solid #c99700;
+
     box-shadow:inset 0 0 0 3px #fff1a3;
+
   }
+
+  .mushroom{
+
+    width:34px;height:34px;z-index:3;
+
+  }
+
+  .mushroom .cap{
+
+    position:absolute;left:0;top:0;width:34px;height:18px;background:#e53935;
+
+    border-radius:18px 18px 8px 8px;border:3px solid #9f1f15;
+
+  }
+
+  .mushroom .dot1,.mushroom .dot2{
+
+    position:absolute;background:#fff;border-radius:50%;
+
+  }
+
+  .mushroom .dot1{left:7px;top:5px;width:8px;height:8px}
+
+  .mushroom .dot2{right:7px;top:5px;width:8px;height:8px}
+
+  .mushroom .stem{
+
+    position:absolute;left:11px;top:16px;width:12px;height:16px;background:#f3dfbd;border:2px solid #b99870;
+
+  }
+
   .spike{
+
     width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;
+
     border-bottom:34px solid #e5e5e5;
+
     filter:drop-shadow(0 2px 0 rgba(0,0,0,.18));
+
   }
+
   .enemy{
+
     width:42px;height:38px;background:#8a4f1d;border-radius:8px 8px 7px 7px;border:3px solid #60340f;
+
   }
+
   .enemy:before,.enemy:after{
+
     content:"";position:absolute;top:8px;width:7px;height:7px;background:#fff;border-radius:50%;
+
   }
+
   .enemy:before{left:8px}.enemy:after{right:8px}
+
   .enemy .mouth{position:absolute;left:9px;right:9px;bottom:8px;height:6px;background:#4b2209;border-radius:4px}
-  .player{width:42px;height:58px}
+
+  .player{width:42px;height:58px;transform-origin:bottom center}
+
+  .player.big{transform:scale(1.32)}
+
   .player .hatTop{position:absolute;left:4px;top:0;width:34px;height:10px;background:#cf2419}
+
   .player .hatBrim{position:absolute;left:2px;top:8px;width:24px;height:7px;background:#cf2419}
+
   .player .head{position:absolute;left:8px;top:8px;width:26px;height:18px;background:#f3c39b}
+
   .player .body{position:absolute;left:10px;top:20px;width:22px;height:24px;background:#e53b2c}
+
   .player .overalls{position:absolute;left:8px;top:32px;width:28px;height:24px;background:#2370d8}
+
   .player .armL,.player .armR{position:absolute;top:25px;width:8px;height:15px;background:#f3c39b}
+
   .player .armL{left:3px}.player .armR{right:3px}
+
   .player .shoeL,.player .shoeR{position:absolute;bottom:0;width:12px;height:6px;background:#5a2d12}
+
   .player .shoeL{left:8px}.player .shoeR{right:6px}
+
   .player .eyeL,.player .eyeR{position:absolute;top:12px;width:3px;height:5px;background:#111}
+
   .player .eyeL{left:16px}.player .eyeR{left:23px}
+
   .player .moust{position:absolute;left:14px;top:18px;width:14px;height:4px;background:#3a2115}
+
   .flagpole{width:10px;background:#eee}
+
   .flag{width:0;height:0;border-top:16px solid transparent;border-bottom:16px solid transparent;border-left:50px solid #e53935}
+
   .cloud{background:#fff;border-radius:999px;opacity:.82}
+
   .hill{background:#72c35f;border-radius:999px 999px 0 0}
+
   .bush{background:#2fa23f;border-radius:999px}
+
   #hud{
+
     position:fixed;left:0;right:0;top:0;display:flex;justify-content:space-between;
+
     padding:max(12px,env(safe-area-inset-top)) 12px 0 12px;z-index:50;pointer-events:none
+
   }
+
   .pill{
+
     background:rgba(47,67,89,.82);color:#fff;font-weight:800;font-size:18px;
+
     padding:12px 16px;border-radius:18px
+
   }
+
   #banner{
+
     position:fixed;left:50%;top:14%;transform:translateX(-50%);z-index:45;
-    background:rgba(255,255,255,.88);padding:12px 18px;border-radius:999px;font-weight:800;
-    max-width:78vw;text-align:center;transition:opacity .4s ease
+
+    background:rgba(255,255,255,.9);padding:12px 18px;border-radius:999px;font-weight:800;
+
+    max-width:82vw;text-align:center;transition:opacity .4s ease
+
   }
+
   #msg{
+
     position:fixed;left:50%;top:28%;transform:translateX(-50%);z-index:60;display:none;
+
     background:rgba(27,42,58,.94);color:#fff;padding:14px 18px;border-radius:18px;font-weight:800;text-align:center
+
   }
+
   #controls{
+
     position:fixed;left:0;right:0;bottom:0;padding:0 16px calc(22px + env(safe-area-inset-bottom)) 16px;
+
     display:flex;justify-content:space-between;align-items:flex-end;z-index:55
+
   }
+
   .cluster{display:flex;gap:14px}
+
   .btn{
+
     width:78px;height:78px;border-radius:24px;background:rgba(184,201,216,.55);
+
     border:5px solid rgba(220,231,239,.9);color:#fff;font-size:34px;font-weight:900;
+
     display:flex;align-items:center;justify-content:center;user-select:none;
+
     backdrop-filter:blur(1px)
+
   }
+
   @media (max-width:700px){
+
     #banner{top:16%;font-size:15px}
+
     .pill{font-size:16px;padding:10px 14px}
+
     .btn{width:72px;height:72px}
+
   }
+
 </style>
+
 </head>
+
 <body>
+
 <div id="game">
+
   <div id="world"></div>
 
   <div id="hud">
+
     <div class="pill" id="coinsTxt">Pièces: 0</div>
-    <div class="pill" id="livesTxt">Vies: 3</div>
+
+    <div class="pill" id="stateTxt">Petit</div>
+
   </div>
-  <div id="banner">Version 4 • plus haut, plus dur, moins vide 👀</div>
+
+  <div id="banner">v5 • blocs cassables + lucky blocks + champignon 🍄</div>
+
   <div id="msg"></div>
 
   <div id="controls">
+
     <div class="cluster">
+
       <div class="btn" id="leftBtn">◀</div>
+
       <div class="btn" id="rightBtn">▶</div>
+
     </div>
+
     <div class="cluster">
+
       <div class="btn" id="jumpBtn">▲</div>
+
     </div>
+
   </div>
+
 </div>
 
 <script>
+
 (function(){
+
   const world = document.getElementById('world');
+
   const msg = document.getElementById('msg');
+
   const coinsTxt = document.getElementById('coinsTxt');
-  const livesTxt = document.getElementById('livesTxt');
+
+  const stateTxt = document.getElementById('stateTxt');
+
   const banner = document.getElementById('banner');
 
-  let groundY = Math.min(window.innerHeight - 90, 660);
-  let worldW = 3800;
+  let groundY = Math.min(window.innerHeight - 92, 660);
+
+  let worldW = 4200;
 
   const solids = [];
+
   const spikes = [];
+
   const coins = [];
+
   const enemies = [];
+
+  const breakables = [];
+
+  const luckyBlocks = [];
+
+  const mushrooms = [];
+
   let playerEl;
 
   function make(tag, cls, style, html=''){
+
     const el = document.createElement(tag);
+
     if(cls) el.className = cls;
+
     if(style) Object.assign(el.style, style);
+
     if(html) el.innerHTML = html;
+
     world.appendChild(el);
+
     return el;
+
   }
 
-  function rectObj(el, x, y, w, h, type='solid'){
+  function obj(el, x, y, w, h, type='solid'){
+
     return {el, x, y, w, h, type, active:true};
+
+  }
+
+  function addBreakable(x,y){
+
+    const el = make('div','brick',{left:x+'px', top:y+'px'});
+
+    const o = obj(el,x,y,48,48,'breakable');
+
+    breakables.push(o);
+
+    solids.push(o);
+
+  }
+
+  function addLucky(x,y){
+
+    const el = make('div','qblock',{left:x+'px', top:y+'px'}, '?');
+
+    const o = obj(el,x,y,48,48,'lucky');
+
+    o.used = false;
+
+    luckyBlocks.push(o);
+
+    solids.push(o);
+
+  }
+
+  function spawnMushroom(x,y){
+
+    const el = make('div','mushroom',{left:x+'px', top:y+'px'},
+
+      '<div class="cap"></div><div class="dot1"></div><div class="dot2"></div><div class="stem"></div>');
+
+    mushrooms.push({el, x, y, w:34, h:34, vx:1.2, vy:0, active:true});
+
   }
 
   function buildLevel(){
+
     world.innerHTML = '';
-    solids.length = 0; spikes.length = 0; coins.length = 0; enemies.length = 0;
 
-    // background
-    for(let i=0;i<7;i++){
+    solids.length = spikes.length = coins.length = enemies.length = breakables.length = luckyBlocks.length = mushrooms.length = 0;
+
+    for(let i=0;i<8;i++){
+
       make('div','cloud',{
+
         left:(120 + i*520)+'px', top:(70 + (i%3)*42)+'px',
+
         width:(100 + (i%2)*30)+'px', height:(44 + (i%2)*10)+'px'
+
       });
+
     }
-    for(let i=0;i<6;i++){
+
+    for(let i=0;i<7;i++){
+
       make('div','hill',{
-        left:(i*650 + 40)+'px', bottom:'110px',
+
+        left:(i*620 + 40)+'px', bottom:'110px',
+
         width:(180 + (i%2)*40)+'px', height:(95 + (i%2)*20)+'px'
+
       });
+
     }
-    for(let i=0;i<18;i++){
+
+    for(let i=0;i<20;i++){
+
       make('div','bush',{
+
         left:(i*210 + 40)+'px', bottom:'70px',
+
         width:(70 + (i%3)*18)+'px', height:(30 + (i%2)*8)+'px'
+
       });
+
     }
 
-    // ground segments with gaps
-    const gSegs = [
-      [0, 420],[500, 420],[1020, 360],[1470, 420],[1980, 380],[2470, 320],[2870, 500]
-    ];
+    const gSegs = [[0,430],[520,420],[1030,370],[1490,420],[2040,380],[2540,340],[3000,600]];
+
     gSegs.forEach(([x,w])=>{
+
       const el = make('div','groundSeg',{left:x+'px', top:groundY+'px', width:w+'px'});
-      solids.push(rectObj(el,x,groundY,w,110,'ground'));
+
+      solids.push(obj(el,x,groundY,w,110,'ground'));
+
     });
 
-    // platforms higher and more vertical
     const plats = [
-      [210, groundY-140, 110, 24],
-      [390, groundY-240, 110, 24],
-      [620, groundY-340, 120, 24],
-      [820, groundY-250, 110, 24],
 
-      [1110, groundY-150, 120, 24],
-      [1290, groundY-250, 120, 24],
+      [220, groundY-140, 110, 24],
 
-      [1540, groundY-190, 120, 24],
-      [1720, groundY-300, 120, 24],
-      [1890, groundY-410, 120, 24],
+      [410, groundY-240, 110, 24],
 
-      [2080, groundY-170, 120, 24],
-      [2280, groundY-270, 120, 24],
+      [650, groundY-340, 120, 24],
 
-      [2520, groundY-150, 120, 24],
-      [2700, groundY-260, 120, 24],
-      [2900, groundY-360, 120, 24],
-      [3110, groundY-260, 120, 24]
+      [860, groundY-250, 110, 24],
+
+      [1120, groundY-150, 120, 24],
+
+      [1300, groundY-250, 120, 24],
+
+      [1570, groundY-190, 120, 24],
+
+      [1750, groundY-300, 120, 24],
+
+      [1930, groundY-410, 120, 24],
+
+      [2130, groundY-170, 120, 24],
+
+      [2330, groundY-270, 120, 24],
+
+      [2580, groundY-150, 120, 24],
+
+      [2770, groundY-260, 120, 24],
+
+      [2970, groundY-360, 120, 24],
+
+      [3190, groundY-250, 120, 24]
+
     ];
+
     plats.forEach(([x,y,w,h])=>{
+
       const el = make('div','platform',{left:x+'px', top:y+'px', width:w+'px', height:h+'px'});
-      solids.push(rectObj(el,x,y,w,h,'platform'));
+
+      solids.push(obj(el,x,y,w,h,'platform'));
+
     });
 
-    // pipes
-    const pipes = [
-      [900, groundY-120, 90, 120],
-      [2370, groundY-160, 100, 160]
-    ];
-    pipes.forEach(([x,y,w,h])=>{
+    [[930, groundY-120, 90, 120],[2420, groundY-160, 100, 160]].forEach(([x,y,w,h])=>{
+
       const el = make('div','pipe',{left:x+'px', top:y+'px', width:w+'px', height:h+'px'});
-      solids.push(rectObj(el,x,y,w,h,'pipe'));
+
+      solids.push(obj(el,x,y,w,h,'pipe'));
+
     });
 
-    // spikes - ground and platform spikes
+    // brick/lucky zone
+
+    addBreakable(500, groundY-420);
+
+    addBreakable(548, groundY-420);
+
+    addLucky(596, groundY-420);
+
+    addBreakable(644, groundY-420);
+
+    addBreakable(1700, groundY-480);
+
+    addLucky(1748, groundY-480);
+
+    addBreakable(1796, groundY-480);
+
+    addLucky(2860, groundY-420);
+
+    addBreakable(2908, groundY-420);
+
     const spikeList = [
-      [440, groundY-34],[472, groundY-34],
-      [740, groundY-34],[772, groundY-34],[804, groundY-34],
-      [1360, groundY-34],[1392, groundY-34],
-      [1648, groundY-224],[1680, groundY-224], // on elevated platform
-      [2440, groundY-34],[2472, groundY-34],
-      [2950, groundY-394],[2982, groundY-394]  // on final high platform
+
+      [450, groundY-34],[482, groundY-34],
+
+      [760, groundY-34],[792, groundY-34],[824, groundY-34],
+
+      [1370, groundY-34],[1402, groundY-34],
+
+      [1680, groundY-224],[1712, groundY-224],
+
+      [2480, groundY-34],[2512, groundY-34],
+
+      [3020, groundY-394],[3052, groundY-394]
+
     ];
+
     spikeList.forEach(([x,y])=>{
+
       const el = make('div','spike',{left:x+'px', top:y+'px'});
-      spikes.push(rectObj(el,x,y,32,34,'spike'));
+
+      spikes.push(obj(el,x,y,32,34,'spike'));
+
     });
 
-    // coins in jump arcs
     const coinList = [
-      [242, groundY-190],[430, groundY-290],[660, groundY-390],[850, groundY-300],
-      [1140, groundY-200],[1320, groundY-300],
-      [1570, groundY-240],[1750, groundY-350],[1920, groundY-460],
-      [2110, groundY-220],[2310, groundY-320],
-      [2550, groundY-200],[2730, groundY-310],[2930, groundY-410],[3140, groundY-310]
+
+      [252, groundY-190],[450, groundY-290],[690, groundY-390],[890, groundY-300],
+
+      [1145, groundY-200],[1335, groundY-300],
+
+      [1585, groundY-240],[1765, groundY-350],[1945, groundY-460],
+
+      [2145, groundY-220],[2360, groundY-320],
+
+      [2605, groundY-200],[2800, groundY-310],[3000, groundY-410],[3215, groundY-300]
+
     ];
+
     coinList.forEach(([x,y])=>{
+
       const el = make('div','coin',{left:x+'px', top:y+'px'});
-      coins.push(rectObj(el,x,y,24,24,'coin'));
+
+      coins.push(obj(el,x,y,24,24,'coin'));
+
     });
 
-    // enemies on useful heights
     const enemyList = [
-      [560, groundY-38, 520, 860],
-      [1125, groundY-188, 1110, 1225],
-      [2088, groundY-208, 2080, 2188],
-      [3120, groundY-298, 3110, 3220]
+
+      [580, groundY-38, 540, 880],
+
+      [1135, groundY-188, 1120, 1235],
+
+      [2140, groundY-208, 2130, 2240],
+
+      [3200, groundY-288, 3190, 3330]
+
     ];
+
     enemyList.forEach(([x,y,minX,maxX])=>{
+
       const el = make('div','enemy',{left:x+'px', top:y+'px'}, '<div class="mouth"></div>');
+
       enemies.push({el,x,y,w:42,h:38,minX,maxX,vx:1.25,active:true});
+
     });
 
-    // flag
-    make('div','flagpole',{left:'3600px', top:(groundY-220)+'px', height:'220px'});
-    make('div','flag',{left:'3610px', top:(groundY-208)+'px'});
+    make('div','flagpole',{left:'3920px', top:(groundY-220)+'px', height:'220px'});
 
-    // player
+    make('div','flag',{left:'3930px', top:(groundY-208)+'px'});
+
     playerEl = make('div','player',{left:'80px', top:(groundY-58)+'px'},
+
       '<div class="hatTop"></div><div class="hatBrim"></div><div class="head"></div><div class="body"></div><div class="overalls"></div><div class="armL"></div><div class="armR"></div><div class="shoeL"></div><div class="shoeR"></div><div class="eyeL"></div><div class="eyeR"></div><div class="moust"></div>');
+
   }
 
   buildLevel();
+
   setTimeout(()=>banner.style.opacity='0', 2200);
+
   setTimeout(()=>banner.style.display='none', 2800);
 
   const state = {
+
     x:80, y:groundY-58, w:42, h:58, vx:0, vy:0,
+
     left:false, right:false, up:false, onGround:false,
-    coins:0, lives:3, inv:0, won:false
+
+    coins:0, big:false, inv:0, won:false
+
   };
 
-  function bind(code,val){
-    if(code==='ArrowLeft'||code==='KeyA') state.left=val;
-    if(code==='ArrowRight'||code==='KeyD') state.right=val;
-    if(code==='ArrowUp'||code==='KeyW'||code==='Space') state.up=val;
+  function updateStateLabel(){
+
+    stateTxt.textContent = state.big ? 'Grand 🍄' : 'Petit';
+
   }
+
+  function bind(code,val){
+
+    if(code==='ArrowLeft'||code==='KeyA') state.left=val;
+
+    if(code==='ArrowRight'||code==='KeyD') state.right=val;
+
+    if(code==='ArrowUp'||code==='KeyW'||code==='Space') state.up=val;
+
+  }
+
   addEventListener('keydown', e=>{ bind(e.code,true); if(['ArrowLeft','ArrowRight','ArrowUp','Space'].includes(e.code)) e.preventDefault(); }, {passive:false});
+
   addEventListener('keyup', e=>bind(e.code,false));
 
   function hold(id,key){
+
     const el=document.getElementById(id);
+
     const on=e=>{e.preventDefault(); state[key]=true;};
+
     const off=e=>{e.preventDefault(); state[key]=false;};
+
     el.addEventListener('touchstart',on,{passive:false});
+
     el.addEventListener('touchend',off,{passive:false});
+
     el.addEventListener('touchcancel',off,{passive:false});
+
     el.addEventListener('mousedown',on);
+
     addEventListener('mouseup',off);
+
     el.addEventListener('mouseleave',off);
+
   }
+
   hold('leftBtn','left'); hold('rightBtn','right'); hold('jumpBtn','up');
 
   function hit(a,b){
+
     return a.x < b.x+b.w && a.x+a.w > b.x && a.y < b.y+b.h && a.y+a.h > b.y;
+
+  }
+
+  function playerBox(){
+
+    return {x:state.x,y:state.y,w:state.w,h:state.h};
+
+  }
+
+  function growPlayer(){
+
+    if(state.big) return;
+
+    state.big = true;
+
+    state.h = 76;
+
+    state.y -= 18;
+
+    playerEl.classList.add('big');
+
+    updateStateLabel();
+
+  }
+
+  function shrinkPlayer(){
+
+    if(!state.big){
+
+      respawn();
+
+      return;
+
+    }
+
+    state.big = false;
+
+    state.h = 58;
+
+    state.y += 18;
+
+    playerEl.classList.remove('big');
+
+    state.inv = 90;
+
+    updateStateLabel();
+
   }
 
   function respawn(){
-    state.x=80; state.y=groundY-58; state.vx=0; state.vy=0;
+
+    state.x=80; state.y=groundY-(state.big?76:58); state.vx=0; state.vy=0;
+
   }
 
   function damage(){
+
     if(state.inv>0 || state.won) return;
-    state.lives--; state.inv=90; livesTxt.textContent='Vies: '+state.lives;
-    if(state.lives<=0){
-      msg.style.display='block';
-      msg.innerHTML='Perdu 😵‍💫<br>Tape l’écran pour recommencer';
-    }
-    respawn();
+
+    shrinkPlayer();
+
   }
 
   function resetAll(){
-    state.coins=0; state.lives=3; state.inv=0; state.won=false;
-    coinsTxt.textContent='Pièces: 0'; livesTxt.textContent='Vies: 3';
-    msg.style.display='none';
+
+    state.coins=0; state.big=false; state.inv=0; state.won=false;
+
+    coinsTxt.textContent='Pièces: 0';
+
     buildLevel();
+
+    updateStateLabel();
+
     respawn();
+
+    msg.style.display='none';
+
   }
-  addEventListener('pointerdown', ()=>{ if(state.lives<=0 || state.won) resetAll(); }, {passive:true});
+
+  addEventListener('pointerdown', ()=>{ if(state.won) resetAll(); }, {passive:true});
+
+  function removeSolid(ref){
+
+    const idx = solids.indexOf(ref);
+
+    if(idx >= 0) solids.splice(idx,1);
+
+  }
 
   function collide(axis){
-    const a = {x:state.x,y:state.y,w:state.w,h:state.h};
+
+    const a = playerBox();
+
     for(const s of solids){
+
       if(!s.active || !hit(a,s)) continue;
+
       if(axis==='x'){
+
         if(state.vx>0) state.x = s.x - state.w;
+
         else if(state.vx<0) state.x = s.x + s.w;
+
         state.vx = 0;
+
       } else {
+
         if(state.vy>0){
+
           state.y = s.y - state.h;
+
           state.vy = 0;
+
           state.onGround = true;
+
         } else if(state.vy<0){
+
+          // hit block from below
+
           state.y = s.y + s.h;
+
           state.vy = 0;
+
+          if(s.type === 'breakable' && state.big){
+
+            s.active = false;
+
+            s.el.style.display = 'none';
+
+            removeSolid(s);
+
+          } else if(s.type === 'lucky' && !s.used){
+
+            s.used = true;
+
+            s.el.classList.add('used');
+
+            s.el.textContent = '';
+
+            spawnMushroom(s.x + 7, s.y - 38);
+
+          }
+
         }
+
       }
+
     }
+
+  }
+
+  function updateMushrooms(){
+
+    for(const m of mushrooms){
+
+      if(!m.active) continue;
+
+      m.vy += 0.55;
+
+      if(m.vy > 12) m.vy = 12;
+
+      // horizontal move
+
+      m.x += m.vx;
+
+      const mr = {x:m.x,y:m.y,w:m.w,h:m.h};
+
+      for(const s of solids){
+
+        if(!s.active) continue;
+
+        if(hit(mr,s)){
+
+          if(m.vx > 0) m.x = s.x - m.w;
+
+          else m.x = s.x + s.w;
+
+          m.vx *= -1;
+
+        }
+
+      }
+
+      // vertical move
+
+      m.y += m.vy;
+
+      const mr2 = {x:m.x,y:m.y,w:m.w,h:m.h};
+
+      for(const s of solids){
+
+        if(!s.active) continue;
+
+        if(hit(mr2,s)){
+
+          if(m.vy > 0){
+
+            m.y = s.y - m.h;
+
+            m.vy = 0;
+
+          } else if(m.vy < 0){
+
+            m.y = s.y + s.h;
+
+            m.vy = 0;
+
+          }
+
+        }
+
+      }
+
+      if(hit(playerBox(), {x:m.x,y:m.y,w:m.w,h:m.h})){
+
+        m.active = false;
+
+        m.el.style.display = 'none';
+
+        growPlayer();
+
+      }
+
+      m.el.style.left = m.x + 'px';
+
+      m.el.style.top = m.y + 'px';
+
+    }
+
   }
 
   function update(){
-    if(state.lives<=0 || state.won) return;
+
+    if(state.won) return;
 
     state.onGround=false;
+
     if(state.left) state.vx -= 0.72;
+
     if(state.right) state.vx += 0.72;
+
     if(!state.left && !state.right) state.vx *= 0.84;
+
     if(state.vx>6.2) state.vx=6.2;
+
     if(state.vx<-6.2) state.vx=-6.2;
 
     if(state.up && state.onGround){
+
       state.vy = -13.2;
+
       state.onGround = false;
+
     }
 
     state.vy += 0.62;
+
     if(state.vy>14) state.vy=14;
 
     state.x += state.vx;
+
     collide('x');
 
     state.y += state.vy;
+
     collide('y');
 
-    if(state.y > window.innerHeight + 120) damage();
+    if(state.y > window.innerHeight + 120){
 
-    const a = {x:state.x,y:state.y,w:state.w,h:state.h};
+      respawn();
+
+    }
+
+    const a = playerBox();
 
     coins.forEach(c=>{
+
       if(!c.active) return;
+
       if(hit(a,c)){
+
         c.active=false;
+
         c.el.style.display='none';
+
         state.coins++;
+
         coinsTxt.textContent='Pièces: '+state.coins;
+
       }
+
     });
 
     spikes.forEach(s=>{ if(s.active && hit(a,s)) damage(); });
 
     enemies.forEach(e=>{
+
       if(!e.active) return;
+
       e.x += e.vx;
+
       if(e.x < e.minX || e.x > e.maxX) e.vx *= -1;
+
       e.el.style.left = e.x+'px';
 
       const b = {x:e.x,y:e.y,w:e.w,h:e.h};
+
       if(hit(a,b)){
+
         if(state.vy > 1 && (state.y + state.h - e.y) < 20){
+
           e.active=false;
+
           e.el.style.display='none';
+
           state.vy = -8.5;
+
         } else {
+
           damage();
+
         }
+
       }
+
     });
+
+    updateMushrooms();
 
     if(state.inv>0) state.inv--;
 
-    if(state.x > 3560){
+    if(state.x > 3880){
+
       state.won = true;
+
       msg.style.display='block';
-      msg.innerHTML='Bravooo 🎉<br>Cette fois le niveau est vraiment plus legit';
+
+      msg.innerHTML='Bravooo 🎉<br>Tu peux casser des blocs et devenir grand';
+
     }
 
     playerEl.style.left = state.x+'px';
+
     playerEl.style.top = state.y+'px';
+
     playerEl.style.opacity = (state.inv>0 && Math.floor(state.inv/6)%2===0) ? '0.35' : '1';
 
     const cam = Math.max(0, Math.min(worldW - window.innerWidth, state.x - window.innerWidth*0.35));
+
     world.style.transform = 'translateX(' + (-cam) + 'px)';
+
   }
 
   function loop(){
+
     update();
+
     requestAnimationFrame(loop);
+
   }
+
+  updateStateLabel();
+
   loop();
+
 })();
+
 </script>
+
 </body>
+
 </html>
+
 """
 
-path = Path("/mnt/data/cube_plumber_bros_v4.html")
+path = Path("/mnt/data/cube_plumber_bros_v5.html")
+
 path.write_text(html, encoding="utf-8")
+
 print(path)
